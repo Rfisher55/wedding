@@ -61,7 +61,7 @@ export const event = {
   mapCoords: { lat: 32.789252, lng: -79.938345 },
   ceremonyTime: "TODO: e.g. 4:00 PM",
   receptionTime: "TODO: e.g. 5:30 PM",
-  dressCode: "TODO: e.g. Black tie optional / Garden formal",
+  dressCode: "Black attire required. Guests are kindly asked to wear a black dress or black suit. All other colors will not be permitted.",
   note: "Ceremony under the garden pergola, with cocktails on the piazzas to follow." // edit freely
 };
 

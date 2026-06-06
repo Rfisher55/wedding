@@ -12,6 +12,13 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
 const lightboxImages = [];
 let lightboxIndex = 0;
 
+// Per-photo animation config — 9 slots, intentionally varied so
+// all 9 gallery items float/drift at different speeds and rhythms.
+const FLOAT_ANIMS   = ['floatA','floatB','floatC','floatD','floatB','floatA','floatD','floatC','floatA'];
+const FLOAT_DURS    = [6.5, 8.2, 7.1, 9.0, 6.8, 7.7, 8.5, 6.2, 7.4]; // seconds
+const FLOAT_DELAYS  = [0, -2.4, -5.1, -1.8, -3.5, -6.2, -4.0, -2.9, -7.1]; // negative = mid-cycle start
+const PARALLAX_SPD  = [0.06, 0.11, 0.04, 0.09, 0.13, 0.05, 0.08, 0.12, 0.07]; // scroll fraction per item
+
 /* ──────────────────────────────────────────────────────────────
    Boot — render content, then wire interactions
 ────────────────────────────────────────────────────────────── */
@@ -123,12 +130,65 @@ function renderGalleryGrid() {
     const isFeatured = (gallery.featured || []).includes(idx);
     const div = document.createElement('div');
     div.className = 'gallery-item' + (isFeatured ? ' gallery-item--featured' : '');
-    if (isFeatured && !prefersReduced) div.classList.add('gallery-item--rotatable');
 
     const img = document.createElement('img');
     img.src     = src;
     img.alt     = `${couple.partnerOne} & ${couple.partnerTwo}`;
     img.loading = 'lazy';
+
+    // ── Ambient float — every photo gets its own personality ──
+    if (!prefersReduced) {
+      img.style.setProperty('--float-anim',  FLOAT_ANIMS[idx % FLOAT_ANIMS.length]);
+      img.style.setProperty('--float-dur',   FLOAT_DURS[idx % FLOAT_DURS.length] + 's');
+      img.style.setProperty('--float-delay', FLOAT_DELAYS[idx % FLOAT_DELAYS.length] + 's');
+    }
+
+    // ── 3D tilt — mouse (desktop) ──
+    if (!prefersReduced) {
+      div.addEventListener('mousemove', e => {
+        const r = div.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width  - 0.5) * 2;
+        const y = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+        img.style.transition        = 'transform 0.08s linear';
+        img.style.animationPlayState = 'paused';
+        img.style.transform = `perspective(700px) rotateX(${-y * 14}deg) rotateY(${x * 14}deg) scale(1.08)`;
+      });
+      div.addEventListener('mouseleave', () => {
+        img.style.transition = 'transform 0.55s ease';
+        img.style.transform  = 'scale(1)';
+        setTimeout(() => {
+          img.style.transform          = '';
+          img.style.transition         = '';
+          img.style.animationPlayState = '';
+        }, 560);
+      });
+    }
+
+    // ── 3D tilt — touch (iPhone / iPad) ──
+    if (!prefersReduced) {
+      let touching = false;
+      div.addEventListener('touchstart', () => { touching = true; }, { passive: true });
+      div.addEventListener('touchmove', e => {
+        if (!touching) return;
+        const touch = e.touches[0];
+        const r = div.getBoundingClientRect();
+        const x = ((touch.clientX - r.left) / r.width  - 0.5) * 2;
+        const y = ((touch.clientY - r.top)  / r.height - 0.5) * 2;
+        img.style.transition        = 'transform 0.06s linear';
+        img.style.animationPlayState = 'paused';
+        img.style.transform = `perspective(700px) rotateX(${-y * 10}deg) rotateY(${x * 10}deg) scale(1.06)`;
+      }, { passive: true });
+      div.addEventListener('touchend', () => {
+        touching = false;
+        img.style.transition = 'transform 0.5s ease';
+        img.style.transform  = 'scale(1)';
+        setTimeout(() => {
+          img.style.transform          = '';
+          img.style.transition         = '';
+          img.style.animationPlayState = '';
+        }, 520);
+      });
+    }
 
     div.appendChild(img);
     div.addEventListener('click', () => openLightbox(idx));
@@ -203,17 +263,35 @@ function initScrollReveal() {
 
   allReveal.forEach(el => observer.observe(el));
 
-  // Gallery scroll rotation for featured items
-  const rotatables = document.querySelectorAll('.gallery-item--rotatable');
-  if (rotatables.length) {
-    const gallerySection = document.getElementById('gallery');
-    window.addEventListener('scroll', () => {
-      if (!gallerySection) return;
-      const rect     = gallerySection.getBoundingClientRect();
-      const progress = -rect.top / (rect.height || 1);
-      const deg      = Math.max(-5, Math.min(5, (progress - 0.4) * 14));
-      rotatables.forEach(el => { el.style.transform = `rotate(${deg}deg)`; });
-    }, { passive: true });
+  // Gallery: scroll parallax (each item moves at its own speed) + featured rotation
+  if (!prefersReduced) {
+    const gallerySection  = document.getElementById('gallery');
+    const galleryItems    = document.querySelectorAll('.gallery-item');
+
+    if (gallerySection && galleryItems.length) {
+      window.addEventListener('scroll', () => {
+        const rect = gallerySection.getBoundingClientRect();
+        // Only compute when gallery is anywhere near the viewport
+        if (rect.bottom < -300 || rect.top > window.innerHeight + 300) return;
+
+        // progress: 0 when section top hits bottom of viewport, 1 when section top at top
+        const progress = 1 - rect.top / window.innerHeight;
+
+        galleryItems.forEach((item, idx) => {
+          const speed  = PARALLAX_SPD[idx % PARALLAX_SPD.length];
+          const yShift = progress * window.innerHeight * speed * 0.35;
+          // Use CSS `translate` (individual transform property) so it composes
+          // independently with the img's float animation & tilt transforms.
+          item.style.translate = `0 ${yShift}px`;
+
+          // Featured items also get a scroll-driven rotation on top
+          if (item.classList.contains('gallery-item--featured')) {
+            const deg = Math.max(-5, Math.min(5, (progress - 0.5) * 12));
+            item.style.rotate = `${deg}deg`;
+          }
+        });
+      }, { passive: true });
+    }
   }
 }
 

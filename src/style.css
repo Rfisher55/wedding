@@ -657,6 +657,34 @@ p { font-size: var(--size-md); }
 /* ============================================================
    GALLERY
    ============================================================ */
+
+/* ── Ambient float keyframes (4 personalities) ── */
+@keyframes floatA {
+  0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+  33%  { transform: translateY(-14px) rotate(0.8deg) scale(1.01); }
+  66%  { transform: translateY(7px)  rotate(-0.4deg) scale(0.99); }
+}
+@keyframes floatB {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  40%  { transform: translateY(-20px) rotate(-1deg); }
+  80%  { transform: translateY(6px)  rotate(0.4deg); }
+}
+@keyframes floatC {
+  0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
+  50%  { transform: translateY(10px) scale(1.025) rotate(-0.6deg); }
+}
+@keyframes floatD {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25%  { transform: translateY(-10px) rotate(0.6deg); }
+  75%  { transform: translateY(13px) rotate(-1.1deg); }
+}
+
+/* ── Story photo slow Ken-Burns ── */
+@keyframes storyZoom {
+  from { transform: scale(1) translateX(0px); }
+  to   { transform: scale(1.08) translateX(-6px); }
+}
+
 .section-gallery { background: var(--ivory); }
 
 .gallery-grid {
@@ -672,6 +700,11 @@ p { font-size: var(--size-md); }
   cursor: pointer;
   position: relative;
   background: var(--cream);
+  /* GPU layer so float animation is smooth on iOS */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .gallery-item::before {
@@ -687,27 +720,43 @@ p { font-size: var(--size-md); }
   color: var(--gold);
   letter-spacing: 0.05em;
   pointer-events: none;
+  z-index: 0;
 }
 
 .gallery-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s var(--ease);
   display: block;
-}
-
-.gallery-item:hover img {
-  transform: scale(1.06);
+  position: relative;
+  z-index: 1;
+  /* Float animation driven by --float-* CSS custom properties set by JS */
+  animation: var(--float-anim, floatA) var(--float-dur, 7s) var(--float-delay, 0s) ease-in-out infinite;
+  will-change: transform;
+  transform-origin: center center;
 }
 
 .gallery-item--featured {
   grid-row: span 2;
 }
 
+/* Story photos — slow ambient zoom while in view */
+.timeline-photo img {
+  animation: storyZoom 9s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Reduce motion: kill all ambient animations, keep simple hover */
 @media (prefers-reduced-motion: reduce) {
-  .gallery-item img { transition: none; }
-  .gallery-item--rotatable { transform: none !important; }
+  .gallery-item img,
+  .timeline-photo img {
+    animation: none !important;
+    will-change: auto;
+    transition: transform 0.35s ease;
+  }
+  .gallery-item:hover img        { transform: scale(1.04); }
+  .timeline-photo:hover img      { transform: scale(1.03); }
+  .gallery-item--rotatable       { transform: none !important; }
 }
 
 /* ── Lightbox ── */
@@ -1178,4 +1227,73 @@ textarea { resize: vertical; min-height: 100px; }
   .registry-grid { flex-direction: column; align-items: center; }
 
   .hero-names { font-size: 2rem; }
+}
+
+/* ============================================================
+   iPHONE / IOS SAFARI — SPECIFIC FIXES
+   ============================================================ */
+
+/* Stop iOS from zooming in on form inputs (requires 16px minimum) */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Safe area padding for iPhones with notch / Dynamic Island / home indicator */
+.nav-inner {
+  padding-left:  max(var(--space-md), env(safe-area-inset-left));
+  padding-right: max(var(--space-md), env(safe-area-inset-right));
+}
+
+.footer {
+  padding-bottom: max(var(--space-lg), calc(var(--space-md) + env(safe-area-inset-bottom)));
+}
+
+/* Kill tap highlight on all interactive elements */
+a, button, .gallery-item, .registry-card, .nav-toggle, .scroll-cue,
+.radio-label, .timeline-photo {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Smooth momentum scrolling on iOS */
+html {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent iOS font size adjustment */
+body {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Gallery tilt feedback on touch — brief scale to signal interaction */
+.gallery-item:active img {
+  transform: scale(1.04);
+  transition: transform 0.15s ease;
+}
+
+/* Mobile gallery: 2 columns on iPhone landscape, 1 portrait */
+@media (max-width: 480px) {
+  .gallery-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 200px;
+    gap: 6px;
+  }
+  .gallery-item--featured { grid-row: span 1; }
+}
+
+@media (max-width: 375px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 260px;
+  }
+}
+
+/* Nav mobile padding for safe area top */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .nav {
+    padding-top: env(safe-area-inset-top);
+    height: calc(var(--nav-h) + env(safe-area-inset-top));
+  }
 }

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 340" fill="none">
+  <style>
+    .ring-outer {
+      stroke-dasharray: 950;
+      stroke-dashoffset: 950;
+      animation: draw 2.8s cubic-bezier(0.4,0,0.2,1) 0.2s forwards;
+    }
+    .ring-inner {
+      stroke-dasharray: 890;
+      stroke-dashoffset: 890;
+      animation: draw 2.8s cubic-bezier(0.4,0,0.2,1) 0.5s forwards;
+    }
+    .ornament {
+      stroke-dasharray: 200;
+      stroke-dashoffset: 200;
+      animation: draw 1s ease 1s forwards;
+    }
+    .divider {
+      stroke-dasharray: 160;
+      stroke-dashoffset: 160;
+      animation: draw 0.9s ease 1.1s forwards;
+    }
+    .divider2 {
+      stroke-dasharray: 120;
+      stroke-dashoffset: 120;
+      animation: draw 0.7s ease 1.2s forwards;
+    }
+    .crest-text {
+      opacity: 0;
+      animation: fadeUp 1s ease 1.4s forwards;
+    }
+    .crest-sub {
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1.8s forwards;
+    }
+    @keyframes draw {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ring-outer, .ring-inner, .ornament, .divider, .divider2 {
+        stroke-dashoffset: 0; animation: none;
+      }
+      .crest-text, .crest-sub { opacity: 1; animation: none; }
+    }
+  </style>
+
+  <!-- Outer oval ring -->
+  <ellipse class="ring-outer" cx="150" cy="170" rx="134" ry="159" stroke="#B08D57" stroke-width="1.2"/>
+  <!-- Inner oval ring -->
+  <ellipse class="ring-inner" cx="150" cy="170" rx="125" ry="150" stroke="#B08D57" stroke-width="0.5"/>
+
+  <!-- Top ornament: cross + small circle -->
+  <g class="ornament">
+    <line x1="150" y1="3"  x2="150" y2="17" stroke="#B08D57" stroke-width="1.4"/>
+    <line x1="143" y1="10" x2="157" y2="10" stroke="#B08D57" stroke-width="1.4"/>
+    <circle cx="150" cy="10" r="3.5" stroke="#B08D57" stroke-width="0.8" fill="none"/>
+  </g>
+
+  <!-- Bottom ornament: arch -->
+  <path class="ornament" d="M 120 330 Q 150 343 180 330" stroke="#B08D57" stroke-width="1" fill="none"/>
+  <!-- Bottom diamond -->
+  <path class="ornament" d="M 150 333 L 154 337 L 150 341 L 146 337 Z" stroke="#B08D57" stroke-width="0.8" fill="none"/>
+
+  <!-- Left leaf sprig -->
+  <g class="ornament">
+    <path d="M 32 175 Q 20 165 28 155" stroke="#B08D57" stroke-width="0.9" fill="none"/>
+    <path d="M 32 175 Q 20 185 28 195" stroke="#B08D57" stroke-width="0.9" fill="none"/>
+    <line x1="32" y1="155" x2="32" y2="195" stroke="#B08D57" stroke-width="0.6"/>
+  </g>
+  <!-- Right leaf sprig -->
+  <g class="ornament">
+    <path d="M 268 175 Q 280 165 272 155" stroke="#B08D57" stroke-width="0.9" fill="none"/>
+    <path d="M 268 175 Q 280 185 272 195" stroke="#B08D57" stroke-width="0.9" fill="none"/>
+    <line x1="268" y1="155" x2="268" y2="195" stroke="#B08D57" stroke-width="0.6"/>
+  </g>
+
+  <!-- Divider lines above subtext -->
+  <line class="divider"  x1="84"  y1="237" x2="216" y2="237" stroke="#B08D57" stroke-width="0.7"/>
+  <line class="divider2" x1="100" y1="241" x2="200" y2="241" stroke="#B08D57" stroke-width="0.35"/>
+
+  <!-- Main monogram letters -->
+  <text class="crest-text"
+    x="150" y="222"
+    text-anchor="middle"
+    font-family="Georgia, serif"
+    font-size="82"
+    font-weight="300"
+    letter-spacing="-1"
+    fill="#B08D57">R &#38; M</text>
+
+  <!-- Date / subtext -->
+  <text class="crest-sub"
+    x="150" y="268"
+    text-anchor="middle"
+    font-family="Georgia, serif"
+    font-size="9.5"
+    letter-spacing="5"
+    fill="#B08D57">NOVEMBER · 2027</text>
+</svg>

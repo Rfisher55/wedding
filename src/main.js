@@ -41,10 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initLightbox();
   initRsvpForm();
   initGuestbook();
+  initHeroScrollStory();
   initScrollProgress();
   initHeroParallax();
   initMagneticButtons();
-  initCountdown();
   initTimelineLine();
   initScrollSkew();
 });
@@ -519,6 +519,41 @@ function prependNote(note, container, append) {
 /* ──────────────────────────────────────────────────────────────
    Utilities
 ────────────────────────────────────────────────────────────── */
+/* ──────────────────────────────────────────────────────────────
+   Hero scroll story  (3 acts: names apart → combined → Mr & Mrs)
+────────────────────────────────────────────────────────────── */
+function initHeroScrollStory() {
+  const section = document.getElementById('hero');
+  const states  = [
+    document.getElementById('hsState1'),
+    document.getElementById('hsState2'),
+    document.getElementById('hsState3'),
+  ];
+  if (!section || states.some(s => !s)) return;
+
+  let active = 0;
+
+  function goTo(idx) {
+    if (idx === active) return;
+    states.forEach((el, i) => {
+      el.classList.remove('hs-state--active', 'hs-state--exiting');
+      if (i === idx)     el.classList.add('hs-state--active');
+      else if (i < idx)  el.classList.add('hs-state--exiting');
+    });
+    active = idx;
+  }
+
+  window.addEventListener('scroll', () => {
+    const scrolled = -section.getBoundingClientRect().top;
+    const total    = section.offsetHeight - window.innerHeight;
+    const p        = Math.max(0, Math.min(1, scrolled / total));
+
+    if      (p < 0.35) goTo(0);
+    else if (p < 0.68) goTo(1);
+    else               goTo(2);
+  }, { passive: true });
+}
+
 /* ──────────────────────────────────────────────────────────────
    Scroll velocity skew on gallery strip
 ────────────────────────────────────────────────────────────── */

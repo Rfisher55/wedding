@@ -68,31 +68,50 @@
          hero image src + scroll cue text set by main.js
     ═══════════════════════════════════════════════════ -->
     <section id="hero" class="section-hero" aria-label="Hero">
-      <div class="hero-bg" aria-hidden="true">
-        <!-- src injected by main.js from hero.heroImage -->
-        <img class="hero-img" src="" alt="Robert and Madison" loading="eager" fetchpriority="high">
-      </div>
-      <div class="hero-overlay" aria-hidden="true"></div>
+      <div class="hero-sticky" id="heroSticky">
 
-      <div class="hero-content">
-        <div class="monogram-wrap" aria-hidden="true">
-          <img src="public/monogram.svg" alt="" class="monogram-svg" width="220" height="250">
+        <div class="hero-bg" aria-hidden="true">
+          <img class="hero-img" src="" alt="Robert and Madison" loading="eager" fetchpriority="high">
         </div>
+        <div class="hero-overlay" aria-hidden="true"></div>
 
-        <p class="hero-tagline">Together with their families</p>
+        <div class="hero-content" id="heroContent">
+          <div class="monogram-wrap" aria-hidden="true">
+            <img src="public/monogram.svg" alt="" class="monogram-svg" width="220" height="250">
+          </div>
 
-        <h1 class="hero-names">
-          <span class="hero-name-line">Robert Fisher</span>
-          <span class="hero-name-line">Madison Muschik</span>
-        </h1>
+          <!-- Three-act scroll story -->
+          <div class="hero-text-stage">
 
-        <p class="hero-date">Sunday, the Seventh of November, 2027</p>
-        <p class="hero-venue" style="margin-top:0.4em">The William Aiken House &middot; Charleston, SC</p>
+            <div class="hs-state hs-state--active" id="hsState1">
+              <p class="hero-tagline">Together with their families</p>
+              <h1 class="hero-names">
+                <span class="hero-name-line">Robert Fisher</span>
+                <span class="hero-name-line">Madison Muschik</span>
+              </h1>
+            </div>
+
+            <div class="hs-state" id="hsState2">
+              <p class="hero-tagline">Together</p>
+              <h1 class="hero-names">Robert &amp; Madison Fisher</h1>
+            </div>
+
+            <div class="hs-state" id="hsState3">
+              <p class="hero-tagline">Soon to be</p>
+              <h1 class="hero-names hero-names--golden">Mr. &amp; Mrs. Fisher</h1>
+            </div>
+
+          </div>
+
+          <p class="hero-date">Sunday, the Seventh of November, 2027</p>
+          <p class="hero-venue" style="margin-top:0.4em">The William Aiken House &middot; Charleston, SC</p>
+        </div>
 
         <a href="#story" class="scroll-cue" aria-label="Scroll down">
           <span class="scroll-cue-line"></span>
           <span class="scroll-cue-label">Scroll</span>
         </a>
+
       </div>
     </section>
 

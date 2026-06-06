@@ -271,13 +271,19 @@ p { font-size: var(--size-md); }
    ============================================================ */
 .section-hero {
   position: relative;
+  height: 280svh; /* tall so scroll passes through 3 story states */
+}
+
+/* Sticky viewport — locks in place while section scrolls */
+.hero-sticky {
+  position: sticky;
+  top: 0;
   height: 100svh;
   min-height: 640px;
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
   overflow: hidden;
-  text-align: left;
 }
 
 /* Ken-Burns background */
@@ -323,13 +329,51 @@ p { font-size: var(--size-md); }
   z-index: 2;
   color: var(--ivory);
   padding: clamp(var(--space-md), 5vw, var(--space-xl));
-  padding-bottom: clamp(5rem, 10vh, 8rem);
+  padding-bottom: var(--space-lg);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-xs);
   animation: heroFadeIn 1.4s ease 0.2s both;
   width: 100%;
+}
+
+/* ── Hero scroll story states ── */
+.hero-text-stage {
+  position: relative;
+  width: 100%;
+  min-height: clamp(10rem, 26vw, 24rem);
+  margin-bottom: var(--space-xs);
+}
+
+.hs-state {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.hs-state--active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.hs-state--exiting {
+  opacity: 0;
+  transform: translateY(-30px);
+  transition-duration: 0.5s;
+}
+
+/* State 3 — gold italic */
+.hero-names--golden {
+  color: var(--gold-light);
+  font-style: italic;
 }
 
 @keyframes heroFadeIn {

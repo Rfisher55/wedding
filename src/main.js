@@ -541,6 +541,14 @@ function initHeroScrollStory() {
   if (!section || !namesEl || !taglineEl) return;
 
   let active = 0;
+  let sectionTop = 0, sectionHeight = 0;
+
+  function measure() {
+    sectionTop    = section.offsetTop;
+    sectionHeight = section.offsetHeight;
+  }
+  measure();
+  window.addEventListener('resize', measure, { passive: true });
 
   function goTo(idx) {
     if (idx === active) return;
@@ -565,15 +573,19 @@ function initHeroScrollStory() {
     }, 300);
   }
 
-  window.addEventListener('scroll', () => {
-    const scrolled = -section.getBoundingClientRect().top;
-    const total    = section.offsetHeight - window.innerHeight;
-    const p        = Math.max(0, Math.min(1, scrolled / total));
-
+  function check() {
+    const scrolled = window.scrollY - sectionTop;
+    const total    = sectionHeight - window.innerHeight;
+    if (total <= 0) return;
+    const p = Math.max(0, Math.min(1, scrolled / total));
     if      (p < 0.35) goTo(0);
     else if (p < 0.68) goTo(1);
     else               goTo(2);
-  }, { passive: true });
+  }
+
+  // scroll covers desktop + iOS; touchmove catches iOS during active touch
+  window.addEventListener('scroll',    check, { passive: true });
+  window.addEventListener('touchmove', check, { passive: true });
 }
 
 /* ──────────────────────────────────────────────────────────────

@@ -20,7 +20,7 @@ export const hero = {
   // Big date line under the names
   dateLine: "Sunday, November 7, 2027",
   location: "Charleston, South Carolina",
-  heroImage: "/images/hero.jpg",   // drop your photo here in /public/images/
+  heroImage: "public/images/hero.jpg",   // drop your photo here in /public/images/
   scrollCue: "Scroll to begin"
 };
 
@@ -30,9 +30,9 @@ export const story = {
   heading: "Our Story",
   intro: "TODO: a sentence or two setting up your story.",
   milestones: [
-    { year: "TODO", title: "How we met", text: "TODO", image: "/images/story/met.jpg" },
-    { year: "TODO", title: "The proposal", text: "TODO", image: "/images/story/proposal.jpg" },
-    { year: "2027", title: "The wedding", text: "We can't wait to celebrate with you in Charleston.", image: "/images/story/today.jpg" }
+    { year: "TODO", title: "How we met", text: "TODO", image: "public/images/story/met.jpg" },
+    { year: "TODO", title: "The proposal", text: "TODO", image: "public/images/story/proposal.jpg" },
+    { year: "2027", title: "The wedding", text: "We can't wait to celebrate with you in Charleston.", image: "public/images/story/today.jpg" }
   ]
 };
 
@@ -88,9 +88,9 @@ export const registry = {
 export const gallery = {
   heading: "Moments",
   images: [
-    "/images/gallery/01.jpg",
-    "/images/gallery/02.jpg",
-    "/images/gallery/03.jpg"
+    "public/images/gallery/01.jpg",
+    "public/images/gallery/02.jpg",
+    "public/images/gallery/03.jpg"
     // TODO: add the rest
   ],
   // Index(es) of photos that get the playful rotate-on-scroll treatment

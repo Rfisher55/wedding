@@ -30,9 +30,9 @@ export const story = {
   heading: "Our Story",
   intro: "TODO: a sentence or two setting up your story.",
   milestones: [
-    { year: "TODO", title: "How we met", text: "TODO", image: "public/images/story/met.jpg" },
-    { year: "TODO", title: "The proposal", text: "TODO", image: "public/images/story/proposal.jpg" },
-    { year: "2027", title: "The wedding", text: "We can't wait to celebrate with you in Charleston.", image: "public/images/story/today.jpg" }
+    { year: "TODO", title: "How we met", text: "TODO", image: "public/images/gallery/04.jpg" },
+    { year: "TODO", title: "The proposal", text: "TODO", image: "public/images/gallery/03.jpg" },
+    { year: "2027", title: "The wedding", text: "We can't wait to celebrate with you in Charleston.", image: "public/images/hero.jpg" }
   ]
 };
 
@@ -88,13 +88,18 @@ export const registry = {
 export const gallery = {
   heading: "Moments",
   images: [
-    "public/images/gallery/01.jpg",
-    "public/images/gallery/02.jpg",
-    "public/images/gallery/03.jpg"
-    // TODO: add the rest
+    "public/images/gallery/01.jpg",  // B&W vaulted marble arches
+    "public/images/gallery/02.jpg",  // Grand staircase, couple sitting, warm gold tones
+    "public/images/gallery/03.jpg",  // Brown leather sofa, orange walls, gold lamp
+    "public/images/gallery/04.jpg",  // Staircase holding hands, Madison looking back
+    "public/images/gallery/05.jpg",  // B&W full-length embrace, dark interior chandeliers
+    "public/images/gallery/06.jpg",  // Wide Gothic balcony, couple on upper level
+    "public/images/gallery/07.jpg",  // B&W overhead on tufted leather chair
+    "public/images/gallery/08.jpg",  // COLOR overhead on tufted leather chair
+    "public/images/gallery/09.jpg"   // B&W balcony from below, dramatic upward angle
   ],
-  // Index(es) of photos that get the playful rotate-on-scroll treatment
-  featured: [0]
+  // B&W arches (0) and B&W embrace (4) get the playful rotate-on-scroll treatment
+  featured: [0, 4]
 };
 
 // ---- RSVP ----

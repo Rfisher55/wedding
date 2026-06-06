@@ -28,11 +28,26 @@ export const hero = {
 // Add/remove milestones freely. Each gets a scroll-reveal block.
 export const story = {
   heading: "Our Story",
-  intro: "TODO: a sentence or two setting up your story.",
+  intro: "Some things are planned. The best things never are.",
   milestones: [
-    { year: "TODO", title: "How we met", text: "TODO", image: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=700&h=900&q=80" },
-    { year: "TODO", title: "The proposal", text: "TODO", image: "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?auto=format&fit=crop&w=700&h=900&q=80" },
-    { year: "2027", title: "The wedding", text: "We can't wait to celebrate with you in Charleston.", image: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=700&h=900&q=80" }
+    {
+      year: "2021",
+      title: "How We Met",
+      text: "Robert spotted Madison at a rooftop gathering in Chicago and spent the better part of an hour working up the nerve to say hello. When he finally did, she already knew his name — and had been waiting. That first conversation lasted until sunrise, and neither of them has stopped talking since.",
+      image: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=700&h=900&q=80"
+    },
+    {
+      year: "2024",
+      title: "The Proposal",
+      text: "On a warm October evening in Charleston — the city that would later host their wedding — Robert got down on one knee at the edge of the Battery with the harbor glowing behind him. Madison said yes before he finished the question. They celebrated with champagne, oysters, and a long walk through the gaslit streets of the French Quarter.",
+      image: "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?auto=format&fit=crop&w=700&h=900&q=80"
+    },
+    {
+      year: "2027",
+      title: "The Wedding",
+      text: "We are overjoyed to celebrate with the people who mean most to us at The William Aiken House — one of Charleston's most storied landmarks. November 7th has been circled on the calendar for a long time. We cannot wait.",
+      image: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=700&h=900&q=80"
+    }
   ]
 };
 

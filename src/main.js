@@ -578,8 +578,8 @@ function initHeroScrollStory() {
     const total    = sectionHeight - window.innerHeight;
     if (total <= 0) return;
     const p = Math.max(0, Math.min(1, scrolled / total));
-    if      (p < 0.35) goTo(0);
-    else if (p < 0.68) goTo(1);
+    if      (p < 0.33) goTo(0);
+    else if (p < 0.66) goTo(1);
     else               goTo(2);
   }
 

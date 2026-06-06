@@ -271,15 +271,17 @@ p { font-size: var(--size-md); }
    ============================================================ */
 .section-hero {
   position: relative;
-  height: 280svh; /* tall so scroll passes through 3 story states */
+  height: 300vh;
+  height: 300svh;
 }
 
 /* Sticky viewport — locks in place while section scrolls */
 .hero-sticky {
   position: sticky;
   top: 0;
+  height: 100vh;   /* fallback */
   height: 100svh;
-  min-height: 640px;
+  min-height: 560px;
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
@@ -386,8 +388,8 @@ p { font-size: var(--size-md); }
 
 .hero-tagline {
   font-family: var(--font-body);
-  font-size: clamp(0.6rem, 1.4vw, 0.75rem);
-  letter-spacing: 0.35em;
+  font-size: clamp(0.62rem, 1.8vw, 0.75rem);
+  letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--gold);
   margin-bottom: 0;
@@ -395,7 +397,7 @@ p { font-size: var(--size-md); }
 
 .hero-names {
   font-family: var(--font-display);
-  font-size: clamp(3.8rem, 11vw, 10rem);
+  font-size: clamp(2.6rem, 11vw, 10rem);
   font-weight: 300;
   color: var(--ivory);
   line-height: 0.95;
@@ -427,8 +429,8 @@ p { font-size: var(--size-md); }
 
 .hero-venue {
   font-family: var(--font-body);
-  font-size: clamp(0.55rem, 1.2vw, 0.7rem);
-  letter-spacing: 0.28em;
+  font-size: clamp(0.6rem, 1.5vw, 0.7rem);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--gold);
 }
@@ -1439,6 +1441,89 @@ body { -webkit-text-size-adjust: 100%; }
 @media (max-width: 480px) {
   .gallery-item           { width: 78vw; height: 56vw; max-height: 360px; }
   .gallery-item--featured { width: 88vw; height: 65vw; max-height: 440px; }
+}
+
+/* ============================================================
+   COMPREHENSIVE MOBILE FIXES  (phones up to 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Base font & section padding */
+  html { font-size: 16px; }
+
+  .section {
+    padding: var(--space-lg) var(--space-sm);
+  }
+
+  /* Hero content padding tighter */
+  .hero-content {
+    padding: var(--space-sm);
+    padding-bottom: 4.5rem;
+    gap: 6px;
+  }
+
+  /* Shrink ghost section numbers so they don't overflow */
+  .section[data-num]::before {
+    font-size: clamp(3rem, 18vw, 5.5rem);
+    top: var(--space-sm);
+    right: var(--space-xs);
+    opacity: 0.05;
+  }
+
+  /* Hero scroll-cue inside sticky — keep visible */
+  .scroll-cue {
+    bottom: var(--space-sm);
+    right: var(--space-sm);
+  }
+
+  /* Map — taller ratio on phone */
+  .map-wrap { aspect-ratio: 4/3; }
+
+  /* Travel grid — single column */
+  .travel-grid { grid-template-columns: 1fr; }
+
+  /* Registry card — full width */
+  .registry-card { width: 100%; max-width: 320px; }
+
+  /* Guestbook notes max-height smaller */
+  .guestbook-notes { max-height: 380px; }
+
+  /* Marquee slightly smaller */
+  .marquee-track { font-size: 0.75rem; }
+
+  /* Schedule row wrap nicely */
+  .schedule { max-width: 100%; }
+
+  /* Footer monogram smaller */
+  .footer-monogram { font-size: var(--size-2xl); }
+
+  /* Grain animation — reduce for performance */
+  body::before { animation-duration: 1.4s; opacity: 0.03; }
+
+  /* Disable desktop-only scroll skew on gallery (touch handles it natively) */
+  .gallery-grid { transform: none !important; }
+}
+
+@media (max-width: 430px) {
+
+  /* Hero names — fit on one line per name */
+  .hero-names { font-size: clamp(2rem, 10.5vw, 2.6rem); }
+
+  /* Hero date / venue readable */
+  .hero-date  { font-size: 0.85rem; }
+  .hero-venue { font-size: 0.62rem; letter-spacing: 0.16em; }
+
+  /* Reduce section vertical padding further */
+  .section { padding: var(--space-md) var(--space-sm); }
+
+  /* Timeline text centered, no big gaps */
+  .timeline { gap: var(--space-lg); }
+
+  /* Details 1 column */
+  .details-grid { grid-template-columns: 1fr; }
+
+  /* Rsvp radio stacked */
+  .rsvp-attending { flex-direction: column; gap: var(--space-xs); }
 }
 
 @supports (padding-top: env(safe-area-inset-top)) {

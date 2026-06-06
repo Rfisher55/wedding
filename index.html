@@ -15,6 +15,9 @@
 </head>
 <body>
 
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
   <!-- Loading screen -->
   <div class="loader" id="loader" aria-hidden="true">
     <img src="public/monogram.svg" class="loader-monogram" alt="">
@@ -87,6 +90,8 @@
         <p class="hero-date">Sunday, the Seventh of November, 2027</p>
         <p class="hero-venue" style="margin-top:0.4em">The William Aiken House &middot; Charleston, SC</p>
 
+        <div class="countdown" id="countdown" aria-label="Days until the wedding"></div>
+
         <a href="#story" class="scroll-cue" aria-label="Scroll down">
           <span class="scroll-cue-line"></span>
           <span class="scroll-cue-label">Scroll</span>
@@ -94,11 +99,18 @@
       </div>
     </section>
 
+    <!-- Marquee band -->
+    <div class="marquee-band" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Robert &amp; Madison</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>November VII &middot; MMXXVII</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>The William Aiken House</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>Charleston, South Carolina</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>Robert &amp; Madison</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>November VII &middot; MMXXVII</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>The William Aiken House</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>Charleston, South Carolina</span><span class="marquee-dot">&nbsp;·&nbsp;</span>
+      </div>
+    </div>
+
     <!-- ═══════════════════════════════════════════════════
          2. OUR STORY
          .timeline populated by main.js from story.milestones
     ═══════════════════════════════════════════════════ -->
-    <section id="story" class="section section-story">
+    <section id="story" class="section section-story" data-num="01">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>How It Began</span>
         <h2 data-reveal class="split-heading">Our Story</h2>
@@ -113,7 +125,7 @@
          3. EVENT DETAILS
          #scheduleList populated by main.js from schedule[]
     ═══════════════════════════════════════════════════ -->
-    <section id="details" class="section section-details">
+    <section id="details" class="section section-details" data-num="02">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Join Us</span>
         <h2 data-reveal class="split-heading">The Celebration</h2>
@@ -169,7 +181,7 @@
          4. TRAVEL & LODGING
          #hotelGrid fully populated by main.js from travel{}
     ═══════════════════════════════════════════════════ -->
-    <section id="travel" class="section section-travel">
+    <section id="travel" class="section section-travel" data-num="03">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Getting Here</span>
         <h2 data-reveal class="split-heading">Travel &amp; Lodging</h2>
@@ -188,7 +200,7 @@
          5. GALLERY
          #galleryGrid populated by main.js from gallery{}
     ═══════════════════════════════════════════════════ -->
-    <section id="gallery" class="section section-gallery">
+    <section id="gallery" class="section section-gallery" data-num="04">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Captured Moments</span>
         <h2 data-reveal class="split-heading">Gallery</h2>
@@ -207,7 +219,7 @@
          6. REGISTRY
          #registryGrid populated by main.js from registry.links[]
     ═══════════════════════════════════════════════════ -->
-    <section id="registry" class="section section-registry section-alt">
+    <section id="registry" class="section section-registry section-alt" data-num="05">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Gifts &amp; Registry</span>
         <h2 data-reveal class="split-heading">Registry</h2>
@@ -225,7 +237,7 @@
          meal <select> options injected by main.js from rsvp.mealOptions[]
          #rsvpIntro text set by main.js from rsvp.intro
     ═══════════════════════════════════════════════════ -->
-    <section id="rsvp" class="section section-rsvp">
+    <section id="rsvp" class="section section-rsvp" data-num="06">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Kindly Reply</span>
         <h2 data-reveal class="split-heading">RSVP</h2>
@@ -301,7 +313,7 @@
          #gbIntro text set by main.js
          textarea placeholder set by main.js from guestbook.placeholder
     ═══════════════════════════════════════════════════ -->
-    <section id="guestbook" class="section section-guestbook">
+    <section id="guestbook" class="section section-guestbook" data-num="07">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Leave a Note</span>
         <h2 data-reveal class="split-heading">Guestbook</h2>

@@ -1378,3 +1378,228 @@ body { -webkit-text-size-adjust: 100%; }
     height: calc(var(--nav-h) + env(safe-area-inset-top));
   }
 }
+
+/* ============================================================
+   SCROLL PROGRESS BAR
+   ============================================================ */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+  width: 0%;
+  z-index: 10001;
+  pointer-events: none;
+  transition: width 0.08s linear;
+}
+
+/* ============================================================
+   FILM GRAIN — old money editorial texture
+   ============================================================ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C%2Fsvg%3E");
+  background-size: 256px 256px;
+  mix-blend-mode: overlay;
+  animation: grainShift 0.7s steps(1) infinite;
+}
+
+@keyframes grainShift {
+  0%   { background-position: 0 0; }
+  14%  { background-position: 12px -8px; }
+  28%  { background-position: -18px 14px; }
+  42%  { background-position: 8px 20px; }
+  57%  { background-position: -22px -6px; }
+  71%  { background-position: 16px 10px; }
+  85%  { background-position: -8px -18px; }
+  100% { background-position: 4px 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
+}
+
+/* ============================================================
+   COUNTDOWN
+   ============================================================ */
+.countdown {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(0.5rem, 2vw, 1.25rem);
+  margin: var(--space-sm) auto var(--space-xs);
+}
+
+.cd-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.cd-num {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5.5vw, 3.8rem);
+  font-weight: 300;
+  color: var(--ivory);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  min-width: 2ch;
+  display: block;
+  text-align: center;
+}
+
+.cd-label {
+  font-family: var(--font-body);
+  font-size: clamp(0.48rem, 0.9vw, 0.62rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: block;
+}
+
+.cd-sep {
+  font-family: var(--font-display);
+  color: rgba(176, 141, 87, 0.4);
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  line-height: 1;
+  margin-top: 0.25em;
+}
+
+/* ============================================================
+   MARQUEE BAND
+   ============================================================ */
+.marquee-band {
+  overflow: hidden;
+  background: var(--green);
+  border-top: 1px solid rgba(176, 141, 87, 0.18);
+  border-bottom: 1px solid rgba(176, 141, 87, 0.18);
+  padding: 1rem 0;
+}
+
+.marquee-track {
+  display: inline-flex;
+  gap: 2rem;
+  white-space: nowrap;
+  animation: marqueeSpin 34s linear infinite;
+  font-family: var(--font-display);
+  font-size: clamp(0.78rem, 1.5vw, 0.95rem);
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: rgba(251, 248, 240, 0.48);
+}
+
+.marquee-dot { color: var(--gold); font-style: normal; }
+
+@keyframes marqueeSpin {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ============================================================
+   HERO — more editorial scale
+   ============================================================ */
+.hero-names {
+  font-size: clamp(3rem, 9vw, 6.5rem);
+  letter-spacing: -0.01em;
+}
+
+.hero-bg  { will-change: translate; }
+.hero-content { will-change: translate; }
+
+/* ============================================================
+   SECTION GHOST NUMBERS
+   ============================================================ */
+.section[data-num] { position: relative; }
+
+.section[data-num]::before {
+  content: attr(data-num);
+  position: absolute;
+  top: var(--space-lg);
+  right: var(--space-md);
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 13vw, 11rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  pointer-events: none;
+  user-select: none;
+  color: rgba(176, 141, 87, 0.065);
+}
+
+.section-details[data-num]::before,
+.section-rsvp[data-num]::before {
+  color: rgba(251, 248, 240, 0.045);
+}
+
+/* ============================================================
+   TIMELINE VERTICAL LINE — draws in on scroll
+   ============================================================ */
+.timeline {
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(176, 141, 87, 0.35) 15%,
+    rgba(176, 141, 87, 0.35) 85%,
+    transparent
+  );
+  transform: translateX(-50%);
+  transform-origin: top center;
+  scale: 1 0;
+  transition: scale 2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.timeline.line-drawn::before { scale: 1 1; }
+
+@media (max-width: 860px) { .timeline::before { display: none; } }
+
+/* ============================================================
+   CARD / INTERACTIVE LIFT EFFECTS
+   ============================================================ */
+.detail-card {
+  transition: border-color var(--trans), transform var(--trans);
+}
+.detail-card:hover {
+  border-color: rgba(176, 141, 87, 0.6);
+  transform: translateY(-4px);
+}
+
+.travel-card {
+  transition: transform var(--trans), box-shadow var(--trans);
+}
+.travel-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(27, 58, 43, 0.12);
+}
+
+.guestbook-card {
+  transition: transform 0.25s var(--ease);
+}
+.guestbook-card:hover { transform: translateX(6px); }
+
+/* ============================================================
+   MAGNETIC BUTTON
+   ============================================================ */
+.btn {
+  transition: background var(--trans), color var(--trans), border-color var(--trans),
+              transform 0.18s ease, box-shadow 0.18s ease;
+}
+.btn-solid:hover  { box-shadow: 0 8px 32px rgba(27, 58, 43, 0.4); }
+.btn-outline:hover { box-shadow: 0 4px 20px rgba(27, 58, 43, 0.12); }

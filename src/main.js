@@ -41,6 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initLightbox();
   initRsvpForm();
   initGuestbook();
+  initScrollProgress();
+  initHeroParallax();
+  initMagneticButtons();
+  initCountdown();
+  initTimelineLine();
 });
 
 /* ──────────────────────────────────────────────────────────────
@@ -513,6 +518,95 @@ function prependNote(note, container, append) {
 /* ──────────────────────────────────────────────────────────────
    Utilities
 ────────────────────────────────────────────────────────────── */
+/* ──────────────────────────────────────────────────────────────
+   Scroll progress bar
+────────────────────────────────────────────────────────────── */
+function initScrollProgress() {
+  const bar = document.getElementById('scrollProgress');
+  if (!bar) return;
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+    bar.style.width = Math.min(pct * 100, 100) + '%';
+  }, { passive: true });
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Hero mouse parallax (desktop only)
+────────────────────────────────────────────────────────────── */
+function initHeroParallax() {
+  if (prefersReduced || isTouchDevice) return;
+  const heroBg      = document.querySelector('.hero-bg');
+  const heroContent = document.querySelector('.hero-content');
+  if (!heroBg) return;
+  const hero = document.getElementById('hero');
+
+  document.addEventListener('mousemove', e => {
+    if (!hero) return;
+    const r  = hero.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > window.innerHeight) return;
+    const cx = (e.clientX / window.innerWidth  - 0.5);
+    const cy = (e.clientY / window.innerHeight - 0.5);
+    heroBg.style.translate      = `${cx * -20}px ${cy * -14}px`;
+    heroContent.style.translate = `${cx * 7}px ${cy * 5}px`;
+  });
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Magnetic buttons (desktop only)
+────────────────────────────────────────────────────────────── */
+function initMagneticButtons() {
+  if (prefersReduced || isTouchDevice) return;
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width  / 2) * 0.28;
+      const y = (e.clientY - r.top  - r.height / 2) * 0.38;
+      btn.style.transform = `translate(${x}px, ${y}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  });
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Wedding countdown
+────────────────────────────────────────────────────────────── */
+function initCountdown() {
+  const el = document.getElementById('countdown');
+  if (!el) return;
+  const target = new Date('2027-11-07T16:00:00');
+
+  function tick() {
+    const diff = target - Date.now();
+    if (diff <= 0) { el.remove(); return; }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000)  / 60000);
+    const s = Math.floor((diff % 60000)    / 1000);
+    el.innerHTML =
+      item(d, 'Days') + sep() + item(h, 'Hrs') + sep() + item(m, 'Min') + sep() + item(s, 'Sec');
+  }
+
+  const item = (n, l) =>
+    `<div class="cd-item"><span class="cd-num">${String(n).padStart(2,'0')}</span><span class="cd-label">${l}</span></div>`;
+  const sep  = () => `<span class="cd-sep" aria-hidden="true">·</span>`;
+
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Timeline vertical line draw
+────────────────────────────────────────────────────────────── */
+function initTimelineLine() {
+  const timeline = document.getElementById('timeline');
+  if (!timeline) return;
+  if (prefersReduced) { timeline.classList.add('line-drawn'); return; }
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) { timeline.classList.add('line-drawn'); obs.disconnect(); }
+  }, { threshold: 0.1 });
+  obs.observe(timeline);
+}
+
 function esc(str) {
   return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }

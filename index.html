@@ -52,16 +52,12 @@
 
     <!-- ═══════════════════════════════════════════════════
          1. HERO
+         hero image src + scroll cue text set by main.js
     ═══════════════════════════════════════════════════ -->
     <section id="hero" class="section-hero" aria-label="Hero">
       <div class="hero-bg" aria-hidden="true">
-        <img
-          src="public/images/hero.jpg"
-          alt="Robert and Madison"
-          class="hero-img"
-          loading="eager"
-          fetchpriority="high"
-        >
+        <!-- src injected by main.js from hero.heroImage -->
+        <img class="hero-img" src="" alt="Robert and Madison" loading="eager" fetchpriority="high">
       </div>
       <div class="hero-overlay" aria-hidden="true"></div>
 
@@ -90,6 +86,7 @@
 
     <!-- ═══════════════════════════════════════════════════
          2. OUR STORY
+         .timeline populated by main.js from story.milestones
     ═══════════════════════════════════════════════════ -->
     <section id="story" class="section section-story">
       <div class="section-inner">
@@ -97,58 +94,14 @@
         <h2 data-reveal>Our Story</h2>
         <div class="divider" aria-hidden="true" data-reveal></div>
 
-        <div class="timeline">
-
-          <div class="timeline-entry" data-reveal>
-            <div class="timeline-photo" data-label="Photo Coming Soon">
-              <img src="public/images/story/01.jpg" alt="Robert and Madison — how we met" loading="lazy">
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-year">TODO</div>
-              <h3>How We Met</h3>
-              <p>TODO: Share the story of how you two first crossed paths. This is where your journey together begins.</p>
-            </div>
-          </div>
-
-          <div class="timeline-entry" data-reveal>
-            <div class="timeline-photo" data-label="Photo Coming Soon">
-              <img src="public/images/story/02.jpg" alt="Robert and Madison" loading="lazy">
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-year">TODO</div>
-              <h3>The First Adventure</h3>
-              <p>TODO: A trip, a moment, or a milestone that brought you closer together.</p>
-            </div>
-          </div>
-
-          <div class="timeline-entry" data-reveal>
-            <div class="timeline-photo" data-label="Photo Coming Soon">
-              <img src="public/images/story/03.jpg" alt="The proposal" loading="lazy">
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-year">TODO</div>
-              <h3>He Proposed</h3>
-              <p>TODO: Tell the engagement story — where you were, how it happened, the moment you said yes.</p>
-            </div>
-          </div>
-
-          <div class="timeline-entry" data-reveal>
-            <div class="timeline-photo" data-label="Photo Coming Soon">
-              <img src="public/images/story/04.jpg" alt="Robert and Madison in Charleston" loading="lazy">
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-year">2027</div>
-              <h3>Forever Begins</h3>
-              <p>And now we invite you to celebrate with us beneath the piazzas and magnolias of Charleston's most beloved historic landmark.</p>
-            </div>
-          </div>
-
-        </div>
+        <!-- Timeline entries injected by main.js -->
+        <div class="timeline" id="timeline"></div>
       </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════════
          3. EVENT DETAILS
+         #scheduleList populated by main.js from schedule[]
     ═══════════════════════════════════════════════════ -->
     <section id="details" class="section section-details">
       <div class="section-inner">
@@ -182,39 +135,13 @@
           </div>
         </div>
 
-        <!-- Schedule -->
+        <!-- Schedule rows injected by main.js -->
         <div class="schedule" data-reveal>
           <h3>Day-Of Schedule</h3>
-          <div class="schedule-list">
-            <div class="schedule-row">
-              <span class="schedule-time">TODO pm</span>
-              <span class="schedule-label">Guest Arrival</span>
-              <span class="schedule-note">The William Aiken House</span>
-            </div>
-            <div class="schedule-row">
-              <span class="schedule-time">TODO pm</span>
-              <span class="schedule-label">Ceremony</span>
-              <span class="schedule-note">Garden Pergola</span>
-            </div>
-            <div class="schedule-row">
-              <span class="schedule-time">TODO pm</span>
-              <span class="schedule-label">Cocktail Hour</span>
-              <span class="schedule-note">Magnolia Courtyard</span>
-            </div>
-            <div class="schedule-row">
-              <span class="schedule-time">TODO pm</span>
-              <span class="schedule-label">Dinner &amp; Reception</span>
-              <span class="schedule-note">Grand Ballroom</span>
-            </div>
-            <div class="schedule-row">
-              <span class="schedule-time">Late</span>
-              <span class="schedule-label">Dancing &amp; Farewell</span>
-              <span class="schedule-note"></span>
-            </div>
-          </div>
+          <div class="schedule-list" id="scheduleList"></div>
         </div>
 
-        <!-- Map -->
+        <!-- Venue map -->
         <div class="map-wrap" data-reveal>
           <iframe
             src="https://maps.google.com/maps?q=The+William+Aiken+House+456+King+Street+Charleston+SC+29403&t=&z=16&ie=UTF8&iwloc=&output=embed"
@@ -230,6 +157,7 @@
 
     <!-- ═══════════════════════════════════════════════════
          4. TRAVEL & LODGING
+         #hotelGrid fully populated by main.js from travel{}
     ═══════════════════════════════════════════════════ -->
     <section id="travel" class="section section-travel">
       <div class="section-inner">
@@ -237,52 +165,18 @@
         <h2 data-reveal>Travel &amp; Lodging</h2>
         <div class="divider" aria-hidden="true" data-reveal></div>
 
-        <div class="travel-grid">
-
-          <div class="travel-card" data-reveal>
-            <h3>By Air</h3>
-            <span class="travel-meta">Nearest Airport</span>
-            <p>Charleston International Airport (CHS)<br>Approximately 12 miles from the venue — a 20-minute drive or rideshare.</p>
-          </div>
-
-          <div class="travel-card" data-reveal>
-            <h3>Parking</h3>
-            <span class="travel-meta">Important Note</span>
-            <p>The William Aiken House has <strong>no on-site parking.</strong> Metered street parking is available on King Street and surrounding blocks. We recommend Uber or Lyft. The Charleston Visitor Center Garage (375 Meeting St) is a convenient option.</p>
-          </div>
-
-          <div class="travel-card" data-reveal>
-            <h3>TODO Hotel</h3>
-            <span class="travel-meta">TODO distance walk</span>
-            <p>TODO: Brief note — block rate, booking deadline, distance to venue.</p>
-            <a href="#" class="travel-link" target="_blank" rel="noopener">Book Your Room &rarr;</a>
-          </div>
-
-          <div class="travel-card" data-reveal>
-            <h3>TODO Hotel</h3>
-            <span class="travel-meta">TODO distance walk</span>
-            <p>TODO: Brief note — block rate, booking deadline, distance to venue.</p>
-            <a href="#" class="travel-link" target="_blank" rel="noopener">Book Your Room &rarr;</a>
-          </div>
-
-          <div class="travel-card" data-reveal>
-            <h3>TODO Hotel</h3>
-            <span class="travel-meta">TODO distance rideshare</span>
-            <p>TODO: Brief note — block rate, booking deadline, distance to venue.</p>
-            <a href="#" class="travel-link" target="_blank" rel="noopener">Book Your Room &rarr;</a>
-          </div>
-
-        </div>
+        <!-- Airport, parking, and hotel cards injected by main.js -->
+        <div class="travel-grid" id="hotelGrid"></div>
 
         <div class="travel-note" data-reveal>
           <p>Charleston's historic downtown is wonderfully walkable. King Street is lined with restaurants, boutiques, and bars — we encourage you to make a long weekend of it.</p>
         </div>
-
       </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════════
          5. GALLERY
+         #galleryGrid populated by main.js from gallery{}
     ═══════════════════════════════════════════════════ -->
     <section id="gallery" class="section section-gallery">
       <div class="section-inner">
@@ -293,56 +187,40 @@
           Click any photo to view full size.
         </p>
 
-        <!-- Gallery items are injected by main.js from WEDDING.gallery -->
+        <!-- Gallery items injected by main.js from gallery.images -->
         <div class="gallery-grid" id="galleryGrid" role="list" aria-label="Photo gallery"></div>
       </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════════
          6. REGISTRY
+         #registryGrid populated by main.js from registry.links[]
     ═══════════════════════════════════════════════════ -->
     <section id="registry" class="section section-registry section-alt">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Gifts &amp; Registry</span>
         <h2 data-reveal>Registry</h2>
         <div class="divider" aria-hidden="true" data-reveal></div>
-        <p data-reveal style="color:var(--ink-muted);max-width:500px;margin:0 auto var(--space-md)">
-          Your presence is the greatest gift. If you wish to celebrate us further, we are registered at the following:
-        </p>
+        <!-- intro text set by main.js from registry.intro -->
+        <p id="registryIntro" data-reveal style="color:var(--ink-muted);max-width:500px;margin:0 auto var(--space-md)"></p>
 
-        <div class="registry-grid">
-
-          <div class="registry-card" data-reveal>
-            <div class="registry-name">Zola</div>
-            <div class="registry-label">Home &amp; Experiences</div>
-            <a href="https://www.zola.com" target="_blank" rel="noopener" class="btn btn-outline">
-              View Registry
-            </a>
-          </div>
-
-          <div class="registry-card" data-reveal>
-            <div class="registry-name">Amazon</div>
-            <div class="registry-label">Kitchen &amp; Beyond</div>
-            <a href="https://www.amazon.com/wedding" target="_blank" rel="noopener" class="btn btn-outline">
-              View Registry
-            </a>
-          </div>
-
-          <!-- Add more registry cards here as needed -->
-
-        </div>
+        <!-- Registry tiles injected by main.js -->
+        <div class="registry-grid" id="registryGrid"></div>
       </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════════
          7. RSVP
+         meal <select> options injected by main.js from rsvp.mealOptions[]
+         #rsvpIntro text set by main.js from rsvp.intro
     ═══════════════════════════════════════════════════ -->
     <section id="rsvp" class="section section-rsvp">
       <div class="section-inner">
-        <span class="eyebrow" data-reveal>Kindly Reply By</span>
+        <span class="eyebrow" data-reveal>Kindly Reply</span>
         <h2 data-reveal>RSVP</h2>
         <div class="divider" aria-hidden="true" data-reveal></div>
-        <p data-reveal>Please respond by <strong style="color:var(--gold-light)">TODO: October 1, 2027</strong></p>
+        <!-- populated by main.js from rsvp.intro -->
+        <p id="rsvpIntro" data-reveal></p>
 
         <div data-reveal>
           <form class="rsvp-form" id="rsvpForm" novalidate>
@@ -379,12 +257,9 @@
               </div>
               <div class="form-group">
                 <label for="rsvp-meal">Meal Preference</label>
+                <!-- Options injected by main.js from rsvp.mealOptions -->
                 <select id="rsvp-meal" name="meal">
                   <option value="">Select a preference</option>
-                  <option value="Chicken">Chicken</option>
-                  <option value="Fish">Fish</option>
-                  <option value="Vegetarian">Vegetarian</option>
-                  <!-- TODO: Update meal options when confirmed -->
                 </select>
               </div>
             </div>
@@ -402,7 +277,8 @@
 
           <div class="form-success" id="rsvpSuccess">
             <h3>Thank you!</h3>
-            <p style="color:rgba(251,248,240,0.7)">We've received your RSVP and can't wait to celebrate with you.</p>
+            <!-- success message text set by main.js from rsvp.successMessage -->
+            <p style="color:rgba(251,248,240,0.7)"></p>
           </div>
         </div>
 
@@ -411,19 +287,19 @@
 
     <!-- ═══════════════════════════════════════════════════
          8. GUESTBOOK
+         #gbIntro text set by main.js
+         textarea placeholder set by main.js from guestbook.placeholder
     ═══════════════════════════════════════════════════ -->
     <section id="guestbook" class="section section-guestbook">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Leave a Note</span>
         <h2 data-reveal>Guestbook</h2>
         <div class="divider" aria-hidden="true" data-reveal></div>
-        <p data-reveal style="color:var(--ink-muted);max-width:480px;margin:0 auto var(--space-lg)">
-          Share your well-wishes, a favorite memory, or a piece of advice for the newlyweds.
-        </p>
+        <!-- populated by main.js from guestbook.intro -->
+        <p id="gbIntro" data-reveal style="color:var(--ink-muted);max-width:480px;margin:0 auto var(--space-lg)"></p>
 
         <div class="guestbook-layout" data-reveal>
 
-          <!-- Form -->
           <div class="guestbook-form-wrap">
             <h3 style="font-style:italic;margin-bottom:var(--space-md)">Write a Note</h3>
 
@@ -434,9 +310,11 @@
               </div>
               <div class="form-group">
                 <label for="gb-message">Your Message</label>
-                <textarea id="gb-message" name="message" required placeholder="Leave a note for Robert &amp; Madison…" rows="5"></textarea>
+                <!-- placeholder set by main.js from guestbook.placeholder -->
+                <textarea id="gb-message" name="message" required rows="5"></textarea>
               </div>
-              <button type="submit" class="btn btn-outline" style="border-color:var(--green);color:var(--green)">
+              <button type="submit" class="btn btn-outline"
+                style="border-color:var(--green);color:var(--green)">
                 Leave a Note
               </button>
             </form>
@@ -447,7 +325,6 @@
             </div>
           </div>
 
-          <!-- Notes display -->
           <div>
             <h3 style="font-style:italic;margin-bottom:var(--space-md)">Notes from Our Guests</h3>
             <div class="guestbook-notes" id="gbNotes">
@@ -462,16 +339,17 @@
   </main>
 
   <!-- ═══════════════════════════════════════════════════════
-       FOOTER
+       FOOTER  — text IDs populated by main.js from footer{} + couple{}
   ═══════════════════════════════════════════════════════ -->
   <footer class="footer">
     <div class="footer-monogram">R &amp; M</div>
     <div class="footer-rule" aria-hidden="true"></div>
-    <div class="footer-date">Sunday &middot; November 7, 2027</div>
-    <div class="footer-hashtag">TODO: #FisherMuschik2027</div>
+    <div class="footer-date" id="footerDate"></div>
+    <div class="footer-hashtag" id="footerHashtag" data-hashtag></div>
+    <div class="footer-tagline" id="footerTagline" style="font-style:italic;color:rgba(251,248,240,0.45);font-size:var(--size-sm);margin:var(--space-xs) 0"></div>
     <div class="footer-rule" aria-hidden="true"></div>
     <div class="footer-contact">
-      Questions? <a href="mailto:TODO@email.com">TODO@email.com</a>
+      Questions? <a href="#" data-contact-email></a>
     </div>
   </footer>
 
@@ -487,8 +365,7 @@
     </div>
   </div>
 
-  <!-- Data + app scripts -->
-  <script src="src/data.js"></script>
-  <script src="src/main.js"></script>
+  <!-- Single ES-module entry point — imports content.js and sheets.js internally -->
+  <script type="module" src="src/main.js"></script>
 </body>
 </html>

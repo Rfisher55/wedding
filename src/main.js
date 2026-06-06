@@ -1,299 +1,381 @@
-/* ============================================================
-   main.js — Wedding website interactions
-   Reads from window.WEDDING (defined in data.js)
-   ============================================================ */
+import {
+  couple, hero as heroData, story, event as eventData,
+  schedule, travel, registry, gallery, rsvp, guestbook as gbData,
+  footer as footerData,
+} from './data/content.js';
+import { submitToSheet, fetchGuestbook } from './lib/sheets.js';
 
-(function () {
-  'use strict';
+/* ──────────────────────────────────────────────────────────────
+   Module-level state
+────────────────────────────────────────────────────────────── */
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const lightboxImages = [];
+let lightboxIndex = 0;
 
-  const W = window.WEDDING;
+/* ──────────────────────────────────────────────────────────────
+   Boot — render content, then wire interactions
+────────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  renderHeroImage();
+  renderStory();
+  renderSchedule();
+  renderTravelGrid();
+  renderRegistryGrid();
+  renderGalleryGrid();
+  renderMealOptions();
+  renderDynamicText();
 
-  /* ──────────────────────────────────────────────────────────
-     SMOOTH NAV: shrink + highlight active section
-  ────────────────────────────────────────────────────────── */
-  const nav = document.getElementById('nav');
-  const navLinks = document.querySelectorAll('.nav-links a');
+  // Interactions run after all [data-reveal] elements exist in the DOM
+  initScrollReveal();
+  initNav();
+  initMobileMenu();
+  initLightbox();
+  initRsvpForm();
+  initGuestbook();
+});
 
-  function onScroll() {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
-    highlightNav();
+/* ──────────────────────────────────────────────────────────────
+   Content renderers
+────────────────────────────────────────────────────────────── */
+
+function renderHeroImage() {
+  const img = document.querySelector('.hero-img');
+  if (img && heroData.heroImage) img.src = heroData.heroImage;
+}
+
+function renderStory() {
+  const timeline = document.getElementById('timeline');
+  if (!timeline) return;
+  timeline.innerHTML = story.milestones.map(m => `
+    <div class="timeline-entry" data-reveal>
+      <div class="timeline-photo" data-label="Photo Coming Soon">
+        <img src="${esc(m.image)}" alt="${esc(m.title)}" loading="lazy">
+      </div>
+      <div class="timeline-content">
+        <div class="timeline-year">${esc(m.year)}</div>
+        <h3>${esc(m.title)}</h3>
+        <p>${esc(m.text)}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderSchedule() {
+  const list = document.getElementById('scheduleList');
+  if (!list) return;
+  list.innerHTML = schedule.map(row => `
+    <div class="schedule-row">
+      <span class="schedule-time">${esc(row.time)}</span>
+      <span class="schedule-label">${esc(row.label)}</span>
+    </div>
+  `).join('');
+}
+
+function renderTravelGrid() {
+  const grid = document.getElementById('hotelGrid');
+  if (!grid) return;
+  const hotelCards = travel.hotels.map(h => {
+    const hasLink = h.link && h.link !== 'https://';
+    return `
+      <div class="travel-card" data-reveal>
+        <h3>${esc(h.name)}</h3>
+        <span class="travel-meta">${esc(h.distance)}</span>
+        ${h.note ? `<p>${esc(h.note)}</p>` : ''}
+        ${hasLink ? `<a href="${esc(h.link)}" class="travel-link" target="_blank" rel="noopener">Book Your Room &rarr;</a>` : ''}
+      </div>`;
+  }).join('');
+
+  grid.innerHTML = `
+    <div class="travel-card" data-reveal>
+      <h3>By Air</h3>
+      <span class="travel-meta">Nearest Airport</span>
+      <p>${esc(travel.airport)}</p>
+    </div>
+    <div class="travel-card" data-reveal>
+      <h3>Parking</h3>
+      <span class="travel-meta">Important Note</span>
+      <p>${esc(travel.parking)}</p>
+    </div>
+    ${hotelCards}
+  `;
+}
+
+function renderRegistryGrid() {
+  const grid = document.getElementById('registryGrid');
+  if (!grid) return;
+  grid.innerHTML = registry.links.map(r => `
+    <div class="registry-card" data-reveal>
+      <div class="registry-name">${esc(r.name)}</div>
+      <a href="${esc(r.url)}" target="_blank" rel="noopener" class="btn btn-outline">
+        ${esc(r.label)}
+      </a>
+    </div>
+  `).join('');
+}
+
+function renderGalleryGrid() {
+  const grid = document.getElementById('galleryGrid');
+  if (!grid) return;
+  lightboxImages.length = 0;
+  grid.innerHTML = '';
+
+  gallery.images.forEach((src, idx) => {
+    const isFeatured = (gallery.featured || []).includes(idx);
+    const div = document.createElement('div');
+    div.className = 'gallery-item' + (isFeatured ? ' gallery-item--featured' : '');
+    if (isFeatured && !prefersReduced) div.classList.add('gallery-item--rotatable');
+
+    const img = document.createElement('img');
+    img.src     = src;
+    img.alt     = `${couple.partnerOne} & ${couple.partnerTwo}`;
+    img.loading = 'lazy';
+
+    div.appendChild(img);
+    div.addEventListener('click', () => openLightbox(idx));
+    grid.appendChild(div);
+    lightboxImages.push({ src, alt: img.alt });
+  });
+}
+
+function renderMealOptions() {
+  const select = document.getElementById('rsvp-meal');
+  if (!select) return;
+  while (select.options.length > 1) select.remove(1);
+  rsvp.mealOptions.forEach(opt => {
+    const o = document.createElement('option');
+    o.value = opt;
+    o.textContent = opt;
+    select.appendChild(o);
+  });
+}
+
+function renderDynamicText() {
+  setText('rsvpIntro',      rsvp.intro);
+  setText('gbIntro',        gbData.intro);
+  setText('registryIntro',  registry.intro);
+  setText('footerTagline',  footerData.tagline);
+  setText('footerDate',     footerData.date);
+  setText('footerLocation', footerData.location);
+  setText('footerHashtag',  couple.hashtag);
+
+  document.querySelectorAll('[data-contact-email]').forEach(el => {
+    el.href        = 'mailto:' + couple.contactEmail;
+    el.textContent = couple.contactEmail;
+  });
+  document.querySelectorAll('[data-hashtag]').forEach(el => {
+    el.textContent = couple.hashtag;
+  });
+
+  // Update guestbook textarea placeholder
+  const gbTextarea = document.querySelector('#gbForm textarea');
+  if (gbTextarea) gbTextarea.placeholder = gbData.placeholder;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Scroll reveal
+────────────────────────────────────────────────────────────── */
+function initScrollReveal() {
+  const allReveal = document.querySelectorAll('[data-reveal]');
+
+  if (prefersReduced) {
+    allReveal.forEach(el => el.classList.add('revealed'));
+    return;
   }
 
-  function highlightNav() {
-    const sections = document.querySelectorAll('section[id]');
+  // Compute stagger index per sibling group
+  const groups = new Map();
+  allReveal.forEach(el => {
+    const key = el.parentElement;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(el);
+  });
+  groups.forEach(group => group.forEach((el, i) => { el.dataset.revealIdx = i; }));
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      el.style.transitionDelay = `${(Number(el.dataset.revealIdx) || 0) * 0.09}s`;
+      el.classList.add('revealed');
+      observer.unobserve(el);
+    });
+  }, { threshold: 0.12 });
+
+  allReveal.forEach(el => observer.observe(el));
+
+  // Gallery scroll rotation for featured items
+  const rotatables = document.querySelectorAll('.gallery-item--rotatable');
+  if (rotatables.length) {
+    const gallerySection = document.getElementById('gallery');
+    window.addEventListener('scroll', () => {
+      if (!gallerySection) return;
+      const rect     = gallerySection.getBoundingClientRect();
+      const progress = -rect.top / (rect.height || 1);
+      const deg      = Math.max(-5, Math.min(5, (progress - 0.4) * 14));
+      rotatables.forEach(el => { el.style.transform = `rotate(${deg}deg)`; });
+    }, { passive: true });
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Nav
+────────────────────────────────────────────────────────────── */
+function initNav() {
+  const nav      = document.getElementById('nav');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  const update = () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
     const fromTop = window.scrollY + 80;
     let current = '';
-    sections.forEach(sec => {
+    document.querySelectorAll('section[id]').forEach(sec => {
       if (sec.offsetTop <= fromTop) current = sec.id;
     });
     navLinks.forEach(a => {
       a.classList.toggle('active', a.getAttribute('href') === '#' + current);
     });
-  }
+  };
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+}
 
-  /* Mobile menu */
-  const mobileMenu   = document.getElementById('mobileMenu');
-  const navToggle    = document.getElementById('navToggle');
-  const mobileClose  = document.getElementById('mobileClose');
-  const mobileLinks  = mobileMenu ? mobileMenu.querySelectorAll('a') : [];
+function initMobileMenu() {
+  const menu    = document.getElementById('mobileMenu');
+  const toggle  = document.getElementById('navToggle');
+  const closeBtn = document.getElementById('mobileClose');
 
-  function openMenu()  { mobileMenu.classList.add('open'); document.body.style.overflow = 'hidden'; }
-  function closeMenu() { mobileMenu.classList.remove('open'); document.body.style.overflow = ''; }
+  const open  = () => { menu.classList.add('open');    document.body.style.overflow = 'hidden'; };
+  const close = () => { menu.classList.remove('open'); document.body.style.overflow = ''; };
 
-  if (navToggle)   navToggle.addEventListener('click', openMenu);
-  if (mobileClose) mobileClose.addEventListener('click', closeMenu);
-  mobileLinks.forEach(a => a.addEventListener('click', closeMenu));
+  toggle?.addEventListener('click', open);
+  closeBtn?.addEventListener('click', close);
+  menu?.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+}
 
-  /* ──────────────────────────────────────────────────────────
-     SCROLL REVEAL — IntersectionObserver
-  ────────────────────────────────────────────────────────── */
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* ──────────────────────────────────────────────────────────────
+   Lightbox
+────────────────────────────────────────────────────────────── */
+function initLightbox() {
+  const lb     = document.getElementById('lightbox');
+  const lbImg  = lb?.querySelector('.lightbox-img');
+  const close  = () => { lb.classList.remove('open'); document.body.style.overflow = ''; lbImg.src = ''; };
+  const nav    = (dir) => openLightbox(lightboxIndex + dir);
 
-  if (!prefersReduced) {
-    const revealEls = document.querySelectorAll('[data-reveal]');
-
-    // Group siblings to stagger within parent
-    const groups = new Map();
-    revealEls.forEach(el => {
-      const key = el.parentElement;
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(el);
-    });
-    groups.forEach(group => {
-      group.forEach((el, i) => { el.dataset.revealIdx = i; });
-    });
-
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const el = entry.target;
-        const delay = (Number(el.dataset.revealIdx) || 0) * 0.09;
-        el.style.transitionDelay = delay + 's';
-        el.classList.add('revealed');
-        revealObserver.unobserve(el);
-      });
-    }, { threshold: 0.12 });
-
-    revealEls.forEach(el => revealObserver.observe(el));
-  } else {
-    // Instantly reveal everything
-    document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('revealed'));
-  }
-
-  /* ──────────────────────────────────────────────────────────
-     GALLERY — build grid from data, lightbox, scroll rotation
-  ────────────────────────────────────────────────────────── */
-  const galleryGrid = document.getElementById('galleryGrid');
-  let galleryImages = [];
-  let lightboxIndex = 0;
-
-  if (galleryGrid && W.gallery) {
-    galleryImages = W.gallery;
-    galleryImages.forEach((item, idx) => {
-      const div = document.createElement('div');
-      div.className = 'gallery-item' + (item.featured ? ' gallery-item--featured' : '');
-      if (item.featured && !prefersReduced) div.classList.add('gallery-item--rotatable');
-      div.dataset.idx = idx;
-
-      const img = document.createElement('img');
-      img.src = item.src;
-      img.alt = item.alt;
-      img.loading = 'lazy';
-
-      div.appendChild(img);
-      div.addEventListener('click', () => openLightbox(idx));
-      galleryGrid.appendChild(div);
-    });
-  }
-
-  /* Gallery scroll rotation for featured items */
-  if (!prefersReduced) {
-    const rotatables = document.querySelectorAll('.gallery-item--rotatable');
-    if (rotatables.length) {
-      const gallerySection = document.getElementById('gallery');
-
-      window.addEventListener('scroll', () => {
-        if (!gallerySection) return;
-        const rect = gallerySection.getBoundingClientRect();
-        const progress = -rect.top / (rect.height || 1);
-        const deg = (progress - 0.4) * 14; // maps to roughly -4° to +4°
-        rotatables.forEach(el => {
-          el.style.transform = `rotate(${Math.max(-5, Math.min(5, deg))}deg)`;
-        });
-      }, { passive: true });
-    }
-  }
-
-  /* Lightbox */
-  const lightbox    = document.getElementById('lightbox');
-  const lbImg       = lightbox ? lightbox.querySelector('.lightbox-img') : null;
-  const lbClose     = document.getElementById('lbClose');
-  const lbPrev      = document.getElementById('lbPrev');
-  const lbNext      = document.getElementById('lbNext');
-
-  function openLightbox(idx) {
-    if (!lightbox || !galleryImages.length) return;
-    lightboxIndex = ((idx % galleryImages.length) + galleryImages.length) % galleryImages.length;
-    lbImg.src = galleryImages[lightboxIndex].src;
-    lbImg.alt = galleryImages[lightboxIndex].alt;
-    lightbox.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeLightbox() {
-    lightbox.classList.remove('open');
-    document.body.style.overflow = '';
-    lbImg.src = '';
-  }
-
-  function lbNavigate(dir) {
-    openLightbox(lightboxIndex + dir);
-  }
-
-  if (lbClose) lbClose.addEventListener('click', closeLightbox);
-  if (lbPrev)  lbPrev.addEventListener('click', () => lbNavigate(-1));
-  if (lbNext)  lbNext.addEventListener('click', () => lbNavigate(+1));
-
-  if (lightbox) {
-    lightbox.addEventListener('click', e => {
-      if (e.target === lightbox) closeLightbox();
-    });
-  }
+  document.getElementById('lbClose')?.addEventListener('click', close);
+  document.getElementById('lbPrev')?.addEventListener('click', () => nav(-1));
+  document.getElementById('lbNext')?.addEventListener('click', () => nav(+1));
+  lb?.addEventListener('click', e => { if (e.target === lb) close(); });
 
   document.addEventListener('keydown', e => {
-    if (!lightbox || !lightbox.classList.contains('open')) return;
-    if (e.key === 'Escape')      closeLightbox();
-    if (e.key === 'ArrowLeft')   lbNavigate(-1);
-    if (e.key === 'ArrowRight')  lbNavigate(+1);
+    if (!lb?.classList.contains('open')) return;
+    if (e.key === 'Escape')     close();
+    if (e.key === 'ArrowLeft')  nav(-1);
+    if (e.key === 'ArrowRight') nav(+1);
+  });
+}
+
+function openLightbox(idx) {
+  if (!lightboxImages.length) return;
+  const lb    = document.getElementById('lightbox');
+  const lbImg = lb?.querySelector('.lightbox-img');
+  if (!lb || !lbImg) return;
+  lightboxIndex = ((idx % lightboxImages.length) + lightboxImages.length) % lightboxImages.length;
+  lbImg.src = lightboxImages[lightboxIndex].src;
+  lbImg.alt = lightboxImages[lightboxIndex].alt;
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+/* ──────────────────────────────────────────────────────────────
+   RSVP form
+────────────────────────────────────────────────────────────── */
+function initRsvpForm() {
+  const form    = document.getElementById('rsvpForm');
+  const success = document.getElementById('rsvpSuccess');
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    await submitToSheet({
+      type:      'rsvp',
+      name:      fd.get('name'),
+      email:     fd.get('email'),
+      attending: fd.get('attending'),
+      guests:    fd.get('guests'),
+      meal:      fd.get('meal'),
+      notes:     fd.get('notes'),
+    });
+    form.style.display = 'none';
+    if (success) {
+      success.querySelector('p').textContent = rsvp.successMessage;
+      success.classList.add('visible');
+    }
+  });
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Guestbook
+────────────────────────────────────────────────────────────── */
+function initGuestbook() {
+  const form    = document.getElementById('gbForm');
+  const success = document.getElementById('gbSuccess');
+  const notes   = document.getElementById('gbNotes');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const payload = { type: 'guestbook', name: fd.get('name'), message: fd.get('message') };
+    await submitToSheet(payload);
+    prependNote({ ...payload, date: new Date() }, notes, false);
+    form.reset();
+    if (success) {
+      success.classList.add('visible');
+      setTimeout(() => success.classList.remove('visible'), 4500);
+    }
   });
 
-  /* ──────────────────────────────────────────────────────────
-     RSVP FORM
-  ────────────────────────────────────────────────────────── */
-  const rsvpForm    = document.getElementById('rsvpForm');
-  const rsvpSuccess = document.getElementById('rsvpSuccess');
-
-  if (rsvpForm) {
-    rsvpForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fd = new FormData(rsvpForm);
-      const payload = {
-        type:      'rsvp',
-        name:      fd.get('name'),
-        email:     fd.get('email'),
-        attending: fd.get('attending'),
-        guests:    fd.get('guests'),
-        meal:      fd.get('meal'),
-        notes:     fd.get('notes'),
-      };
-      await submitToSheet(payload);
-      rsvpForm.style.display = 'none';
-      if (rsvpSuccess) rsvpSuccess.classList.add('visible');
-    });
-  }
-
-  /* ──────────────────────────────────────────────────────────
-     GUESTBOOK FORM + DISPLAY
-  ────────────────────────────────────────────────────────── */
-  const gbForm     = document.getElementById('gbForm');
-  const gbSuccess  = document.getElementById('gbSuccess');
-  const gbNotes    = document.getElementById('gbNotes');
-
-  if (gbForm) {
-    gbForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fd = new FormData(gbForm);
-      const payload = {
-        type:    'guestbook',
-        name:    fd.get('name'),
-        message: fd.get('message'),
-      };
-      await submitToSheet(payload);
-      // Optimistic UI: prepend the new card
-      prependGuestbookCard({ name: payload.name, message: payload.message, date: new Date() });
-      gbForm.reset();
-      if (gbSuccess) { gbSuccess.classList.add('visible'); setTimeout(() => gbSuccess.classList.remove('visible'), 4000); }
-    });
-  }
-
-  // Fetch existing notes on load
-  fetchGuestbook();
-
-  async function fetchGuestbook() {
-    if (!gbNotes || !W.sheetsEndpoint || W.sheetsEndpoint === 'PASTE_WEB_APP_URL_HERE') {
-      return;
-    }
-    try {
-      const notes = await fetchViaJSONP(W.sheetsEndpoint);
-      if (!Array.isArray(notes) || !notes.length) {
-        gbNotes.innerHTML = '<p class="guestbook-empty">Be the first to leave a note.</p>';
+  fetchGuestbook()
+    .then(data => {
+      if (!notes) return;
+      if (!Array.isArray(data) || !data.length) {
+        notes.innerHTML = '<p class="guestbook-empty">Be the first to leave a note.</p>';
         return;
       }
-      notes.forEach(note => prependGuestbookCard(note, true));
-    } catch {
-      // Silently fail — form still works
-    }
-  }
+      notes.innerHTML = '';
+      data.forEach(n => prependNote(n, notes, true));
+    })
+    .catch(() => {});
+}
 
-  function prependGuestbookCard(note, append = false) {
-    if (!gbNotes) return;
-    const empty = gbNotes.querySelector('.guestbook-empty');
-    if (empty) empty.remove();
+function prependNote(note, container, append) {
+  if (!container) return;
+  container.querySelector('.guestbook-empty')?.remove();
+  const date = note.date
+    ? new Date(note.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : '';
+  const card = document.createElement('div');
+  card.className = 'guestbook-card';
+  card.innerHTML = `
+    <div class="guestbook-card-name">${esc(note.name)}</div>
+    <p class="guestbook-card-message">${esc(note.message)}</p>
+    ${date ? `<div class="guestbook-card-date">${date}</div>` : ''}
+  `;
+  if (append) container.appendChild(card);
+  else        container.insertBefore(card, container.firstChild);
+}
 
-    const date = note.date ? new Date(note.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
-    const card = document.createElement('div');
-    card.className = 'guestbook-card';
-    card.innerHTML = `
-      <div class="guestbook-card-name">${escHtml(note.name)}</div>
-      <p class="guestbook-card-message">${escHtml(note.message)}</p>
-      ${date ? `<div class="guestbook-card-date">${date}</div>` : ''}
-    `;
-    if (append) {
-      gbNotes.appendChild(card);
-    } else {
-      gbNotes.insertBefore(card, gbNotes.firstChild);
-    }
-  }
+/* ──────────────────────────────────────────────────────────────
+   Utilities
+────────────────────────────────────────────────────────────── */
+function esc(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
-  /* ──────────────────────────────────────────────────────────
-     SHEETS HELPERS
-  ────────────────────────────────────────────────────────── */
-  async function submitToSheet(payload) {
-    if (!W.sheetsEndpoint || W.sheetsEndpoint === 'PASTE_WEB_APP_URL_HERE') return;
-    try {
-      await fetch(W.sheetsEndpoint, {
-        method:  'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body:    JSON.stringify(payload),
-      });
-    } catch {
-      // Treat non-throwing as success (CORS won't block POST with text/plain)
-    }
-  }
-
-  function fetchViaJSONP(endpoint) {
-    return new Promise((resolve, reject) => {
-      const cb = 'gb_' + Date.now();
-      const s  = document.createElement('script');
-      window[cb] = (data) => { resolve(data); delete window[cb]; s.remove(); };
-      s.onerror = () => { reject(new Error('JSONP failed')); s.remove(); };
-      s.src = `${endpoint}?callback=${cb}`;
-      document.body.appendChild(s);
-    });
-  }
-
-  /* ──────────────────────────────────────────────────────────
-     UTILITIES
-  ────────────────────────────────────────────────────────── */
-  function escHtml(str) {
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
-})();
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}

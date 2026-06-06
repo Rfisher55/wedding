@@ -522,25 +522,47 @@ function prependNote(note, container, append) {
 /* ──────────────────────────────────────────────────────────────
    Hero scroll story  (3 acts: names apart → combined → Mr & Mrs)
 ────────────────────────────────────────────────────────────── */
+const HERO_STATES = [
+  { tagline: 'Together with their families',
+    html:    '<span class="hero-name-line">Robert Fisher</span><span class="hero-name-line">Madison Muschik</span>',
+    golden:  false },
+  { tagline: 'Together',
+    html:    'Robert &amp; Madison Fisher',
+    golden:  false },
+  { tagline: 'Soon to be',
+    html:    'Mr. &amp; Mrs. Fisher',
+    golden:  true },
+];
+
 function initHeroScrollStory() {
-  const section = document.getElementById('hero');
-  const states  = [
-    document.getElementById('hsState1'),
-    document.getElementById('hsState2'),
-    document.getElementById('hsState3'),
-  ];
-  if (!section || states.some(s => !s)) return;
+  const section   = document.getElementById('hero');
+  const namesEl   = document.getElementById('heroNamesEl');
+  const taglineEl = document.getElementById('heroTagline');
+  if (!section || !namesEl || !taglineEl) return;
 
   let active = 0;
 
   function goTo(idx) {
     if (idx === active) return;
-    states.forEach((el, i) => {
-      el.classList.remove('hs-state--active', 'hs-state--exiting');
-      if (i === idx)     el.classList.add('hs-state--active');
-      else if (i < idx)  el.classList.add('hs-state--exiting');
-    });
     active = idx;
+    const next = HERO_STATES[idx];
+
+    namesEl.classList.add('hs-out');
+    taglineEl.classList.add('hs-out');
+
+    setTimeout(() => {
+      namesEl.innerHTML = next.html;
+      taglineEl.textContent = next.tagline;
+      namesEl.classList.toggle('hero-names--golden', next.golden);
+      namesEl.classList.remove('hs-out');
+      taglineEl.classList.remove('hs-out');
+      namesEl.classList.add('hs-in');
+      taglineEl.classList.add('hs-in');
+      setTimeout(() => {
+        namesEl.classList.remove('hs-in');
+        taglineEl.classList.remove('hs-in');
+      }, 650);
+    }, 300);
   }
 
   window.addEventListener('scroll', () => {

@@ -338,36 +338,31 @@ p { font-size: var(--size-md); }
   width: 100%;
 }
 
-/* ── Hero scroll story states ── */
+/* ── Hero scroll story ── */
 .hero-text-stage {
-  position: relative;
   width: 100%;
-  min-height: clamp(10rem, 26vw, 24rem);
   margin-bottom: var(--space-xs);
 }
 
-.hs-state {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+/* JS adds .hs-out to fade names out, swaps content, then adds .hs-in */
+.hero-names.hs-out,
+.hero-tagline.hs-out {
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none;
+  transform: translateY(-16px);
+  transition: opacity 0.28s ease, transform 0.28s ease;
 }
 
-.hs-state--active {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+.hero-names.hs-in {
+  animation: hsSlideIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.hs-state--exiting {
-  opacity: 0;
-  transform: translateY(-30px);
-  transition-duration: 0.5s;
+.hero-tagline.hs-in {
+  animation: hsSlideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+@keyframes hsSlideIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* State 3 — gold italic */

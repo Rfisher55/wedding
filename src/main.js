@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMagneticButtons();
   initCountdown();
   initTimelineLine();
+  initScrollSkew();
 });
 
 /* ──────────────────────────────────────────────────────────────
@@ -349,7 +350,7 @@ function renderDynamicText() {
    Scroll reveal
 ────────────────────────────────────────────────────────────── */
 function initScrollReveal() {
-  const allReveal = document.querySelectorAll('[data-reveal]');
+  const allReveal = document.querySelectorAll('[data-reveal], [data-reveal="wipe"]');
 
   if (prefersReduced) {
     allReveal.forEach(el => el.classList.add('revealed'));
@@ -518,6 +519,33 @@ function prependNote(note, container, append) {
 /* ──────────────────────────────────────────────────────────────
    Utilities
 ────────────────────────────────────────────────────────────── */
+/* ──────────────────────────────────────────────────────────────
+   Scroll velocity skew on gallery strip
+────────────────────────────────────────────────────────────── */
+function initScrollSkew() {
+  if (isTouchDevice || prefersReduced) return;
+  const grid = document.querySelector('.gallery-grid');
+  if (!grid) return;
+
+  let lastY = window.scrollY, targetSkew = 0, currentSkew = 0, raf;
+
+  window.addEventListener('scroll', () => {
+    const delta  = window.scrollY - lastY;
+    lastY        = window.scrollY;
+    targetSkew   = Math.max(-5, Math.min(5, delta * -0.18));
+    cancelAnimationFrame(raf);
+
+    (function lerp() {
+      currentSkew += (targetSkew - currentSkew) * 0.08;
+      targetSkew  *= 0.88; // decay
+      grid.style.setProperty('--gallery-skew', currentSkew.toFixed(3) + 'deg');
+      if (Math.abs(currentSkew) > 0.02 || Math.abs(targetSkew) > 0.02) {
+        raf = requestAnimationFrame(lerp);
+      }
+    })();
+  }, { passive: true });
+}
+
 /* ──────────────────────────────────────────────────────────────
    Scroll progress bar
 ────────────────────────────────────────────────────────────── */

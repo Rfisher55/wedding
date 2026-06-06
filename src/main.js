@@ -535,20 +535,11 @@ const HERO_STATES = [
 ];
 
 function initHeroScrollStory() {
-  const section   = document.getElementById('hero');
   const namesEl   = document.getElementById('heroNamesEl');
   const taglineEl = document.getElementById('heroTagline');
-  if (!section || !namesEl || !taglineEl) return;
+  if (!namesEl || !taglineEl) return;
 
   let active = 0;
-  let sectionTop = 0, sectionHeight = 0;
-
-  function measure() {
-    sectionTop    = section.offsetTop;
-    sectionHeight = section.offsetHeight;
-  }
-  measure();
-  window.addEventListener('resize', measure, { passive: true });
 
   function goTo(idx) {
     if (idx === active) return;
@@ -573,19 +564,10 @@ function initHeroScrollStory() {
     }, 300);
   }
 
-  function check() {
-    const scrolled = window.scrollY - sectionTop;
-    const total    = sectionHeight - window.innerHeight;
-    if (total <= 0) return;
-    const p = Math.max(0, Math.min(1, scrolled / total));
-    if      (p < 0.33) goTo(0);
-    else if (p < 0.66) goTo(1);
-    else               goTo(2);
-  }
-
-  // scroll covers desktop + iOS; touchmove catches iOS during active touch
-  window.addEventListener('scroll',    check, { passive: true });
-  window.addEventListener('touchmove', check, { passive: true });
+  // Auto-play: each state gets ~3s of screen time after loader exits (~3.8s)
+  // State 1 visible immediately, state 2 at 4s, state 3 at 7.5s
+  setTimeout(() => goTo(1), 4000);
+  setTimeout(() => goTo(2), 7500);
 }
 
 /* ──────────────────────────────────────────────────────────────

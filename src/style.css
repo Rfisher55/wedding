@@ -53,7 +53,7 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   line-height: 1.7;
-  overflow-x: hidden;
+  overflow-x: clip; /* clip instead of hidden — doesn't break position:sticky on iOS */
 }
 
 img {
@@ -271,17 +271,9 @@ p { font-size: var(--size-md); }
    ============================================================ */
 .section-hero {
   position: relative;
-  height: 300vh;
-  height: 300svh;
-}
-
-/* Sticky viewport — locks in place while section scrolls */
-.hero-sticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;   /* fallback */
+  height: 100vh;
   height: 100svh;
-  min-height: 560px;
+  min-height: 600px;
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
@@ -440,6 +432,7 @@ p { font-size: var(--size-md); }
   position: absolute;
   bottom: var(--space-md);
   right: var(--space-md);
+  z-index: 3;
   transform: none;
   display: flex;
   flex-direction: column;

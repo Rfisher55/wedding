@@ -87,7 +87,7 @@ h1, h2, h3, h4 {
 }
 
 h1 { font-size: clamp(2.4rem, 6vw, var(--size-4xl)); }
-h2 { font-size: clamp(1.9rem, 4vw, var(--size-3xl)); }
+h2 { font-size: clamp(2.4rem, 6vw, 4.5rem); }
 h3 { font-size: clamp(1.3rem, 2.5vw, var(--size-2xl)); }
 
 p { font-size: var(--size-md); }
@@ -332,37 +332,30 @@ p { font-size: var(--size-md); }
   width: 100%;
 }
 
-/* ── Hero scroll story ── */
-.hero-text-stage {
-  width: 100%;
-  margin-bottom: var(--space-xs);
+/* ── Hero title — film poster treatment ── */
+.hero-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: var(--space-xs) 0;
 }
-
-/* JS adds .hs-out to fade names out, swaps content, then adds .hs-in */
-.hero-names.hs-out,
-.hero-tagline.hs-out {
-  opacity: 0;
-  transform: translateY(-16px);
-  transition: opacity 0.28s ease, transform 0.28s ease;
+.hero-title-line {
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  display: block;
+  line-height: 0.88;
 }
-
-.hero-names.hs-in {
-  animation: hsSlideIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+.ht-first, .ht-last {
+  font-size: clamp(3.2rem, 15vw, 13rem);
+  color: var(--ivory);
 }
-
-.hero-tagline.hs-in {
-  animation: hsSlideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
-}
-
-@keyframes hsSlideIn {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* State 3 — gold italic */
-.hero-names--golden {
+.ht-and {
+  font-size: clamp(2rem, 9.5vw, 8rem);
   color: var(--gold-light);
   font-style: italic;
+  line-height: 1.0;
+  padding-left: 0.04em;
 }
 
 @keyframes heroFadeIn {
@@ -387,26 +380,8 @@ p { font-size: var(--size-md); }
   margin-bottom: 0;
 }
 
-.hero-names {
-  font-family: var(--font-display);
-  font-size: clamp(2.6rem, 11vw, 10rem);
-  font-weight: 300;
-  color: var(--ivory);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-}
-
-.hero-name-line {
-  display: block;
-}
-
-.hero-name-line + .hero-name-line {
-  color: rgba(251, 248, 240, 0.55);
-  font-style: italic;
-}
-
 .hero-amp {
-  display: none; /* hidden — separation handled by two lines */
+  display: none;
 }
 
 .hero-date {
@@ -463,51 +438,52 @@ p { font-size: var(--size-md); }
 /* ============================================================
    OUR STORY
    ============================================================ */
-.section-story { background: var(--ivory); }
+.section-story {
+  background: var(--green);
+  padding-bottom: 0;
+}
+.section-story .eyebrow { color: var(--gold-light); }
+.section-story h2 { color: var(--ivory); }
+.section-story .divider { background: var(--gold); }
 
 .timeline {
-  margin-top: var(--space-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
+  margin-top: 0;
+  display: block;
+  gap: 0;
 }
 
 .timeline-entry {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-lg);
-  align-items: center;
-  text-align: left;
-}
-
-.timeline-entry:nth-child(even) {
-  direction: rtl;
-}
-
-.timeline-entry:nth-child(even) > * {
-  direction: ltr;
+  height: 100vh;
+  height: 100svh;
+  min-height: 500px;
+  position: relative;
+  overflow: hidden;
+  display: block;
 }
 
 .timeline-photo {
-  aspect-ratio: 4/5;
-  overflow: hidden;
-  background: var(--cream);
-  position: relative;
-}
-
-.timeline-photo::before {
-  content: attr(data-label);
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-body);
-  font-style: italic;
-  font-size: var(--size-sm);
-  color: var(--gold);
-  letter-spacing: 0.05em;
-  z-index: 0;
+  aspect-ratio: unset;
+  height: 100%;
+  overflow: hidden;
+  background: var(--green);
+}
+
+.timeline-photo::before { display: none; }
+
+.timeline-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(10, 25, 18, 0.96) 0%,
+    rgba(27, 58, 43, 0.35) 50%,
+    transparent 100%
+  );
+  z-index: 1;
+  pointer-events: none;
 }
 
 .timeline-photo img {
@@ -516,27 +492,44 @@ p { font-size: var(--size-md); }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: 1;
-  transition: transform 0.6s var(--ease);
+  z-index: 0;
+  transition: transform 9s ease;
+  animation: storyZoom 9s ease-in-out infinite alternate;
 }
 
-.timeline-photo:hover img { transform: scale(1.04); }
+.timeline-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 5vw, 5rem);
+  z-index: 2;
+  text-align: left;
+  color: var(--ivory);
+  max-width: 720px;
+}
 
 .timeline-year {
   font-family: var(--font-body);
   font-size: var(--size-xs);
-  letter-spacing: 0.22em;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: var(--space-xs);
+  color: var(--gold-light);
+  margin-bottom: 0.4rem;
 }
 
 .timeline-content h3 {
+  font-size: clamp(2.2rem, 5.5vw, 4.5rem);
+  color: var(--ivory);
   margin-bottom: var(--space-xs);
+  line-height: 1.05;
 }
 
 .timeline-content p {
-  color: var(--ink-muted);
+  color: rgba(251, 248, 240, 0.72);
+  font-size: clamp(1rem, 1.8vw, 1.15rem);
+  max-width: 520px;
+  line-height: 1.7;
 }
 
 /* ============================================================
@@ -560,8 +553,11 @@ p { font-size: var(--size-md); }
 }
 
 .detail-card {
+  border: none;
+  border-left: 2px solid rgba(176, 141, 87, 0.4);
   padding: var(--space-md);
-  border: 1px solid rgba(176, 141, 87, 0.3);
+  padding-left: var(--space-md);
+  text-align: left;
 }
 
 .detail-card h3 {
@@ -832,7 +828,6 @@ p { font-size: var(--size-md); }
     transition: transform 0.35s ease;
   }
   .gallery-item:hover img        { transform: scale(1.04); }
-  .timeline-photo:hover img      { transform: scale(1.03); }
   .gallery-item--rotatable       { transform: none !important; }
   .gallery-reveal-overlay        { transform: scaleX(0) !important; }
 }
@@ -1267,12 +1262,6 @@ textarea { resize: vertical; min-height: 100px; }
   .nav-links { display: none; }
   .nav-toggle { display: block; }
 
-  .timeline-entry {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-  .timeline-entry:nth-child(even) { direction: ltr; }
-
   .guestbook-layout {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
@@ -1291,8 +1280,6 @@ textarea { resize: vertical; min-height: 100px; }
   .details-grid { grid-template-columns: 1fr; }
 
   .registry-grid { flex-direction: column; align-items: center; }
-
-  .hero-names { font-size: 2rem; }
 }
 
 /* ============================================================
@@ -1499,18 +1486,12 @@ body { -webkit-text-size-adjust: 100%; }
 
 @media (max-width: 430px) {
 
-  /* Hero names — fit on one line per name */
-  .hero-names { font-size: clamp(2rem, 10.5vw, 2.6rem); }
-
   /* Hero date / venue readable */
   .hero-date  { font-size: 0.85rem; }
   .hero-venue { font-size: 0.62rem; letter-spacing: 0.16em; }
 
   /* Reduce section vertical padding further */
   .section { padding: var(--space-md) var(--space-sm); }
-
-  /* Timeline text centered, no big gaps */
-  .timeline { gap: var(--space-lg); }
 
   /* Details 1 column */
   .details-grid { grid-template-columns: 1fr; }
@@ -1650,13 +1631,8 @@ body::before {
 }
 
 /* ============================================================
-   HERO — more editorial scale
+   HERO — performance hints
    ============================================================ */
-.hero-names {
-  font-size: clamp(3rem, 9vw, 6.5rem);
-  letter-spacing: -0.01em;
-}
-
 .hero-bg  { will-change: translate; }
 .hero-content { will-change: translate; }
 
@@ -1686,36 +1662,11 @@ body::before {
 }
 
 /* ============================================================
-   TIMELINE VERTICAL LINE — draws in on scroll
+   TIMELINE — position context for full-screen panels
    ============================================================ */
 .timeline {
   position: relative;
 }
-
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(176, 141, 87, 0.35) 15%,
-    rgba(176, 141, 87, 0.35) 85%,
-    transparent
-  );
-  transform: translateX(-50%);
-  transform-origin: top center;
-  scale: 1 0;
-  transition: scale 2s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none;
-}
-
-.timeline.line-drawn::before { scale: 1 1; }
-
-@media (max-width: 860px) { .timeline::before { display: none; } }
 
 /* ============================================================
    CARD / INTERACTIVE LIFT EFFECTS
@@ -1724,7 +1675,7 @@ body::before {
   transition: border-color var(--trans), transform var(--trans);
 }
 .detail-card:hover {
-  border-color: rgba(176, 141, 87, 0.6);
+  border-left-color: var(--gold);
   transform: translateY(-4px);
 }
 

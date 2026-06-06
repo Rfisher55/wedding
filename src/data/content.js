@@ -60,16 +60,15 @@ export const schedule = [
 ];
 
 // ---- Travel & lodging ----
-// The venue is on Upper King St with no on-site parking; there's
-// metered street parking and the Visitor's Center Parking Garage nearby.
 export const travel = {
   heading: "Travel & Stay",
   airport: "Charleston International Airport (CHS), ~20–30 min from downtown",
-  parking: "No on-site parking. Metered street parking and the Charleston Visitor Center Garage are nearby. A guest shuttle is recommended.",
-  // TODO: confirm hotels + add your room-block link/code if you set one up.
+  parking: "No on-site parking at the venue. Uber and Lyft are the easiest options — drop-off is right on King Street. Metered street parking and the Charleston Visitor Center Garage are also nearby if you prefer to drive.",
   hotels: [
-    { name: "TODO: Hotel name", distance: "TODO", link: "https://", note: "TODO: room block code?" },
-    { name: "TODO: Hotel name", distance: "TODO", link: "https://", note: "" }
+    { name: "Hotel Bennett",           distance: "0.2 mi · 5 min walk",  link: "https://www.hotelbennett.com",          note: "" },
+    { name: "Francis Marion Hotel",    distance: "0.4 mi · 8 min walk",  link: "https://www.francismarionhotel.com",    note: "" },
+    { name: "The Restoration Hotel",   distance: "0.7 mi",               link: "https://www.therestorationhotel.com",   note: "" },
+    { name: "The Dewberry Charleston", distance: "0.8 mi",               link: "https://www.thedewberry.com",           note: "" }
   ]
 };
 

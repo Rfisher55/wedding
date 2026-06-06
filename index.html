@@ -15,6 +15,16 @@
 </head>
 <body>
 
+  <!-- Loading screen -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <img src="public/monogram.svg" class="loader-monogram" alt="">
+    <span class="loader-label">Robert &amp; Madison</span>
+  </div>
+
+  <!-- Custom cursor (desktop only, hidden on touch) -->
+  <div class="cursor-dot"  id="cursorDot"  aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
   <!-- ═══════════════════════════════════════════════════════
        NAVIGATION
   ═══════════════════════════════════════════════════════ -->
@@ -91,7 +101,7 @@
     <section id="story" class="section section-story">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>How It Began</span>
-        <h2 data-reveal>Our Story</h2>
+        <h2 data-reveal class="split-heading">Our Story</h2>
         <div class="divider" aria-hidden="true" data-reveal></div>
 
         <!-- Timeline entries injected by main.js -->
@@ -106,7 +116,7 @@
     <section id="details" class="section section-details">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Join Us</span>
-        <h2 data-reveal>The Celebration</h2>
+        <h2 data-reveal class="split-heading">The Celebration</h2>
         <div class="divider" aria-hidden="true" data-reveal></div>
         <p data-reveal style="color:rgba(251,248,240,0.65);max-width:540px;margin:0 auto var(--space-md)">
           The William Aiken House — an 1810 National Historic Landmark on Upper King Street — sets the stage with its grand ballrooms, open-air piazzas, garden pergola, and magnolia courtyard.
@@ -162,7 +172,7 @@
     <section id="travel" class="section section-travel">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Getting Here</span>
-        <h2 data-reveal>Travel &amp; Lodging</h2>
+        <h2 data-reveal class="split-heading">Travel &amp; Lodging</h2>
         <div class="divider" aria-hidden="true" data-reveal></div>
 
         <!-- Airport, parking, and hotel cards injected by main.js -->
@@ -181,13 +191,14 @@
     <section id="gallery" class="section section-gallery">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Captured Moments</span>
-        <h2 data-reveal>Gallery</h2>
+        <h2 data-reveal class="split-heading">Gallery</h2>
         <div class="divider" aria-hidden="true" data-reveal></div>
         <p data-reveal style="color:var(--ink-muted);max-width:480px;margin:0 auto var(--space-md);font-style:italic">
           Click any photo to view full size.
         </p>
 
-        <!-- Gallery items injected by main.js from gallery.images -->
+        <!-- Horizontal scroll gallery — drag on desktop, swipe on iPhone -->
+        <!-- JS wraps this in .gallery-scroll-outer and populates items -->
         <div class="gallery-grid" id="galleryGrid" role="list" aria-label="Photo gallery"></div>
       </div>
     </section>
@@ -199,7 +210,7 @@
     <section id="registry" class="section section-registry section-alt">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Gifts &amp; Registry</span>
-        <h2 data-reveal>Registry</h2>
+        <h2 data-reveal class="split-heading">Registry</h2>
         <div class="divider" aria-hidden="true" data-reveal></div>
         <!-- intro text set by main.js from registry.intro -->
         <p id="registryIntro" data-reveal style="color:var(--ink-muted);max-width:500px;margin:0 auto var(--space-md)"></p>
@@ -217,7 +228,7 @@
     <section id="rsvp" class="section section-rsvp">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Kindly Reply</span>
-        <h2 data-reveal>RSVP</h2>
+        <h2 data-reveal class="split-heading">RSVP</h2>
         <div class="divider" aria-hidden="true" data-reveal></div>
         <!-- populated by main.js from rsvp.intro -->
         <p id="rsvpIntro" data-reveal></p>
@@ -293,7 +304,7 @@
     <section id="guestbook" class="section section-guestbook">
       <div class="section-inner">
         <span class="eyebrow" data-reveal>Leave a Note</span>
-        <h2 data-reveal>Guestbook</h2>
+        <h2 data-reveal class="split-heading">Guestbook</h2>
         <div class="divider" aria-hidden="true" data-reveal></div>
         <!-- populated by main.js from guestbook.intro -->
         <p id="gbIntro" data-reveal style="color:var(--ink-muted);max-width:480px;margin:0 auto var(--space-lg)"></p>

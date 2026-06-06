@@ -655,10 +655,10 @@ p { font-size: var(--size-md); }
 .travel-note p { color: var(--ink-muted); font-size: var(--size-sm); }
 
 /* ============================================================
-   GALLERY
+   GALLERY — horizontal cinematic strip
    ============================================================ */
 
-/* ── Ambient float keyframes (4 personalities) ── */
+/* Ambient float keyframes */
 @keyframes floatA {
   0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
   33%  { transform: translateY(-14px) rotate(0.8deg) scale(1.01); }
@@ -679,48 +679,67 @@ p { font-size: var(--size-md); }
   75%  { transform: translateY(13px) rotate(-1.1deg); }
 }
 
-/* ── Story photo slow Ken-Burns ── */
+/* Story photo slow Ken-Burns */
 @keyframes storyZoom {
   from { transform: scale(1) translateX(0px); }
   to   { transform: scale(1.08) translateX(-6px); }
 }
 
-.section-gallery { background: var(--ivory); }
+.section-gallery { background: var(--ivory); padding-bottom: var(--space-2xl); }
 
+/* Outer scroll wrapper — created by JS */
+.gallery-scroll-outer {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  cursor: grab;
+  margin: var(--space-lg) calc(-1 * var(--space-md)) 0;
+  padding: 0 var(--space-md);
+}
+.gallery-scroll-outer::-webkit-scrollbar { display: none; }
+.gallery-scroll-outer.grabbing { cursor: grabbing; }
+
+/* Horizontal strip */
 .gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 300px;
-  gap: 10px;
-  margin-top: var(--space-lg);
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  width: max-content;
+  padding: var(--space-md) var(--space-md) var(--space-md) 0;
 }
 
 .gallery-item {
+  flex-shrink: 0;
+  width: 360px;
+  height: 500px;
   overflow: hidden;
   cursor: pointer;
   position: relative;
   background: var(--cream);
-  /* GPU layer so float animation is smooth on iOS */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-.gallery-item::before {
-  content: 'Photo Coming Soon';
+.gallery-item--featured {
+  width: 440px;
+  height: 600px;
+}
+
+/* Green wipe-reveal overlay — slides away on scroll into view */
+.gallery-reveal-overlay {
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-body);
-  font-style: italic;
-  font-size: var(--size-sm);
-  color: var(--gold);
-  letter-spacing: 0.05em;
+  background: var(--green);
+  z-index: 3;
+  transform: scaleX(1);
+  transform-origin: right center;
+  transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1);
   pointer-events: none;
-  z-index: 0;
+}
+
+.gallery-item.photo-revealed .gallery-reveal-overlay {
+  transform: scaleX(0);
 }
 
 .gallery-item img {
@@ -730,23 +749,17 @@ p { font-size: var(--size-md); }
   display: block;
   position: relative;
   z-index: 1;
-  /* Float animation driven by --float-* CSS custom properties set by JS */
   animation: var(--float-anim, floatA) var(--float-dur, 7s) var(--float-delay, 0s) ease-in-out infinite;
   will-change: transform;
   transform-origin: center center;
 }
 
-.gallery-item--featured {
-  grid-row: span 2;
-}
-
-/* Story photos — slow ambient zoom while in view */
+/* Story photos ambient zoom */
 .timeline-photo img {
   animation: storyZoom 9s ease-in-out infinite alternate;
   will-change: transform;
 }
 
-/* Reduce motion: kill all ambient animations, keep simple hover */
 @media (prefers-reduced-motion: reduce) {
   .gallery-item img,
   .timeline-photo img {
@@ -757,6 +770,7 @@ p { font-size: var(--size-md); }
   .gallery-item:hover img        { transform: scale(1.04); }
   .timeline-photo:hover img      { transform: scale(1.03); }
   .gallery-item--rotatable       { transform: none !important; }
+  .gallery-reveal-overlay        { transform: scaleX(0) !important; }
 }
 
 /* ── Lightbox ── */
@@ -1195,12 +1209,6 @@ textarea { resize: vertical; min-height: 100px; }
   }
   .timeline-entry:nth-child(even) { direction: ltr; }
 
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 220px;
-  }
-  .gallery-item--featured { grid-row: span 2; }
-
   .guestbook-layout {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
@@ -1216,12 +1224,6 @@ textarea { resize: vertical; min-height: 100px; }
 }
 
 @media (max-width: 540px) {
-  .gallery-grid {
-    grid-template-columns: 1fr;
-    grid-auto-rows: 280px;
-  }
-  .gallery-item--featured { grid-row: span 1; }
-
   .details-grid { grid-template-columns: 1fr; }
 
   .registry-grid { flex-direction: column; align-items: center; }
@@ -1230,17 +1232,125 @@ textarea { resize: vertical; min-height: 100px; }
 }
 
 /* ============================================================
+   LOADING SCREEN
+   ============================================================ */
+.loader {
+  position: fixed;
+  inset: 0;
+  background: var(--green);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  transform: translateY(0);
+  transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+  pointer-events: none;
+}
+
+.loader.exit {
+  transform: translateY(-100%);
+}
+
+.loader-monogram {
+  width: clamp(120px, 30vw, 180px);
+  height: auto;
+}
+
+.loader-label {
+  font-family: var(--font-display);
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  color: rgba(251, 248, 240, 0.45);
+  text-transform: uppercase;
+  animation: loaderPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes loaderPulse {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.9; }
+}
+
+/* ============================================================
+   CUSTOM CURSOR  (hidden on touch devices via JS)
+   ============================================================ */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+  display: none; /* JS shows them on non-touch */
+}
+
+.cursor-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--gold);
+  z-index: 10000;
+  transition: opacity 0.3s ease, width 0.25s ease, height 0.25s ease, background 0.25s ease;
+}
+
+.cursor-ring {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(176, 141, 87, 0.6);
+  transition: opacity 0.3s ease, width 0.35s ease, height 0.35s ease, border-color 0.35s ease;
+}
+
+.cursor-ring.cursor-hover {
+  width: 64px;
+  height: 64px;
+  border-color: var(--gold);
+}
+
+.cursor-dot.cursor-hover {
+  width: 4px;
+  height: 4px;
+  background: var(--gold-light);
+}
+
+/* ============================================================
+   SPLIT TEXT ANIMATION
+   ============================================================ */
+.split-heading {
+  overflow: hidden;
+}
+
+.split-heading .char {
+  display: inline-block;
+  transform: translateY(110%);
+  opacity: 0;
+  transition:
+    transform 0.65s cubic-bezier(0.2, 0.8, 0.4, 1) calc(var(--i, 0) * 0.038s),
+    opacity   0.45s ease                            calc(var(--i, 0) * 0.038s);
+}
+
+.split-heading .char-space {
+  display: inline;
+}
+
+.split-heading.chars-revealed .char {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ============================================================
    iPHONE / IOS SAFARI — SPECIFIC FIXES
    ============================================================ */
-
-/* Stop iOS from zooming in on form inputs (requires 16px minimum) */
 @media (max-width: 768px) {
   input, select, textarea {
     font-size: 16px !important;
   }
 }
 
-/* Safe area padding for iPhones with notch / Dynamic Island / home indicator */
 .nav-inner {
   padding-left:  max(var(--space-md), env(safe-area-inset-left));
   padding-right: max(var(--space-md), env(safe-area-inset-right));
@@ -1250,47 +1360,18 @@ textarea { resize: vertical; min-height: 100px; }
   padding-bottom: max(var(--space-lg), calc(var(--space-md) + env(safe-area-inset-bottom)));
 }
 
-/* Kill tap highlight on all interactive elements */
-a, button, .gallery-item, .registry-card, .nav-toggle, .scroll-cue,
-.radio-label, .timeline-photo {
+a, button, .gallery-item, .registry-card, .nav-toggle, .scroll-cue, .radio-label {
   -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
 }
 
-/* Smooth momentum scrolling on iOS */
-html {
-  -webkit-overflow-scrolling: touch;
-}
+html { -webkit-overflow-scrolling: touch; }
+body { -webkit-text-size-adjust: 100%; }
 
-/* Prevent iOS font size adjustment */
-body {
-  -webkit-text-size-adjust: 100%;
-}
-
-/* Gallery tilt feedback on touch — brief scale to signal interaction */
-.gallery-item:active img {
-  transform: scale(1.04);
-  transition: transform 0.15s ease;
-}
-
-/* Mobile gallery: 2 columns on iPhone landscape, 1 portrait */
 @media (max-width: 480px) {
-  .gallery-grid {
-    grid-template-columns: 1fr 1fr;
-    grid-auto-rows: 200px;
-    gap: 6px;
-  }
-  .gallery-item--featured { grid-row: span 1; }
+  .gallery-item       { width: 75vw; height: 62vw; max-height: 420px; }
+  .gallery-item--featured { width: 85vw; height: 70vw; max-height: 500px; }
 }
 
-@media (max-width: 375px) {
-  .gallery-grid {
-    grid-template-columns: 1fr;
-    grid-auto-rows: 260px;
-  }
-}
-
-/* Nav mobile padding for safe area top */
 @supports (padding-top: env(safe-area-inset-top)) {
   .nav {
     padding-top: env(safe-area-inset-top);

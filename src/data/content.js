@@ -20,7 +20,7 @@ export const hero = {
   // Big date line under the names
   dateLine: "Sunday, November 7, 2027",
   location: "Charleston, South Carolina",
-  heroImage: "public/images/hero.jpg",   // drop your photo here in /public/images/
+  heroImage: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1800&h=1000&q=85",
   scrollCue: "Scroll to begin"
 };
 
@@ -30,9 +30,9 @@ export const story = {
   heading: "Our Story",
   intro: "TODO: a sentence or two setting up your story.",
   milestones: [
-    { year: "TODO", title: "How we met", text: "TODO", image: "public/images/gallery/04.jpg" },
-    { year: "TODO", title: "The proposal", text: "TODO", image: "public/images/gallery/03.jpg" },
-    { year: "2027", title: "The wedding", text: "We can't wait to celebrate with you in Charleston.", image: "public/images/hero.jpg" }
+    { year: "TODO", title: "How we met", text: "TODO", image: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=700&h=900&q=80" },
+    { year: "TODO", title: "The proposal", text: "TODO", image: "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?auto=format&fit=crop&w=700&h=900&q=80" },
+    { year: "2027", title: "The wedding", text: "We can't wait to celebrate with you in Charleston.", image: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=700&h=900&q=80" }
   ]
 };
 
@@ -88,15 +88,15 @@ export const registry = {
 export const gallery = {
   heading: "Moments",
   images: [
-    "public/images/gallery/01.jpg",  // B&W vaulted marble arches
-    "public/images/gallery/02.jpg",  // Grand staircase, couple sitting, warm gold tones
-    "public/images/gallery/03.jpg",  // Brown leather sofa, orange walls, gold lamp
-    "public/images/gallery/04.jpg",  // Staircase holding hands, Madison looking back
-    "public/images/gallery/05.jpg",  // B&W full-length embrace, dark interior chandeliers
-    "public/images/gallery/06.jpg",  // Wide Gothic balcony, couple on upper level
-    "public/images/gallery/07.jpg",  // B&W overhead on tufted leather chair
-    "public/images/gallery/08.jpg",  // COLOR overhead on tufted leather chair
-    "public/images/gallery/09.jpg"   // B&W balcony from below, dramatic upward angle
+    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&h=1100&q=80",
+    "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&h=1100&q=80",
+    "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&h=1100&q=80",
+    "https://images.unsplash.com/photo-1460978812857-470ed1c77af0?auto=format&fit=crop&w=800&h=1100&q=80",
+    "https://images.unsplash.com/photo-1523359346063-d879354c0ea5?auto=format&fit=crop&w=800&h=1100&q=80",
+    "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&h=1100&q=80",
+    "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?auto=format&fit=crop&w=800&h=1100&q=80",
+    "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=800&h=1100&q=80",
+    "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?auto=format&fit=crop&w=800&h=1100&q=80"
   ],
   // B&W arches (0) and B&W embrace (4) get the playful rotate-on-scroll treatment
   featured: [0, 4]

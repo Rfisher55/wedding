@@ -370,9 +370,9 @@ p { font-size: var(--size-md); }
 }
 
 .monogram-wrap {
-  width: min(110px, 28vw);
+  width: min(220px, 55vw);
   margin-bottom: var(--space-xs);
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .monogram-svg { width: 100%; height: auto; }

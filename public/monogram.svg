@@ -1,104 +1,326 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 340" fill="none">
-  <style>
-    .ring-outer {
-      stroke-dasharray: 950;
-      stroke-dashoffset: 950;
-      animation: draw 2.8s cubic-bezier(0.4,0,0.2,1) 0.2s forwards;
-    }
-    .ring-inner {
-      stroke-dasharray: 890;
-      stroke-dashoffset: 890;
-      animation: draw 2.8s cubic-bezier(0.4,0,0.2,1) 0.5s forwards;
-    }
-    .ornament {
-      stroke-dasharray: 200;
-      stroke-dashoffset: 200;
-      animation: draw 1s ease 1s forwards;
-    }
-    .divider {
-      stroke-dasharray: 160;
-      stroke-dashoffset: 160;
-      animation: draw 0.9s ease 1.1s forwards;
-    }
-    .divider2 {
-      stroke-dasharray: 120;
-      stroke-dashoffset: 120;
-      animation: draw 0.7s ease 1.2s forwards;
-    }
-    .crest-text {
-      opacity: 0;
-      animation: fadeUp 1s ease 1.4s forwards;
-    }
-    .crest-sub {
-      opacity: 0;
-      animation: fadeUp 0.8s ease 1.8s forwards;
-    }
-    @keyframes draw {
-      to { stroke-dashoffset: 0; }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .ring-outer, .ring-inner, .ornament, .divider, .divider2 {
-        stroke-dashoffset: 0; animation: none;
-      }
-      .crest-text, .crest-sub { opacity: 1; animation: none; }
-    }
-  </style>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 490" fill="none">
+<style>
+/* ── Gate-open: whole crest scales from a hairline at center ── */
+.crest-all {
+  transform-origin: 200px 245px;
+  animation: gateOpen 1.2s cubic-bezier(0.16,1,0.3,1) 0.05s both;
+}
+@keyframes gateOpen {
+  0%  { transform: scaleY(0.012); opacity: 0; }
+  18% { opacity: 1; }
+  100%{ transform: scaleY(1); }
+}
 
-  <!-- Outer oval ring -->
-  <ellipse class="ring-outer" cx="150" cy="170" rx="134" ry="159" stroke="#B08D57" stroke-width="1.2"/>
-  <!-- Inner oval ring -->
-  <ellipse class="ring-inner" cx="150" cy="170" rx="125" ry="150" stroke="#B08D57" stroke-width="0.5"/>
+/* ── Wreath rings draw themselves ── */
+.ring-1 {
+  stroke-dasharray: 1340; stroke-dashoffset: 1340;
+  animation: draw 3.2s cubic-bezier(0.4,0,0.2,1) 0.55s forwards;
+}
+.ring-2 {
+  stroke-dasharray: 1280; stroke-dashoffset: 1280;
+  animation: draw 3.2s cubic-bezier(0.4,0,0.2,1) 0.8s forwards;
+}
 
-  <!-- Top ornament: cross + small circle -->
-  <g class="ornament">
-    <line x1="150" y1="3"  x2="150" y2="17" stroke="#B08D57" stroke-width="1.4"/>
-    <line x1="143" y1="10" x2="157" y2="10" stroke="#B08D57" stroke-width="1.4"/>
-    <circle cx="150" cy="10" r="3.5" stroke="#B08D57" stroke-width="0.8" fill="none"/>
+/* ── Crown drops from above ── */
+.crown { opacity: 0; animation: fadeDown 0.8s ease 1.5s forwards; }
+
+/* ── Top finial ── */
+.finial { opacity: 0; animation: fadeDown 0.6s ease 1.2s forwards; }
+
+/* ── Shield outlines draw ── */
+.shield-out {
+  stroke-dasharray: 860; stroke-dashoffset: 860;
+  animation: draw 2.4s ease 1.3s forwards;
+}
+.shield-in {
+  stroke-dasharray: 820; stroke-dashoffset: 820;
+  animation: draw 2.4s ease 1.55s forwards;
+}
+.shield-hdiv {
+  stroke-dasharray: 115; stroke-dashoffset: 115;
+  animation: draw 0.6s ease 2.4s forwards;
+}
+
+/* ── Branches extend outward from shield ── */
+.br-l {
+  stroke-dasharray: 700; stroke-dashoffset: 700;
+  animation: draw 2.2s ease 2.1s forwards;
+}
+.br-r {
+  stroke-dasharray: 700; stroke-dashoffset: 700;
+  animation: draw 2.2s ease 2.3s forwards;
+}
+
+/* ── Shield corner stars ── */
+.shield-star { opacity: 0; animation: pop 0.5s ease 2.6s forwards; }
+
+/* ── Monogram: R slides from left, M from right, & fades in ── */
+.mono-R {
+  opacity: 0;
+  animation: slideR 1s cubic-bezier(0.22,1,0.36,1) 2.8s forwards;
+}
+.mono-M {
+  opacity: 0;
+  animation: slideL 1s cubic-bezier(0.22,1,0.36,1) 2.8s forwards;
+}
+.mono-amp {
+  opacity: 0;
+  animation: fadeUp 0.7s ease 3.1s forwards;
+}
+.mono-sub {
+  opacity: 0;
+  animation: fadeUp 0.8s ease 3.3s forwards;
+}
+
+/* ── Banner ribbon draws center-out ── */
+.banner {
+  stroke-dasharray: 560; stroke-dashoffset: 560;
+  animation: draw 1.5s ease 3.1s forwards;
+}
+.ban-txt { opacity: 0; animation: fadeUp 0.7s ease 3.6s forwards; }
+
+/* ── Bottom details appear last ── */
+.bot-rule { opacity: 0; animation: fadeUp 0.6s ease 3.8s forwards; }
+.bot-date { opacity: 0; animation: fadeUp 0.7s ease 4.0s forwards; }
+.bot-arch { opacity: 0; animation: fadeUp 0.7s ease 4.2s forwards; }
+
+/* ── Keyframes ── */
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-7px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes slideR {
+  from { opacity: 0; transform: translateX(-14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes slideL {
+  from { opacity: 0; transform: translateX(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes pop {
+  0%   { opacity: 0; transform: scale(0); }
+  65%  { opacity: 1; transform: scale(1.25); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crest-all { transform: none !important; animation: none !important; opacity: 1 !important; }
+  * { stroke-dashoffset: 0 !important; animation: none !important; opacity: 1 !important; }
+}
+</style>
+
+<g class="crest-all">
+
+  <!-- ════ Outer wreath rings ════════════════════════ -->
+  <ellipse class="ring-1" cx="200" cy="245" rx="188" ry="233"
+    stroke="#B08D57" stroke-width="1.25"/>
+  <ellipse class="ring-2" cx="200" cy="245" rx="179" ry="224"
+    stroke="#B08D57" stroke-width="0.45"/>
+
+  <!-- ════ Top finial (cross + orb) ════════════════════ -->
+  <g class="finial">
+    <line x1="200" y1="4"  x2="200" y2="17" stroke="#B08D57" stroke-width="1.4"/>
+    <line x1="193" y1="10" x2="207" y2="10" stroke="#B08D57" stroke-width="1.4"/>
+    <circle cx="200" cy="10" r="3.5" stroke="#B08D57" stroke-width="0.9" fill="none"/>
   </g>
 
-  <!-- Bottom ornament: arch -->
-  <path class="ornament" d="M 120 330 Q 150 343 180 330" stroke="#B08D57" stroke-width="1" fill="none"/>
-  <!-- Bottom diamond -->
-  <path class="ornament" d="M 150 333 L 154 337 L 150 341 L 146 337 Z" stroke="#B08D57" stroke-width="0.8" fill="none"/>
-
-  <!-- Left leaf sprig -->
-  <g class="ornament">
-    <path d="M 32 175 Q 20 165 28 155" stroke="#B08D57" stroke-width="0.9" fill="none"/>
-    <path d="M 32 175 Q 20 185 28 195" stroke="#B08D57" stroke-width="0.9" fill="none"/>
-    <line x1="32" y1="155" x2="32" y2="195" stroke="#B08D57" stroke-width="0.6"/>
+  <!-- ════ Heraldic Crown ════════════════════════════ -->
+  <g class="crown">
+    <!-- Crown base bar -->
+    <line x1="162" y1="126" x2="238" y2="126" stroke="#B08D57" stroke-width="1.1"/>
+    <!-- 5 uprights -->
+    <line x1="165" y1="126" x2="165" y2="108" stroke="#B08D57" stroke-width="1.1"/>
+    <line x1="181" y1="126" x2="181" y2="99"  stroke="#B08D57" stroke-width="1.1"/>
+    <line x1="200" y1="126" x2="200" y2="89"  stroke="#B08D57" stroke-width="1.4"/>
+    <line x1="219" y1="126" x2="219" y2="99"  stroke="#B08D57" stroke-width="1.1"/>
+    <line x1="235" y1="126" x2="235" y2="108" stroke="#B08D57" stroke-width="1.1"/>
+    <!-- Jewels at upright tips -->
+    <circle cx="165" cy="106" r="3"   stroke="#B08D57" stroke-width="0.9" fill="none"/>
+    <circle cx="181" cy="97"  r="3.5" stroke="#B08D57" stroke-width="0.9" fill="none"/>
+    <circle cx="200" cy="87"  r="4.2" stroke="#B08D57" stroke-width="1.0" fill="none"/>
+    <circle cx="219" cy="97"  r="3.5" stroke="#B08D57" stroke-width="0.9" fill="none"/>
+    <circle cx="235" cy="106" r="3"   stroke="#B08D57" stroke-width="0.9" fill="none"/>
+    <!-- Arches between uprights -->
+    <path d="M 165,126 Q 173,113 181,126" stroke="#B08D57" stroke-width="0.55" fill="none"/>
+    <path d="M 181,126 Q 190,108 200,126" stroke="#B08D57" stroke-width="0.55" fill="none"/>
+    <path d="M 200,126 Q 210,108 219,126" stroke="#B08D57" stroke-width="0.55" fill="none"/>
+    <path d="M 219,126 Q 227,113 235,126" stroke="#B08D57" stroke-width="0.55" fill="none"/>
   </g>
-  <!-- Right leaf sprig -->
-  <g class="ornament">
-    <path d="M 268 175 Q 280 165 272 155" stroke="#B08D57" stroke-width="0.9" fill="none"/>
-    <path d="M 268 175 Q 280 185 272 195" stroke="#B08D57" stroke-width="0.9" fill="none"/>
-    <line x1="268" y1="155" x2="268" y2="195" stroke="#B08D57" stroke-width="0.6"/>
+
+  <!-- ════ Heraldic Shield ════════════════════════════ -->
+  <!-- Outer border -->
+  <path class="shield-out"
+    d="M 148,132 L 252,132 L 252,246 Q 249,314 200,337 Q 151,314 148,246 Z"
+    stroke="#B08D57" stroke-width="1.7"/>
+  <!-- Inner border (6px inset) -->
+  <path class="shield-in"
+    d="M 155,139 L 245,139 L 245,243 Q 242,304 200,325 Q 158,304 155,243 Z"
+    stroke="#B08D57" stroke-width="0.4"/>
+  <!-- Horizontal divider at shield mid-height -->
+  <line class="shield-hdiv"
+    x1="148" y1="202" x2="252" y2="202"
+    stroke="#B08D57" stroke-width="0.8"/>
+
+  <!-- ════ Shield corner 8-point stars ═══════════════ -->
+  <!-- Upper-left quadrant -->
+  <g class="shield-star">
+    <line x1="173" y1="159" x2="173" y2="170" stroke="#B08D57" stroke-width="0.75"/>
+    <line x1="167" y1="164" x2="179" y2="164" stroke="#B08D57" stroke-width="0.75"/>
+    <line x1="169" y1="161" x2="177" y2="167" stroke="#B08D57" stroke-width="0.55"/>
+    <line x1="177" y1="161" x2="169" y2="167" stroke="#B08D57" stroke-width="0.55"/>
+  </g>
+  <!-- Upper-right quadrant -->
+  <g class="shield-star">
+    <line x1="227" y1="159" x2="227" y2="170" stroke="#B08D57" stroke-width="0.75"/>
+    <line x1="221" y1="164" x2="233" y2="164" stroke="#B08D57" stroke-width="0.75"/>
+    <line x1="223" y1="161" x2="231" y2="167" stroke="#B08D57" stroke-width="0.55"/>
+    <line x1="231" y1="161" x2="223" y2="167" stroke="#B08D57" stroke-width="0.55"/>
   </g>
 
-  <!-- Divider lines above subtext -->
-  <line class="divider"  x1="84"  y1="237" x2="216" y2="237" stroke="#B08D57" stroke-width="0.7"/>
-  <line class="divider2" x1="100" y1="241" x2="200" y2="241" stroke="#B08D57" stroke-width="0.35"/>
-
-  <!-- Main monogram letters -->
-  <text class="crest-text"
-    x="150" y="222"
+  <!-- ════ Monogram R & M ══════════════════════════ -->
+  <text class="mono-R"
+    x="174" y="196"
     text-anchor="middle"
-    font-family="Georgia, serif"
-    font-size="82"
-    font-weight="300"
-    letter-spacing="-1"
-    fill="#B08D57">R &#38; M</text>
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="46" font-weight="400"
+    fill="#B08D57">R</text>
 
-  <!-- Date / subtext -->
-  <text class="crest-sub"
-    x="150" y="268"
+  <text class="mono-M"
+    x="226" y="196"
     text-anchor="middle"
-    font-family="Georgia, serif"
-    font-size="9.5"
-    letter-spacing="5"
-    fill="#B08D57">NOVEMBER · 2027</text>
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="46" font-weight="400"
+    fill="#B08D57">M</text>
+
+  <text class="mono-amp"
+    x="200" y="188"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="19" font-style="italic"
+    fill="#B08D57">&amp;</text>
+
+  <!-- Sub-text in lower shield half -->
+  <text class="mono-sub"
+    x="200" y="235"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="8.5" letter-spacing="4.5"
+    fill="#B08D57">TOGETHER  ·  2027</text>
+
+  <!-- Small rule under sub-text -->
+  <g class="mono-sub">
+    <line x1="170" y1="244" x2="230" y2="244" stroke="#B08D57" stroke-width="0.4"/>
+  </g>
+
+  <!-- ════ Left laurel branch ══════════════════════ -->
+  <g class="br-l" stroke="#B08D57" fill="none">
+    <!-- Main stems -->
+    <path d="M 140,188 C 126,188 114,184 103,179" stroke-width="0.85"/>
+    <path d="M 140,208 C 126,210 114,216 103,222" stroke-width="0.85"/>
+    <!-- Upper cluster leaves -->
+    <path d="M 135,186 C 126,177 118,170 113,162" stroke-width="0.7"/>
+    <path d="M 135,186 C 123,186 115,192 109,198" stroke-width="0.7"/>
+    <path d="M 124,183 C 115,175 110,167 107,159" stroke-width="0.7"/>
+    <path d="M 124,183 C 112,183 104,190 99,197" stroke-width="0.7"/>
+    <path d="M 113,181 C 106,174 103,165 101,157" stroke-width="0.65"/>
+    <path d="M 113,181 C 103,182 96,188 93,196" stroke-width="0.65"/>
+    <!-- Lower cluster leaves -->
+    <path d="M 135,210 C 126,218 121,226 118,234" stroke-width="0.7"/>
+    <path d="M 135,210 C 123,207 115,202 109,198" stroke-width="0.7"/>
+    <path d="M 124,213 C 114,220 109,228 106,237" stroke-width="0.7"/>
+    <path d="M 124,213 C 113,211 105,206 99,202" stroke-width="0.7"/>
+    <path d="M 113,217 C 104,224 101,233 99,242" stroke-width="0.65"/>
+    <path d="M 113,217 C 103,215 96,210 92,206" stroke-width="0.65"/>
+  </g>
+
+  <!-- ════ Right laurel branch ═════════════════════ -->
+  <g class="br-r" stroke="#B08D57" fill="none">
+    <!-- Main stems -->
+    <path d="M 260,188 C 274,188 286,184 297,179" stroke-width="0.85"/>
+    <path d="M 260,208 C 274,210 286,216 297,222" stroke-width="0.85"/>
+    <!-- Upper cluster -->
+    <path d="M 265,186 C 274,177 282,170 287,162" stroke-width="0.7"/>
+    <path d="M 265,186 C 277,186 285,192 291,198" stroke-width="0.7"/>
+    <path d="M 276,183 C 285,175 290,167 293,159" stroke-width="0.7"/>
+    <path d="M 276,183 C 288,183 296,190 301,197" stroke-width="0.7"/>
+    <path d="M 287,181 C 294,174 297,165 299,157" stroke-width="0.65"/>
+    <path d="M 287,181 C 297,182 304,188 307,196" stroke-width="0.65"/>
+    <!-- Lower cluster -->
+    <path d="M 265,210 C 274,218 279,226 282,234" stroke-width="0.7"/>
+    <path d="M 265,210 C 277,207 285,202 291,198" stroke-width="0.7"/>
+    <path d="M 276,213 C 286,220 291,228 294,237" stroke-width="0.7"/>
+    <path d="M 276,213 C 287,211 295,206 301,202" stroke-width="0.7"/>
+    <path d="M 287,217 C 296,224 299,233 301,242" stroke-width="0.65"/>
+    <path d="M 287,217 C 297,215 304,210 308,206" stroke-width="0.65"/>
+  </g>
+
+  <!-- ════ Banner ribbon ═══════════════════════════ -->
+  <!-- Ribbon body -->
+  <path class="banner"
+    d="M 136,350 Q 200,342 264,350 L 266,362 Q 200,354 134,362 Z"
+    stroke="#B08D57" stroke-width="1.0"/>
+  <!-- Left ribbon tail (folded corner) -->
+  <path class="banner"
+    d="M 136,350 L 119,356 L 134,362"
+    stroke="#B08D57" stroke-width="0.85" fill="none"/>
+  <!-- Right ribbon tail -->
+  <path class="banner"
+    d="M 264,350 L 281,356 L 266,362"
+    stroke="#B08D57" stroke-width="0.85" fill="none"/>
+  <!-- Inner ribbon crease lines -->
+  <path class="banner"
+    d="M 136,350 L 142,356 L 136,362"
+    stroke="#B08D57" stroke-width="0.4" fill="none"/>
+  <path class="banner"
+    d="M 264,350 L 258,356 L 264,362"
+    stroke="#B08D57" stroke-width="0.4" fill="none"/>
+
+  <!-- Banner name -->
+  <text class="ban-txt"
+    x="200" y="360"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="11.5" letter-spacing="6"
+    fill="#B08D57">F I S H E R</text>
+
+  <!-- ════ Bottom ornamental rules ════════════════ -->
+  <g class="bot-rule">
+    <line x1="155" y1="376" x2="245" y2="376" stroke="#B08D57" stroke-width="0.65"/>
+    <line x1="163" y1="380" x2="237" y2="380" stroke="#B08D57" stroke-width="0.3"/>
+    <!-- Center diamond on rule -->
+    <path d="M 200,374 L 203.5,378 L 200,382 L 196.5,378 Z"
+      stroke="#B08D57" stroke-width="0.8"/>
+  </g>
+
+  <!-- Date in Roman numerals -->
+  <text class="bot-date"
+    x="200" y="410"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="8" letter-spacing="5"
+    fill="#B08D57">NOVEMBER · VII · MMXXVII</text>
+
+  <!-- ════ Bottom arch + closing diamond ══════════ -->
+  <g class="bot-arch">
+    <!-- Left dot -->
+    <circle cx="148" cy="408" r="1.4" fill="#B08D57"/>
+    <!-- Right dot -->
+    <circle cx="252" cy="408" r="1.4" fill="#B08D57"/>
+    <!-- Bottom closing arch -->
+    <path d="M 168,462 Q 200,474 232,462"
+      stroke="#B08D57" stroke-width="1.0" fill="none"/>
+    <!-- Closing diamond -->
+    <path d="M 200,464 L 204,470 L 200,476 L 196,470 Z"
+      stroke="#B08D57" stroke-width="0.9"/>
+  </g>
+
+</g>
 </svg>

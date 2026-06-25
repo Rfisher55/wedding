@@ -1,8 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Boot resilience: prove scripting works, and arm a failsafe so a failed
+       module load can never leave the loader or hidden content stranded.
+       main.js clears the timer once it boots; if it never does, content is shown. -->
+  <script>
+    (function (h) {
+      h.className = h.className.replace('no-js', 'js');
+      window.__impBootFailsafe = window.setTimeout(function () {
+        h.classList.add('boot-failed');
+      }, 5000);
+    })(document.documentElement);
+  </script>
+
   <meta name="description" content="Robert Fisher & Madison Muschik — Wedding Celebration, November 7, 2027 · The William Aiken House, Charleston, SC">
   <title>Robert &amp; Madison | November 7, 2027</title>
 
@@ -235,8 +248,8 @@
     ═══════════════════════════════════════════════════ -->
     <section id="story" class="section section-story" data-num="01">
       <div class="section-inner">
-        <span class="eyebrow" data-reveal>How It Began</span>
         <h2 data-reveal class="split-heading">Our Story</h2>
+        <p class="section-dek" data-reveal>How it all began</p>
         <div class="divider" aria-hidden="true" data-reveal></div>
       </div>
       <!-- Timeline entries injected by main.js -->
@@ -249,8 +262,8 @@
     ═══════════════════════════════════════════════════ -->
     <section id="details" class="section section-details" data-num="02">
       <div class="section-inner">
-        <span class="eyebrow" data-reveal>Join Us</span>
         <h2 data-reveal class="split-heading">The Celebration</h2>
+        <p class="section-dek" data-reveal>Where to be, and when</p>
         <div class="divider" aria-hidden="true" data-reveal></div>
         <p data-reveal style="color:rgba(251,248,240,0.65);max-width:540px;margin:0 auto var(--space-md)">
           The William Aiken House — an 1810 National Historic Landmark on Upper King Street — sets the stage with its grand ballrooms, open-air piazzas, garden pergola, and magnolia courtyard.
@@ -305,8 +318,8 @@
     ═══════════════════════════════════════════════════ -->
     <section id="travel" class="section section-travel" data-num="03">
       <div class="section-inner">
-        <span class="eyebrow" data-reveal>Getting Here</span>
         <h2 data-reveal class="split-heading">Travel &amp; Lodging</h2>
+        <p class="section-dek" data-reveal>Making your way to Charleston</p>
         <div class="divider" aria-hidden="true" data-reveal></div>
 
         <!-- Airport, parking, and hotel cards injected by main.js -->
@@ -324,16 +337,16 @@
     ═══════════════════════════════════════════════════ -->
     <section id="gallery" class="section section-gallery" data-num="04">
       <div class="section-inner">
-        <span class="eyebrow" data-reveal>Captured Moments</span>
         <h2 data-reveal class="split-heading">Gallery</h2>
+        <p class="section-dek" data-reveal>A few of our favorite moments</p>
         <div class="divider" aria-hidden="true" data-reveal></div>
         <p data-reveal style="color:var(--ink-muted);max-width:480px;margin:0 auto var(--space-md);font-style:italic">
           Click any photo to view full size.
         </p>
 
-        <!-- Horizontal scroll gallery — drag on desktop, swipe on iPhone -->
+        <!-- Horizontal scroll gallery — drag on desktop, swipe on iPhone, Tab/Enter by keyboard -->
         <!-- JS wraps this in .gallery-scroll-outer and populates items -->
-        <div class="gallery-grid" id="galleryGrid" role="list" aria-label="Photo gallery"></div>
+        <div class="gallery-grid" id="galleryGrid" role="group" aria-label="Photo gallery — Tab to browse, Enter to enlarge"></div>
       </div>
     </section>
 
@@ -343,8 +356,8 @@
     ═══════════════════════════════════════════════════ -->
     <section id="registry" class="section section-registry section-alt" data-num="05">
       <div class="section-inner">
-        <span class="eyebrow" data-reveal>Gifts &amp; Registry</span>
         <h2 data-reveal class="split-heading">Registry</h2>
+        <p class="section-dek" data-reveal>Should you wish to give</p>
         <div class="divider" aria-hidden="true" data-reveal></div>
         <!-- intro text set by main.js from registry.intro -->
         <p id="registryIntro" data-reveal style="color:var(--ink-muted);max-width:500px;margin:0 auto var(--space-md)"></p>
@@ -361,8 +374,8 @@
     ═══════════════════════════════════════════════════ -->
     <section id="rsvp" class="section section-rsvp" data-num="06">
       <div class="section-inner">
-        <span class="eyebrow" data-reveal>Kindly Reply</span>
         <h2 data-reveal class="split-heading">RSVP</h2>
+        <p class="section-dek" data-reveal>Kindly let us know</p>
         <div class="divider" aria-hidden="true" data-reveal></div>
         <!-- populated by main.js from rsvp.intro -->
         <p id="rsvpIntro" data-reveal></p>
@@ -373,16 +386,19 @@
             <div class="form-row">
               <div class="form-group">
                 <label for="rsvp-name">Full Name</label>
-                <input type="text" id="rsvp-name" name="name" required placeholder="Your full name">
+                <input type="text" id="rsvp-name" name="name" required maxlength="80"
+                  autocomplete="name" autocapitalize="words" placeholder="Your full name">
               </div>
               <div class="form-group">
                 <label for="rsvp-email">Email Address</label>
-                <input type="email" id="rsvp-email" name="email" required placeholder="your@email.com">
+                <input type="email" id="rsvp-email" name="email" required maxlength="254"
+                  autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false"
+                  placeholder="your@email.com">
               </div>
             </div>
 
-            <div class="form-group">
-              <label>Will you be attending?</label>
+            <fieldset class="form-group rsvp-attending-group">
+              <legend>Will you be attending?</legend>
               <div class="rsvp-attending">
                 <label class="radio-label">
                   <input type="radio" name="attending" value="Joyfully Accepts" required>
@@ -393,12 +409,13 @@
                   Regretfully Declines
                 </label>
               </div>
-            </div>
+            </fieldset>
 
             <div class="form-row">
               <div class="form-group">
                 <label for="rsvp-guests">Number of Guests (including yourself)</label>
-                <input type="number" id="rsvp-guests" name="guests" min="1" max="10" placeholder="1">
+                <input type="number" id="rsvp-guests" name="guests" min="1" max="10" step="1"
+                  inputmode="numeric" placeholder="1">
               </div>
               <div class="form-group">
                 <label for="rsvp-meal">Meal Preference</label>
@@ -411,7 +428,7 @@
 
             <div class="form-group">
               <label for="rsvp-notes">Dietary Restrictions / Notes</label>
-              <textarea id="rsvp-notes" name="notes" placeholder="Any allergies or notes for us?"></textarea>
+              <textarea id="rsvp-notes" name="notes" maxlength="1000" placeholder="Any allergies or notes for us?"></textarea>
             </div>
 
             <div class="rsvp-submit">
@@ -437,8 +454,8 @@
     ═══════════════════════════════════════════════════ -->
     <section id="guestbook" class="section section-guestbook" data-num="07">
       <div class="section-inner">
-        <span class="eyebrow" data-reveal>Leave a Note</span>
         <h2 data-reveal class="split-heading">Guestbook</h2>
+        <p class="section-dek" data-reveal>A note for us to keep</p>
         <div class="divider" aria-hidden="true" data-reveal></div>
         <!-- populated by main.js from guestbook.intro -->
         <p id="gbIntro" data-reveal style="color:var(--ink-muted);max-width:480px;margin:0 auto var(--space-lg)"></p>
@@ -451,12 +468,13 @@
             <form class="guestbook-form" id="gbForm" novalidate>
               <div class="form-group">
                 <label for="gb-name">Your Name</label>
-                <input type="text" id="gb-name" name="name" required placeholder="Your name">
+                <input type="text" id="gb-name" name="name" required maxlength="80"
+                  autocomplete="name" autocapitalize="words" placeholder="Your name">
               </div>
               <div class="form-group">
                 <label for="gb-message">Your Message</label>
                 <!-- placeholder set by main.js from guestbook.placeholder -->
-                <textarea id="gb-message" name="message" required rows="5"></textarea>
+                <textarea id="gb-message" name="message" required maxlength="2000" rows="5"></textarea>
               </div>
               <button type="submit" class="btn btn-outline"
                 style="border-color:var(--green);color:var(--green)">

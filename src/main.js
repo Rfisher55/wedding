@@ -12,6 +12,7 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
 const isTouchDevice  = window.matchMedia('(hover: none)').matches;
 const lightboxImages = [];
 let lightboxIndex = 0;
+let lightboxReturnFocus = null;
 
 const FLOAT_ANIMS  = ['floatA','floatB','floatC','floatD','floatB','floatA','floatD','floatC','floatA'];
 const FLOAT_DURS   = [6.5, 8.2, 7.1, 9.0, 6.8, 7.7, 8.5, 6.2, 7.4];
@@ -46,6 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initMagneticButtons();
   initTimelineLine();
   initScrollSkew();
+
+  // Boot succeeded — stand down the head failsafe. If any init above threw,
+  // this line is never reached and the failsafe reveals content at 5s.
+  clearTimeout(window.__impBootFailsafe);
 });
 
 /* ──────────────────────────────────────────────────────────────
@@ -220,11 +225,13 @@ function renderGalleryGrid() {
 
   gallery.images.forEach((src, idx) => {
     const isFeatured = (gallery.featured || []).includes(idx);
-    const div = document.createElement('div');
+    const div = document.createElement('button');
+    div.type = 'button';
     div.className = 'gallery-item' + (isFeatured ? ' gallery-item--featured' : '');
+    div.setAttribute('aria-label', `View photo ${idx + 1} of ${gallery.images.length} — enlarge`);
 
-    // Green wipe-reveal overlay
-    const overlay = document.createElement('div');
+    // Green wipe-reveal overlay (span — valid phrasing content inside <button>)
+    const overlay = document.createElement('span');
     overlay.className = 'gallery-reveal-overlay';
     div.appendChild(overlay);
 
@@ -418,30 +425,74 @@ function initMobileMenu() {
   const menu     = document.getElementById('mobileMenu');
   const toggle   = document.getElementById('navToggle');
   const closeBtn = document.getElementById('mobileClose');
-  const open  = () => { menu.classList.add('open');    document.body.style.overflow = 'hidden'; };
-  const close = () => { menu.classList.remove('open'); document.body.style.overflow = ''; };
-  toggle?.addEventListener('click', open);
-  closeBtn?.addEventListener('click', close);
-  menu?.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+  if (!menu || !toggle) return;
+
+  const open = () => {
+    menu.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    toggle.setAttribute('aria-expanded', 'true');
+    requestAnimationFrame(() => closeBtn?.focus());
+  };
+  const close = ({ returnFocus = true } = {}) => {
+    menu.classList.remove('open');
+    document.body.style.overflow = '';
+    toggle.setAttribute('aria-expanded', 'false');
+    if (returnFocus) toggle.focus();
+  };
+
+  toggle.addEventListener('click', open);
+  closeBtn?.addEventListener('click', () => close());
+  // Following a link navigates to a section — close without yanking focus back
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => close({ returnFocus: false })));
+
+  // Escape closes; Tab is trapped within the open menu
+  menu.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key !== 'Tab') return;
+    const focusables = [closeBtn, ...menu.querySelectorAll('a')].filter(Boolean);
+    if (!focusables.length) return;
+    const first = focusables[0], last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
 }
 
 /* ──────────────────────────────────────────────────────────────
    Lightbox
 ────────────────────────────────────────────────────────────── */
 function initLightbox() {
-  const lb    = document.getElementById('lightbox');
-  const lbImg = lb?.querySelector('.lightbox-img');
-  const close = () => { lb.classList.remove('open'); document.body.style.overflow = ''; lbImg.src = ''; };
-  const nav   = dir => openLightbox(lightboxIndex + dir);
+  const lb = document.getElementById('lightbox');
+  if (!lb) return;
+  const lbImg = lb.querySelector('.lightbox-img');
+  const controls = ['lbClose', 'lbPrev', 'lbNext'].map(id => document.getElementById(id)).filter(Boolean);
+
+  const close = () => {
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+    lbImg.src = '';
+    // Return focus to whatever opened the lightbox (the gallery button)
+    if (lightboxReturnFocus && document.contains(lightboxReturnFocus)) lightboxReturnFocus.focus();
+    lightboxReturnFocus = null;
+  };
+  const nav = dir => openLightbox(lightboxIndex + dir);
+
   document.getElementById('lbClose')?.addEventListener('click', close);
   document.getElementById('lbPrev')?.addEventListener('click', () => nav(-1));
   document.getElementById('lbNext')?.addEventListener('click', () => nav(+1));
-  lb?.addEventListener('click', e => { if (e.target === lb) close(); });
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+
   document.addEventListener('keydown', e => {
-    if (!lb?.classList.contains('open')) return;
-    if (e.key === 'Escape')     close();
-    if (e.key === 'ArrowLeft')  nav(-1);
-    if (e.key === 'ArrowRight') nav(+1);
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape')     { close();  return; }
+    if (e.key === 'ArrowLeft')  { nav(-1);  return; }
+    if (e.key === 'ArrowRight') { nav(+1);  return; }
+    if (e.key === 'Tab' && controls.length) {
+      // Trap focus inside the dialog
+      e.preventDefault();
+      const curr = controls.indexOf(document.activeElement);
+      const step = e.shiftKey ? -1 : 1;
+      controls[(curr + step + controls.length) % controls.length].focus();
+    }
   });
 }
 
@@ -450,11 +501,17 @@ function openLightbox(idx) {
   const lb    = document.getElementById('lightbox');
   const lbImg = lb?.querySelector('.lightbox-img');
   if (!lb || !lbImg) return;
+  const wasOpen = lb.classList.contains('open');
+  if (!wasOpen) lightboxReturnFocus = document.activeElement;   // remember the trigger
   lightboxIndex = ((idx % lightboxImages.length) + lightboxImages.length) % lightboxImages.length;
   lbImg.src = lightboxImages[lightboxIndex].src;
   lbImg.alt = lightboxImages[lightboxIndex].alt;
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
+  if (!wasOpen) {
+    const closeBtn = document.getElementById('lbClose');
+    if (closeBtn) requestAnimationFrame(() => closeBtn.focus());
+  }
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -464,15 +521,48 @@ function initRsvpForm() {
   const form    = document.getElementById('rsvpForm');
   const success = document.getElementById('rsvpSuccess');
   if (!form) return;
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const nameEl  = document.getElementById('rsvp-name');
+  const emailEl = document.getElementById('rsvp-email');
+  const group   = form.querySelector('.rsvp-attending-group');
+
   form.addEventListener('submit', async e => {
     e.preventDefault();
-    const fd = new FormData(form);
-    await submitToSheet({ type: 'rsvp', name: fd.get('name'), email: fd.get('email'),
-      attending: fd.get('attending'), guests: fd.get('guests'), meal: fd.get('meal'), notes: fd.get('notes') });
-    form.style.display = 'none';
-    if (success) {
-      success.querySelector('p').textContent = rsvp.successMessage;
-      success.classList.add('visible');
+    setFormError(form, '');
+
+    let firstInvalid = null;
+    if (!nameEl.value.trim()) { setFieldError(nameEl, 'Please enter your name.'); firstInvalid ||= nameEl; }
+    else clearFieldError(nameEl);
+
+    if (!emailEl.value.trim())          { setFieldError(emailEl, 'Please enter your email.'); firstInvalid ||= emailEl; }
+    else if (!emailEl.checkValidity())  { setFieldError(emailEl, 'Please enter a valid email address.'); firstInvalid ||= emailEl; }
+    else clearFieldError(emailEl);
+
+    const attending = form.querySelector('input[name="attending"]:checked');
+    if (!attending) {
+      setGroupError(group, 'Please let us know if you can attend.');
+      firstInvalid ||= form.querySelector('input[name="attending"]');
+    } else setGroupError(group, '');
+
+    if (firstInvalid) { firstInvalid.focus(); return; }
+
+    const restore = setSubmitting(submitBtn, 'Sending…');
+    let ok = false;
+    try {
+      ok = await submitToSheet({
+        type: 'rsvp', name: nameEl.value, email: emailEl.value, attending: attending.value,
+        guests: document.getElementById('rsvp-guests').value,
+        meal:   document.getElementById('rsvp-meal').value,
+        notes:  document.getElementById('rsvp-notes').value,
+      });
+    } catch { ok = false; }
+
+    if (ok) {
+      form.style.display = 'none';
+      if (success) { success.querySelector('p').textContent = rsvp.successMessage; success.classList.add('visible'); }
+    } else {
+      restore();
+      setFormError(form, 'Something went wrong sending your RSVP. Please try again, or email us directly.');
     }
   });
 }
@@ -484,14 +574,36 @@ function initGuestbook() {
   const form    = document.getElementById('gbForm');
   const success = document.getElementById('gbSuccess');
   const notes   = document.getElementById('gbNotes');
+  const submitBtn = form?.querySelector('button[type="submit"]');
+  const nameEl = document.getElementById('gb-name');
+  const msgEl  = document.getElementById('gb-message');
+
   form?.addEventListener('submit', async e => {
     e.preventDefault();
-    const fd = new FormData(form);
-    const payload = { type: 'guestbook', name: fd.get('name'), message: fd.get('message') };
-    await submitToSheet(payload);
-    prependNote({ ...payload, date: new Date() }, notes, false);
-    form.reset();
-    if (success) { success.classList.add('visible'); setTimeout(() => success.classList.remove('visible'), 4500); }
+    setFormError(form, '');
+
+    let firstInvalid = null;
+    if (!nameEl.value.trim()) { setFieldError(nameEl, 'Please enter your name.'); firstInvalid ||= nameEl; }
+    else clearFieldError(nameEl);
+    if (!msgEl.value.trim())  { setFieldError(msgEl, 'Please write a short note.'); firstInvalid ||= msgEl; }
+    else clearFieldError(msgEl);
+    if (firstInvalid) { firstInvalid.focus(); return; }
+
+    const restore = setSubmitting(submitBtn, 'Sending…');
+    const payload = { type: 'guestbook', name: nameEl.value, message: msgEl.value };
+    let ok = false;
+    try { ok = await submitToSheet(payload); } catch { ok = false; }
+
+    if (ok) {
+      prependNote({ ...payload, date: new Date() }, notes, false);
+      form.reset();
+      restore();
+      clearFieldError(nameEl); clearFieldError(msgEl);
+      if (success) { success.classList.add('visible'); setTimeout(() => success.classList.remove('visible'), 4500); }
+    } else {
+      restore();
+      setFormError(form, 'Your note could not be sent just now. Please try again in a moment.');
+    }
   });
   fetchGuestbook().then(data => {
     if (!notes) return;
@@ -638,3 +750,65 @@ function esc(str) {
   return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function setText(id, value) { const el = document.getElementById(id); if (el) el.textContent = value; }
+
+/* ──────────────────────────────────────────────────────────────
+   Form validation helpers
+────────────────────────────────────────────────────────────── */
+function setFieldError(input, message) {
+  clearFieldError(input);
+  if (!message) return;
+  input.setAttribute('aria-invalid', 'true');
+  const err = document.createElement('span');
+  err.className = 'field-error';
+  err.id = (input.id || input.name) + '-error';
+  err.setAttribute('role', 'alert');
+  err.textContent = message;
+  input.setAttribute('aria-describedby', err.id);
+  input.insertAdjacentElement('afterend', err);
+}
+
+function clearFieldError(input) {
+  if (!input) return;
+  input.removeAttribute('aria-invalid');
+  input.removeAttribute('aria-describedby');
+  document.getElementById((input.id || input.name) + '-error')?.remove();
+}
+
+// Radio/checkbox group error — attaches inside the fieldset
+function setGroupError(group, message) {
+  if (!group) return;
+  group.querySelector('.field-error')?.remove();
+  if (!message) return;
+  const err = document.createElement('span');
+  err.className = 'field-error';
+  err.setAttribute('role', 'alert');
+  err.textContent = message;
+  group.appendChild(err);
+}
+
+// Form-level error banner (network / submit failure)
+function setFormError(form, message) {
+  let box = form.querySelector('.form-error');
+  if (!message) { box?.remove(); return; }
+  if (!box) {
+    box = document.createElement('div');
+    box.className = 'form-error';
+    box.setAttribute('role', 'alert');
+    form.appendChild(box);
+  }
+  box.textContent = message;
+}
+
+// Disable a submit button during an in-flight request; returns a restore fn
+function setSubmitting(btn, label) {
+  if (!btn) return () => {};
+  const original = btn.textContent;
+  btn.textContent = label;
+  btn.disabled = true;
+  btn.setAttribute('aria-busy', 'true');
+  return () => {
+    btn.disabled = false;
+    btn.removeAttribute('aria-busy');
+    btn.textContent = original;
+  };
+}

@@ -8,6 +8,7 @@
   --green-soft: #2E4F3E;
   --gold:       #B08D57;
   --gold-light: #C9A96E;
+  --gold-dark:  #7E6433;   /* AA-safe gold for small text on light bg (≥4.5:1) */
   --ink:        #2A2A26;
   --ink-muted:  #6B665E;
 
@@ -76,6 +77,35 @@ button {
 
 ul, ol { list-style: none; }
 
+/* ── Keyboard focus visibility ──
+   Dark green ring on light surfaces (≈11:1), light gold ring on dark surfaces
+   (≈5.6:1) — both clear the 3:1 non-text contrast minimum. */
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.nav :focus-visible,
+.mobile-menu :focus-visible,
+.hero-content :focus-visible,
+.section-story :focus-visible,
+.section-details :focus-visible,
+.section-rsvp :focus-visible,
+.footer :focus-visible,
+.lightbox :focus-visible,
+.lightbox-close:focus-visible,
+.lightbox-prev:focus-visible,
+.lightbox-next:focus-visible {
+  outline-color: var(--gold-light);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline-offset: 1px;
+}
+
 /* ============================================================
    TYPOGRAPHY SCALE
    ============================================================ */
@@ -83,31 +113,59 @@ h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 400;
   line-height: 1.15;
+  letter-spacing: -0.01em;
   color: var(--ink);
+  text-wrap: balance;
 }
 
 h1 { font-size: clamp(2.4rem, 6vw, var(--size-4xl)); }
 h2 { font-size: clamp(2.4rem, 6vw, 4.5rem); }
 h3 { font-size: clamp(1.3rem, 2.5vw, var(--size-2xl)); }
 
-p { font-size: var(--size-md); }
+p { font-size: var(--size-md); text-wrap: pretty; }
 
-.eyebrow {
-  font-family: var(--font-body);
-  font-size: var(--size-xs);
-  font-style: normal;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--gold);
-  display: block;
-  margin-bottom: var(--space-xs);
+/* Section header lockup — heading leads, italic dek sits beneath as a
+   standfirst (not an overline). The tracked-caps overline is reserved for the
+   hero alone, so sections read in a distinct, heading-led cadence. */
+.section-dek {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.15rem, 2.2vw, var(--size-lg));
+  line-height: 1.3;
+  color: var(--gold-dark);
+  margin-top: 0.3em;
+  text-wrap: balance;
 }
 
+/* Ornamental divider — hairline with a centered diamond */
 .divider {
-  width: 60px;
+  width: 124px;
+  height: 8px;
+  margin: var(--space-md) auto var(--space-md);
+  position: relative;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
   height: 1px;
+  transform: translateY(-50%);
+  background: linear-gradient(to right, transparent, var(--gold) 28%, var(--gold) 72%, transparent);
+}
+
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translate(-50%, -50%) rotate(45deg);
   background: var(--gold);
-  margin: var(--space-sm) auto var(--space-md);
 }
 
 /* ============================================================
@@ -256,6 +314,29 @@ p { font-size: var(--size-md); }
   clip-path: inset(0 0% 0 0);
 }
 
+/* ── Boot resilience ──
+   The reveal system hides content until JS un-hides it. These two overrides
+   guarantee content is never stranded:
+   • html.no-js   — scripting is disabled, so nothing will ever reveal it.
+   • html.boot-failed — scripting is on but the module never booted (armed by the
+     inline head failsafe, cleared by main.js on successful boot). */
+html.no-js [data-reveal],
+html.no-js [data-reveal="wipe"],
+html.boot-failed [data-reveal],
+html.boot-failed [data-reveal="wipe"],
+html.boot-failed .split-heading .char {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+  transition: none !important;
+}
+
+/* Loader is a JS-dismissed intro; never let it trap the page. */
+html.no-js .loader,
+html.boot-failed .loader {
+  display: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-reveal],
   [data-reveal="wipe"] {
@@ -347,7 +428,7 @@ p { font-size: var(--size-md); }
   line-height: 0.88;
 }
 .ht-name {
-  font-size: clamp(3.2rem, 15vw, 13rem);
+  font-size: clamp(3rem, 12vw, 9rem);
   color: var(--ivory);
 }
 .ht-amp {
@@ -382,7 +463,7 @@ p { font-size: var(--size-md); }
   font-size: clamp(0.62rem, 1.8vw, 0.75rem);
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-light);
   margin-bottom: 0;
 }
 
@@ -405,7 +486,7 @@ p { font-size: var(--size-md); }
   font-size: clamp(0.6rem, 1.5vw, 0.7rem);
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-light);
 }
 
 /* Scroll cue */
@@ -448,9 +529,8 @@ p { font-size: var(--size-md); }
   background: var(--green);
   padding-bottom: 0;
 }
-.section-story .eyebrow { color: var(--gold-light); }
+.section-story .section-dek { color: var(--gold-light); }
 .section-story h2 { color: var(--ivory); }
-.section-story .divider { background: var(--gold); }
 
 .timeline {
   margin-top: 0;
@@ -547,8 +627,7 @@ p { font-size: var(--size-md); }
 .section-details h3,
 .section-details .timeline-year { color: var(--ivory); }
 
-.section-details .eyebrow { color: var(--gold-light); }
-.section-details .divider  { background: var(--gold); }
+.section-details .section-dek { color: var(--gold-light); }
 
 .details-grid {
   display: grid;
@@ -577,7 +656,7 @@ p { font-size: var(--size-md); }
   font-size: var(--size-xs);
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-light);
   margin-bottom: var(--space-xs);
   display: block;
 }
@@ -614,7 +693,7 @@ p { font-size: var(--size-md); }
   font-family: var(--font-body);
   font-size: var(--size-xs);
   letter-spacing: 0.15em;
-  color: var(--gold);
+  color: var(--gold-light);
   min-width: 80px;
   flex-shrink: 0;
 }
@@ -681,7 +760,7 @@ p { font-size: var(--size-md); }
   font-size: var(--size-xs);
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-dark);
   margin-bottom: var(--space-xs);
   display: block;
 }
@@ -785,6 +864,14 @@ p { font-size: var(--size-md); }
   background: var(--cream);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  /* element is a <button> for keyboard access — strip native chrome */
+  display: block;
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
 }
 
 .gallery-item--featured {
@@ -992,11 +1079,9 @@ p { font-size: var(--size-md); }
    ============================================================ */
 .section-rsvp { background: var(--green); color: var(--ivory); }
 
-.section-rsvp h2,
-.section-rsvp .eyebrow { color: var(--ivory); }
+.section-rsvp h2 { color: var(--ivory); }
 
-.section-rsvp .eyebrow { color: var(--gold-light); }
-.section-rsvp .divider  { background: var(--gold); }
+.section-rsvp .section-dek { color: var(--gold-light); }
 
 .section-rsvp p { color: rgba(251, 248, 240, 0.7); }
 
@@ -1057,6 +1142,25 @@ input:focus, select:focus, textarea:focus {
 }
 
 textarea { resize: vertical; min-height: 100px; }
+
+/* Attending radio group — fieldset reset so <legend> reads like a field label */
+.rsvp-attending-group {
+  display: block;
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-inline-size: 0;
+}
+
+.rsvp-attending-group legend {
+  font-family: var(--font-body);
+  font-size: var(--size-xs);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(251, 248, 240, 0.65);
+  padding: 0;
+  margin-bottom: var(--space-xs);
+}
 
 .rsvp-attending {
   display: flex;
@@ -1707,3 +1811,64 @@ body::before {
 }
 .btn-solid:hover  { box-shadow: 0 8px 32px rgba(27, 58, 43, 0.4); }
 .btn-outline:hover { box-shadow: 0 4px 20px rgba(27, 58, 43, 0.12); }
+
+/* Disabled / in-flight button */
+.btn[disabled],
+.btn[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: progress;
+  pointer-events: none;
+}
+
+/* ============================================================
+   FORM VALIDATION — inline errors
+   ============================================================ */
+.field-error {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-body);
+  font-size: var(--size-xs);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #F6C7BB;               /* soft rose — readable on green */
+}
+
+.form-error {
+  margin: var(--space-sm) 0 0;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba(246, 199, 187, 0.45);
+  background: rgba(246, 199, 187, 0.08);
+  color: #F6C7BB;
+  font-size: var(--size-sm);
+  text-align: left;
+}
+
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: #E0917D;
+}
+
+/* Guestbook sits on ivory — errors need a dark rose for contrast */
+.guestbook-form .field-error,
+.section-guestbook .form-error {
+  color: #9C2F1B;
+}
+.section-guestbook .form-error {
+  border-color: rgba(156, 47, 27, 0.4);
+  background: rgba(156, 47, 27, 0.05);
+}
+
+/* ============================================================
+   REDUCED MOTION — completeness for always-on / entrance motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .scroll-cue,
+  .loader-label,
+  .hero-content,
+  .cd-num {
+    animation: none !important;
+  }
+  html { scroll-behavior: auto; }
+}

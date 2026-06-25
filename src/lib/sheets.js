@@ -10,17 +10,23 @@
 
 export const ENDPOINT = 'PASTE_WEB_APP_URL_HERE';
 
-// Write (RSVP or Guestbook) — uses text/plain to skip CORS preflight
+// Write (RSVP or Guestbook) — uses text/plain to skip CORS preflight.
+// Returns true on send (or when not yet configured), false on a real network failure.
 export async function submitToSheet(payload) {
-  if (!ENDPOINT || ENDPOINT === 'PASTE_WEB_APP_URL_HERE') return;
+  // Endpoint not configured yet: treat as a no-op success so the form works in
+  // preview. NOTE: nothing is actually recorded until ENDPOINT is set.
+  if (!ENDPOINT || ENDPOINT === 'PASTE_WEB_APP_URL_HERE') return true;
   try {
     await fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(payload),
     });
+    return true;
   } catch {
-    // A network error here is usually a CORS no-op; the row still lands.
+    // The opaque-CORS success case resolves rather than throwing, so reaching
+    // here means the request genuinely failed to send (offline / blocked).
+    return false;
   }
 }
 

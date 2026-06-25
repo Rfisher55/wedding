@@ -9,23 +9,14 @@ import { submitToSheet, fetchGuestbook } from './lib/sheets.js';
    Module-level state
 ────────────────────────────────────────────────────────────── */
 const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const isTouchDevice  = window.matchMedia('(hover: none)').matches;
 const lightboxImages = [];
 let lightboxIndex = 0;
 let lightboxReturnFocus = null;
-
-const FLOAT_ANIMS  = ['floatA','floatB','floatC','floatD','floatB','floatA','floatD','floatC','floatA'];
-const FLOAT_DURS   = [6.5, 8.2, 7.1, 9.0, 6.8, 7.7, 8.5, 6.2, 7.4];
-const FLOAT_DELAYS = [0, -2.4, -5.1, -1.8, -3.5, -6.2, -4.0, -2.9, -7.1];
-const PARALLAX_SPD = [0.06, 0.11, 0.04, 0.09, 0.13, 0.05, 0.08, 0.12, 0.07];
 
 /* ──────────────────────────────────────────────────────────────
    Boot
 ────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  initLoader();
-  initCursor();
-
   renderHeroImage();
   renderStory();
   renderSchedule();
@@ -35,94 +26,17 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMealOptions();
   renderDynamicText();
 
-  initSplitText();
   initScrollReveal();
   initNav();
   initMobileMenu();
   initLightbox();
   initRsvpForm();
   initGuestbook();
-  initScrollProgress();
-  initHeroParallax();
-  initMagneticButtons();
-  initTimelineLine();
-  initScrollSkew();
 
   // Boot succeeded — stand down the head failsafe. If any init above threw,
   // this line is never reached and the failsafe reveals content at 5s.
   clearTimeout(window.__impBootFailsafe);
 });
-
-/* ──────────────────────────────────────────────────────────────
-   Loading screen
-────────────────────────────────────────────────────────────── */
-function initLoader() {
-  const loader = document.getElementById('loader');
-  if (!loader) return;
-  // Monogram SVG draws for ~2.6s; wait that long then exit
-  const delay = prefersReduced ? 400 : 2600;
-  setTimeout(() => {
-    loader.classList.add('exit');
-    setTimeout(() => { loader.remove(); }, 1300);
-  }, delay);
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Custom cursor (desktop / mouse only)
-────────────────────────────────────────────────────────────── */
-function initCursor() {
-  const dot  = document.getElementById('cursorDot');
-  const ring = document.getElementById('cursorRing');
-  if (!dot || !ring || isTouchDevice) return;
-
-  dot.style.display  = 'block';
-  ring.style.display = 'block';
-
-  let mx = -100, my = -100, rx = -100, ry = -100;
-
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-  document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
-  document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
-
-  (function loop() {
-    dot.style.left  = mx + 'px';
-    dot.style.top   = my + 'px';
-    rx += (mx - rx) * 0.13;
-    ry += (my - ry) * 0.13;
-    ring.style.left = rx + 'px';
-    ring.style.top  = ry + 'px';
-    requestAnimationFrame(loop);
-  })();
-
-  document.querySelectorAll('a, button, .gallery-item, .registry-card').forEach(el => {
-    el.addEventListener('mouseenter', () => { ring.classList.add('cursor-hover'); dot.classList.add('cursor-hover'); });
-    el.addEventListener('mouseleave', () => { ring.classList.remove('cursor-hover'); dot.classList.remove('cursor-hover'); });
-  });
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Split-text heading animation
-────────────────────────────────────────────────────────────── */
-function initSplitText() {
-  if (prefersReduced) return;
-  document.querySelectorAll('.split-heading').forEach(el => {
-    const raw = el.textContent;
-    el.innerHTML = [...raw].map((ch, i) =>
-      ch === ' '
-        ? '<span class="char char-space"> </span>'
-        : `<span class="char" style="--i:${i}">${ch}</span>`
-    ).join('');
-
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (!e.isIntersecting) return;
-        el.classList.add('chars-revealed');
-        obs.unobserve(el);
-      });
-    }, { threshold: 0.25 });
-    obs.observe(el);
-  });
-}
 
 /* ──────────────────────────────────────────────────────────────
    Content renderers
@@ -135,18 +49,22 @@ function renderHeroImage() {
 function renderStory() {
   const timeline = document.getElementById('timeline');
   if (!timeline) return;
-  timeline.innerHTML = story.milestones.map(m => `
-    <div class="timeline-entry">
-      <div class="timeline-photo" data-label="Photo Coming Soon">
+  const intro = story.intro
+    ? `<p class="story-intro" data-reveal>${esc(story.intro)}</p>`
+    : '';
+  const entries = story.milestones.map(m => `
+    <article class="story-entry" data-reveal>
+      <div class="story-photo">
         <img src="${esc(m.image)}" alt="${esc(m.title)}" loading="lazy">
       </div>
-      <div class="timeline-content">
-        <div class="timeline-year">${esc(m.year)}</div>
+      <div class="story-text">
+        <p class="story-year">${esc(m.year)}</p>
         <h3>${esc(m.title)}</h3>
         <p>${esc(m.text)}</p>
       </div>
-    </div>
+    </article>
   `).join('');
+  timeline.innerHTML = intro + entries;
 }
 
 function renderSchedule() {
@@ -201,127 +119,30 @@ function renderRegistryGrid() {
   `).join('');
 }
 
-/* ── Gallery — horizontal cinematic strip ── */
+/* ── Gallery — calm responsive grid ── */
 function renderGalleryGrid() {
   const gridEl = document.getElementById('galleryGrid');
   if (!gridEl) return;
   lightboxImages.length = 0;
   gridEl.innerHTML = '';
 
-  // Wrap in a scroll outer container
-  const scrollOuter = document.createElement('div');
-  scrollOuter.className = 'gallery-scroll-outer';
-  gridEl.parentNode.insertBefore(scrollOuter, gridEl);
-  scrollOuter.appendChild(gridEl);
-
-  // Per-photo wipe-reveal observer (uses horizontal scroll container as root)
-  const revealObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      e.target.classList.add('photo-revealed');
-      revealObs.unobserve(e.target);
-    });
-  }, { root: scrollOuter, threshold: 0.08 });
-
   gallery.images.forEach((src, idx) => {
     const isFeatured = (gallery.featured || []).includes(idx);
-    const div = document.createElement('button');
-    div.type = 'button';
-    div.className = 'gallery-item' + (isFeatured ? ' gallery-item--featured' : '');
-    div.setAttribute('aria-label', `View photo ${idx + 1} of ${gallery.images.length} — enlarge`);
-
-    // Green wipe-reveal overlay (span — valid phrasing content inside <button>)
-    const overlay = document.createElement('span');
-    overlay.className = 'gallery-reveal-overlay';
-    div.appendChild(overlay);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'gallery-item' + (isFeatured ? ' gallery-item--featured' : '');
+    btn.setAttribute('aria-label', `View photo ${idx + 1} of ${gallery.images.length} — enlarge`);
 
     const img = document.createElement('img');
     img.src     = src;
     img.alt     = `${couple.partnerOne} & ${couple.partnerTwo}`;
     img.loading = 'lazy';
 
-    // Per-photo float animation
-    if (!prefersReduced) {
-      img.style.setProperty('--float-anim',  FLOAT_ANIMS[idx % FLOAT_ANIMS.length]);
-      img.style.setProperty('--float-dur',   FLOAT_DURS[idx % FLOAT_DURS.length] + 's');
-      img.style.setProperty('--float-delay', FLOAT_DELAYS[idx % FLOAT_DELAYS.length] + 's');
-    }
-
-    // 3D tilt — mouse (desktop)
-    if (!prefersReduced && !isTouchDevice) {
-      div.addEventListener('mousemove', e => {
-        const r = div.getBoundingClientRect();
-        const x = ((e.clientX - r.left) / r.width  - 0.5) * 2;
-        const y = ((e.clientY - r.top)  / r.height - 0.5) * 2;
-        img.style.transition         = 'transform 0.08s linear';
-        img.style.animationPlayState = 'paused';
-        img.style.transform = `perspective(700px) rotateX(${-y * 14}deg) rotateY(${x * 14}deg) scale(1.08)`;
-      });
-      div.addEventListener('mouseleave', () => {
-        img.style.transition = 'transform 0.55s ease';
-        img.style.transform  = 'scale(1)';
-        setTimeout(() => {
-          img.style.transform = img.style.transition = img.style.animationPlayState = '';
-        }, 560);
-      });
-    }
-
-    // 3D tilt — touch (iPhone)
-    if (!prefersReduced && isTouchDevice) {
-      let touching = false;
-      div.addEventListener('touchstart', () => { touching = true; }, { passive: true });
-      div.addEventListener('touchmove', e => {
-        if (!touching) return;
-        const t = e.touches[0];
-        const r = div.getBoundingClientRect();
-        const x = ((t.clientX - r.left) / r.width  - 0.5) * 2;
-        const y = ((t.clientY - r.top)  / r.height - 0.5) * 2;
-        img.style.transition         = 'transform 0.06s linear';
-        img.style.animationPlayState = 'paused';
-        img.style.transform = `perspective(700px) rotateX(${-y * 10}deg) rotateY(${x * 10}deg) scale(1.06)`;
-      }, { passive: true });
-      div.addEventListener('touchend', () => {
-        touching = false;
-        img.style.transition = 'transform 0.5s ease';
-        img.style.transform  = 'scale(1)';
-        setTimeout(() => {
-          img.style.transform = img.style.transition = img.style.animationPlayState = '';
-        }, 520);
-      });
-    }
-
-    div.appendChild(img);
-    div.addEventListener('click', () => openLightbox(idx));
-    gridEl.appendChild(div);
+    btn.appendChild(img);
+    btn.addEventListener('click', () => openLightbox(idx));
+    gridEl.appendChild(btn);
     lightboxImages.push({ src, alt: img.alt });
-    revealObs.observe(div);
   });
-
-  // Drag-to-scroll with inertia (mouse only; iPhone uses native touch scroll)
-  if (!isTouchDevice) {
-    let down = false, startX = 0, startLeft = 0, vel = 0, lastX = 0, raf;
-    scrollOuter.addEventListener('mousedown', e => {
-      down = true; startX = e.clientX; startLeft = scrollOuter.scrollLeft;
-      vel = 0; lastX = e.clientX;
-      scrollOuter.classList.add('grabbing');
-      cancelAnimationFrame(raf);
-    });
-    window.addEventListener('mousemove', e => {
-      if (!down) return;
-      vel = e.clientX - lastX; lastX = e.clientX;
-      scrollOuter.scrollLeft = startLeft - (e.clientX - startX);
-    });
-    window.addEventListener('mouseup', () => {
-      if (!down) return;
-      down = false;
-      scrollOuter.classList.remove('grabbing');
-      (function coast() {
-        vel *= 0.92;
-        scrollOuter.scrollLeft -= vel;
-        if (Math.abs(vel) > 0.5) raf = requestAnimationFrame(coast);
-      })();
-    });
-  }
 }
 
 function renderMealOptions() {
@@ -356,13 +177,14 @@ function renderDynamicText() {
    Scroll reveal
 ────────────────────────────────────────────────────────────── */
 function initScrollReveal() {
-  const allReveal = document.querySelectorAll('[data-reveal], [data-reveal="wipe"]');
+  const allReveal = document.querySelectorAll('[data-reveal]');
 
   if (prefersReduced) {
     allReveal.forEach(el => el.classList.add('revealed'));
     return;
   }
 
+  // Subtle per-sibling stagger so groups settle in sequence, not all at once
   const groups = new Map();
   allReveal.forEach(el => {
     const key = el.parentElement;
@@ -375,33 +197,13 @@ function initScrollReveal() {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
       const el = entry.target;
-      el.style.transitionDelay = `${(Number(el.dataset.revealIdx) || 0) * 0.09}s`;
+      el.style.transitionDelay = `${(Number(el.dataset.revealIdx) || 0) * 0.08}s`;
       el.classList.add('revealed');
       observer.unobserve(el);
     });
   }, { threshold: 0.12 });
 
   allReveal.forEach(el => observer.observe(el));
-
-  // Gallery scroll parallax on the scroll container
-  const gallerySection  = document.getElementById('gallery');
-  const galleryItems    = () => document.querySelectorAll('.gallery-item');
-
-  window.addEventListener('scroll', () => {
-    if (!gallerySection) return;
-    const rect = gallerySection.getBoundingClientRect();
-    if (rect.bottom < -300 || rect.top > window.innerHeight + 300) return;
-    const progress = 1 - rect.top / window.innerHeight;
-    galleryItems().forEach((item, idx) => {
-      const speed  = PARALLAX_SPD[idx % PARALLAX_SPD.length];
-      const yShift = progress * window.innerHeight * speed * 0.35;
-      item.style.translate = `0 ${yShift}px`;
-      if (item.classList.contains('gallery-item--featured')) {
-        const deg = Math.max(-5, Math.min(5, (progress - 0.5) * 12));
-        item.style.rotate = `${deg}deg`;
-      }
-    });
-  }, { passive: true });
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -630,122 +432,6 @@ function prependNote(note, container, append) {
 /* ──────────────────────────────────────────────────────────────
    Utilities
 ────────────────────────────────────────────────────────────── */
-/* ──────────────────────────────────────────────────────────────
-   Scroll velocity skew on gallery strip
-────────────────────────────────────────────────────────────── */
-function initScrollSkew() {
-  if (isTouchDevice || prefersReduced) return;
-  const grid = document.querySelector('.gallery-grid');
-  if (!grid) return;
-
-  let lastY = window.scrollY, targetSkew = 0, currentSkew = 0, raf;
-
-  window.addEventListener('scroll', () => {
-    const delta  = window.scrollY - lastY;
-    lastY        = window.scrollY;
-    targetSkew   = Math.max(-5, Math.min(5, delta * -0.18));
-    cancelAnimationFrame(raf);
-
-    (function lerp() {
-      currentSkew += (targetSkew - currentSkew) * 0.08;
-      targetSkew  *= 0.88; // decay
-      grid.style.setProperty('--gallery-skew', currentSkew.toFixed(3) + 'deg');
-      if (Math.abs(currentSkew) > 0.02 || Math.abs(targetSkew) > 0.02) {
-        raf = requestAnimationFrame(lerp);
-      }
-    })();
-  }, { passive: true });
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Scroll progress bar
-────────────────────────────────────────────────────────────── */
-function initScrollProgress() {
-  const bar = document.getElementById('scrollProgress');
-  if (!bar) return;
-  window.addEventListener('scroll', () => {
-    const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-    bar.style.width = Math.min(pct * 100, 100) + '%';
-  }, { passive: true });
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Hero mouse parallax (desktop only)
-────────────────────────────────────────────────────────────── */
-function initHeroParallax() {
-  if (prefersReduced || isTouchDevice) return;
-  const heroBg      = document.querySelector('.hero-bg');
-  const heroContent = document.querySelector('.hero-content');
-  if (!heroBg) return;
-  const hero = document.getElementById('hero');
-
-  document.addEventListener('mousemove', e => {
-    if (!hero) return;
-    const r  = hero.getBoundingClientRect();
-    if (r.bottom < 0 || r.top > window.innerHeight) return;
-    const cx = (e.clientX / window.innerWidth  - 0.5);
-    const cy = (e.clientY / window.innerHeight - 0.5);
-    heroBg.style.translate      = `${cx * -20}px ${cy * -14}px`;
-    heroContent.style.translate = `${cx * 7}px ${cy * 5}px`;
-  });
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Magnetic buttons (desktop only)
-────────────────────────────────────────────────────────────── */
-function initMagneticButtons() {
-  if (prefersReduced || isTouchDevice) return;
-  document.querySelectorAll('.btn').forEach(btn => {
-    btn.addEventListener('mousemove', e => {
-      const r = btn.getBoundingClientRect();
-      const x = (e.clientX - r.left - r.width  / 2) * 0.28;
-      const y = (e.clientY - r.top  - r.height / 2) * 0.38;
-      btn.style.transform = `translate(${x}px, ${y}px)`;
-    });
-    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
-  });
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Wedding countdown
-────────────────────────────────────────────────────────────── */
-function initCountdown() {
-  const el = document.getElementById('countdown');
-  if (!el) return;
-  const target = new Date('2027-11-07T16:00:00');
-
-  function tick() {
-    const diff = target - Date.now();
-    if (diff <= 0) { el.remove(); return; }
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000)  / 60000);
-    const s = Math.floor((diff % 60000)    / 1000);
-    el.innerHTML =
-      item(d, 'Days') + sep() + item(h, 'Hrs') + sep() + item(m, 'Min') + sep() + item(s, 'Sec');
-  }
-
-  const item = (n, l) =>
-    `<div class="cd-item"><span class="cd-num">${String(n).padStart(2,'0')}</span><span class="cd-label">${l}</span></div>`;
-  const sep  = () => `<span class="cd-sep" aria-hidden="true">·</span>`;
-
-  tick();
-  setInterval(tick, 1000);
-}
-
-/* ──────────────────────────────────────────────────────────────
-   Timeline vertical line draw
-────────────────────────────────────────────────────────────── */
-function initTimelineLine() {
-  const timeline = document.getElementById('timeline');
-  if (!timeline) return;
-  if (prefersReduced) { timeline.classList.add('line-drawn'); return; }
-  const obs = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) { timeline.classList.add('line-drawn'); obs.disconnect(); }
-  }, { threshold: 0.1 });
-  obs.observe(timeline);
-}
-
 function esc(str) {
   return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }

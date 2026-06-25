@@ -28,19 +28,6 @@
 </head>
 <body>
 
-  <!-- Scroll progress bar -->
-  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-
-  <!-- Loading screen -->
-  <div class="loader" id="loader" aria-hidden="true">
-    <img src="public/monogram.svg" class="loader-monogram" alt="">
-    <span class="loader-label">Robert &amp; Madison</span>
-  </div>
-
-  <!-- Custom cursor (desktop only, hidden on touch) -->
-  <div class="cursor-dot"  id="cursorDot"  aria-hidden="true"></div>
-  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
-
   <!-- ═══════════════════════════════════════════════════════
        NAVIGATION
   ═══════════════════════════════════════════════════════ -->
@@ -90,34 +77,10 @@
         <div class="monogram-wrap" aria-hidden="true">
           <svg class="monogram-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 490" fill="none">
           <style>
-          .crest-all{transform-origin:200px 245px;animation:gateOpen 1.2s cubic-bezier(0.16,1,0.3,1) 0.05s both}
-          @keyframes gateOpen{0%{transform:scaleY(0.012);opacity:0}18%{opacity:1}100%{transform:scaleY(1)}}
-          .ring-1{stroke-dasharray:1340;stroke-dashoffset:1340;animation:cDraw 3.2s cubic-bezier(0.4,0,0.2,1) 0.55s forwards}
-          .ring-2{stroke-dasharray:1280;stroke-dashoffset:1280;animation:cDraw 3.2s cubic-bezier(0.4,0,0.2,1) 0.8s forwards}
-          .crown{opacity:0;animation:cFadeD 0.8s ease 1.5s forwards}
-          .finial{opacity:0;animation:cFadeD 0.6s ease 1.2s forwards}
-          .shield-out{stroke-dasharray:860;stroke-dashoffset:860;animation:cDraw 2.4s ease 1.3s forwards}
-          .shield-in{stroke-dasharray:820;stroke-dashoffset:820;animation:cDraw 2.4s ease 1.55s forwards}
-          .shield-hdiv{stroke-dasharray:115;stroke-dashoffset:115;animation:cDraw 0.6s ease 2.4s forwards}
-          .br-l{stroke-dasharray:700;stroke-dashoffset:700;animation:cDraw 2.2s ease 2.1s forwards}
-          .br-r{stroke-dasharray:700;stroke-dashoffset:700;animation:cDraw 2.2s ease 2.3s forwards}
-          .shield-star{opacity:0;animation:cPop 0.5s ease 2.6s forwards}
-          .mono-R{opacity:0;animation:cSlideR 1s cubic-bezier(0.22,1,0.36,1) 2.8s forwards}
-          .mono-M{opacity:0;animation:cSlideL 1s cubic-bezier(0.22,1,0.36,1) 2.8s forwards}
-          .mono-amp{opacity:0;animation:cFadeU 0.7s ease 3.1s forwards}
-          .mono-sub{opacity:0;animation:cFadeU 0.8s ease 3.3s forwards}
-          .banner{stroke-dasharray:560;stroke-dashoffset:560;animation:cDraw 1.5s ease 3.1s forwards}
-          .ban-txt{opacity:0;animation:cFadeU 0.7s ease 3.6s forwards}
-          .bot-rule{opacity:0;animation:cFadeU 0.6s ease 3.8s forwards}
-          .bot-date{opacity:0;animation:cFadeU 0.7s ease 4.0s forwards}
-          .bot-arch{opacity:0;animation:cFadeU 0.7s ease 4.2s forwards}
-          @keyframes cDraw{to{stroke-dashoffset:0}}
-          @keyframes cFadeU{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
-          @keyframes cFadeD{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:none}}
-          @keyframes cSlideR{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
-          @keyframes cSlideL{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
-          @keyframes cPop{0%{opacity:0;transform:scale(0)}65%{opacity:1;transform:scale(1.25)}100%{opacity:1;transform:scale(1)}}
-          @media(prefers-reduced-motion:reduce){.crest-all{transform:none!important;animation:none!important;opacity:1!important}*{stroke-dashoffset:0!important;animation:none!important;opacity:1!important}}
+          /* Restrained: the crest is drawn in full and simply settles in, no stroke choreography. */
+          .crest-all{animation:crestFade 1.6s cubic-bezier(0.22,1,0.36,1) 0.2s both}
+          @keyframes crestFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+          @media(prefers-reduced-motion:reduce){.crest-all{animation:none}}
           </style>
           <g class="crest-all">
             <ellipse class="ring-1" cx="200" cy="245" rx="188" ry="233" stroke="#B08D57" stroke-width="1.25"/>
@@ -219,14 +182,13 @@
         </div>
 
         <p class="hero-tagline">Together with their families</p>
-        <div class="hero-title">
-          <span class="hero-title-line ht-name">Robert</span>
-          <span class="hero-title-line ht-amp">&amp;</span>
-          <span class="hero-title-line ht-name">Madison</span>
-          <span class="hero-title-line ht-last">Fisher</span>
-        </div>
+        <h1 class="hero-title">
+          <span class="ht-name">Robert</span>
+          <span class="ht-amp" aria-hidden="true">&amp;</span>
+          <span class="ht-name">Madison</span>
+        </h1>
         <p class="hero-date">Sunday, the Seventh of November, 2027</p>
-        <p class="hero-venue" style="margin-top:0.4em">The William Aiken House &middot; Charleston, SC</p>
+        <p class="hero-venue">The William Aiken House &middot; Charleston, SC</p>
       </div>
 
       <a href="#story" class="scroll-cue" aria-label="Scroll down">
@@ -235,18 +197,11 @@
       </a>
     </section>
 
-    <!-- Marquee band -->
-    <div class="marquee-band" aria-hidden="true">
-      <div class="marquee-track">
-        <span>Robert &amp; Madison</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>November VII &middot; MMXXVII</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>The William Aiken House</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>Charleston, South Carolina</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>Robert &amp; Madison</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>November VII &middot; MMXXVII</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>The William Aiken House</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>Charleston, South Carolina</span><span class="marquee-dot">&nbsp;·&nbsp;</span>
-      </div>
-    </div>
-
     <!-- ═══════════════════════════════════════════════════
          2. OUR STORY
          .timeline populated by main.js from story.milestones
     ═══════════════════════════════════════════════════ -->
-    <section id="story" class="section section-story" data-num="01">
+    <section id="story" class="section section-story">
       <div class="section-inner">
         <h2 data-reveal class="split-heading">Our Story</h2>
         <p class="section-dek" data-reveal>How it all began</p>
@@ -260,7 +215,7 @@
          3. EVENT DETAILS
          #scheduleList populated by main.js from schedule[]
     ═══════════════════════════════════════════════════ -->
-    <section id="details" class="section section-details" data-num="02">
+    <section id="details" class="section section-details">
       <div class="section-inner">
         <h2 data-reveal class="split-heading">The Celebration</h2>
         <p class="section-dek" data-reveal>Where to be, and when</p>
@@ -299,7 +254,7 @@
         </div>
 
         <!-- Venue map -->
-        <div class="map-wrap" data-reveal="wipe">
+        <div class="map-wrap" data-reveal>
           <iframe
             src="https://maps.google.com/maps?q=The+William+Aiken+House+456+King+Street+Charleston+SC+29403&t=&z=16&ie=UTF8&iwloc=&output=embed"
             title="The William Aiken House — 456 King Street, Charleston, SC"
@@ -316,7 +271,7 @@
          4. TRAVEL & LODGING
          #hotelGrid fully populated by main.js from travel{}
     ═══════════════════════════════════════════════════ -->
-    <section id="travel" class="section section-travel" data-num="03">
+    <section id="travel" class="section section-travel">
       <div class="section-inner">
         <h2 data-reveal class="split-heading">Travel &amp; Lodging</h2>
         <p class="section-dek" data-reveal>Making your way to Charleston</p>
@@ -335,7 +290,7 @@
          5. GALLERY
          #galleryGrid populated by main.js from gallery{}
     ═══════════════════════════════════════════════════ -->
-    <section id="gallery" class="section section-gallery" data-num="04">
+    <section id="gallery" class="section section-gallery">
       <div class="section-inner">
         <h2 data-reveal class="split-heading">Gallery</h2>
         <p class="section-dek" data-reveal>A few of our favorite moments</p>
@@ -344,8 +299,7 @@
           Click any photo to view full size.
         </p>
 
-        <!-- Horizontal scroll gallery — drag on desktop, swipe on iPhone, Tab/Enter by keyboard -->
-        <!-- JS wraps this in .gallery-scroll-outer and populates items -->
+        <!-- Calm responsive grid populated by main.js; Tab/Enter by keyboard, click to enlarge -->
         <div class="gallery-grid" id="galleryGrid" role="group" aria-label="Photo gallery — Tab to browse, Enter to enlarge"></div>
       </div>
     </section>
@@ -354,7 +308,7 @@
          6. REGISTRY
          #registryGrid populated by main.js from registry.links[]
     ═══════════════════════════════════════════════════ -->
-    <section id="registry" class="section section-registry section-alt" data-num="05">
+    <section id="registry" class="section section-registry section-alt">
       <div class="section-inner">
         <h2 data-reveal class="split-heading">Registry</h2>
         <p class="section-dek" data-reveal>Should you wish to give</p>
@@ -372,7 +326,7 @@
          meal <select> options injected by main.js from rsvp.mealOptions[]
          #rsvpIntro text set by main.js from rsvp.intro
     ═══════════════════════════════════════════════════ -->
-    <section id="rsvp" class="section section-rsvp" data-num="06">
+    <section id="rsvp" class="section section-rsvp">
       <div class="section-inner">
         <h2 data-reveal class="split-heading">RSVP</h2>
         <p class="section-dek" data-reveal>Kindly let us know</p>
@@ -452,7 +406,7 @@
          #gbIntro text set by main.js
          textarea placeholder set by main.js from guestbook.placeholder
     ═══════════════════════════════════════════════════ -->
-    <section id="guestbook" class="section section-guestbook" data-num="07">
+    <section id="guestbook" class="section section-guestbook">
       <div class="section-inner">
         <h2 data-reveal class="split-heading">Guestbook</h2>
         <p class="section-dek" data-reveal>A note for us to keep</p>

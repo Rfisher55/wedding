@@ -9,6 +9,7 @@ import { submitToSheet, fetchGuestbook } from './lib/sheets.js';
    Module-level state
 ────────────────────────────────────────────────────────────── */
 const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouchDevice  = window.matchMedia('(hover: none)').matches;
 const lightboxImages = [];
 let lightboxIndex = 0;
 let lightboxReturnFocus = null;
@@ -27,11 +28,21 @@ document.addEventListener('DOMContentLoaded', () => {
   renderDynamicText();
 
   initScrollReveal();
+  initSplitText();
   initNav();
   initMobileMenu();
   initLightbox();
   initRsvpForm();
   initGuestbook();
+
+  // Cinematic flourishes
+  initLoader();
+  initCursor();
+  initScrollProgress();
+  initHeroParallax();
+  initImageParallax();
+  initMagneticButtons();
+  initCountdown();
 
   // Boot succeeded — stand down the head failsafe. If any init above threw,
   // this line is never reached and the failsafe reveals content at 5s.
@@ -52,19 +63,18 @@ function renderStory() {
   const intro = story.intro
     ? `<p class="story-intro" data-reveal>${esc(story.intro)}</p>`
     : '';
-  const entries = story.milestones.map(m => `
-    <article class="story-entry" data-reveal>
-      <div class="story-photo">
-        <img src="${esc(m.image)}" alt="${esc(m.title)}" loading="lazy">
-      </div>
-      <div class="story-text">
+  const panels = story.milestones.map(m => `
+    <section class="story-panel">
+      <div class="story-bg"><img src="${esc(m.image)}" alt="${esc(m.title)}" loading="lazy"></div>
+      <div class="story-scrim" aria-hidden="true"></div>
+      <div class="story-caption" data-reveal>
         <p class="story-year">${esc(m.year)}</p>
         <h3>${esc(m.title)}</h3>
         <p>${esc(m.text)}</p>
       </div>
-    </article>
+    </section>
   `).join('');
-  timeline.innerHTML = intro + entries;
+  timeline.innerHTML = intro + panels;
 }
 
 function renderSchedule() {
@@ -137,6 +147,18 @@ function renderGalleryGrid() {
     img.src     = src;
     img.alt     = `${couple.partnerOne} & ${couple.partnerTwo}`;
     img.loading = 'lazy';
+
+    // Cursor-following 3D tilt (desktop)
+    if (!prefersReduced && !isTouchDevice) {
+      btn.addEventListener('mousemove', e => {
+        const r = btn.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width  - 0.5) * 2;
+        const y = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+        img.style.transition = 'transform 0.1s linear';
+        img.style.transform  = `perspective(800px) rotateX(${(-y * 8).toFixed(2)}deg) rotateY(${(x * 8).toFixed(2)}deg) scale(1.1)`;
+      });
+      btn.addEventListener('mouseleave', () => { img.style.transition = ''; img.style.transform = ''; });
+    }
 
     btn.appendChild(img);
     btn.addEventListener('click', () => openLightbox(idx));
@@ -427,6 +449,135 @@ function prependNote(note, container, append) {
     ${date ? `<div class="guestbook-card-date">${date}</div>` : ''}
   `;
   if (append) container.appendChild(card); else container.insertBefore(card, container.firstChild);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Cinematic flourishes
+────────────────────────────────────────────────────────────── */
+function initLoader() {
+  const loader = document.getElementById('loader');
+  if (!loader) return;
+  // Hold long enough for the crest to draw, then lift the curtain
+  const delay = prefersReduced ? 300 : 3300;
+  setTimeout(() => {
+    loader.classList.add('exit');
+    setTimeout(() => loader.remove(), 1200);
+  }, delay);
+}
+
+function initCursor() {
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  if (!dot || !ring || isTouchDevice || prefersReduced) return;
+  document.documentElement.classList.add('cursor-custom');
+  dot.style.display = 'block'; ring.style.display = 'block';
+  let mx = -100, my = -100, rx = -100, ry = -100;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+  document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+  (function loop() {
+    dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('a, button, .gallery-item, .registry-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.classList.add('cursor-hover'); dot.classList.add('cursor-hover'); });
+    el.addEventListener('mouseleave', () => { ring.classList.remove('cursor-hover'); dot.classList.remove('cursor-hover'); });
+  });
+}
+
+function initSplitText() {
+  if (prefersReduced) return;
+  document.querySelectorAll('.split-heading').forEach(el => {
+    const raw = el.textContent;
+    el.innerHTML = [...raw].map((ch, i) =>
+      ch === ' ' ? '<span class="char char-space"> </span>' : `<span class="char" style="--i:${i}">${esc(ch)}</span>`
+    ).join('');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { el.classList.add('chars-revealed'); obs.unobserve(el); } });
+    }, { threshold: 0.2 });
+    obs.observe(el);
+  });
+}
+
+function initScrollProgress() {
+  const bar = document.getElementById('scrollProgress');
+  if (!bar) return;
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+    bar.style.width = Math.min(Math.max(pct, 0) * 100, 100) + '%';
+  }, { passive: true });
+}
+
+function initHeroParallax() {
+  if (prefersReduced || isTouchDevice) return;
+  const heroBg = document.querySelector('.hero-bg');
+  const heroContent = document.querySelector('.hero-content');
+  const hero = document.getElementById('hero');
+  if (!heroBg || !hero) return;
+  document.addEventListener('mousemove', e => {
+    const r = hero.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > window.innerHeight) return;
+    const cx = e.clientX / window.innerWidth - 0.5;
+    const cy = e.clientY / window.innerHeight - 0.5;
+    heroBg.style.transform = `scale(1.06) translate(${cx * -18}px, ${cy * -12}px)`;
+    if (heroContent) heroContent.style.transform = `translate(${cx * 8}px, ${cy * 6}px)`;
+  });
+}
+
+// Cinematic scroll parallax on the full-bleed story panels
+function initImageParallax() {
+  if (prefersReduced || isTouchDevice) return;
+  const imgs = [...document.querySelectorAll('.story-bg img')];
+  if (!imgs.length) return;
+  imgs.forEach(img => { img.style.transition = 'none'; });
+  let ticking = false;
+  const apply = () => {
+    const vh = window.innerHeight;
+    imgs.forEach(img => {
+      const panel = img.closest('.story-panel') || img;
+      const r = panel.getBoundingClientRect();
+      if (r.bottom < -100 || r.top > vh + 100) return;
+      const progress = (r.top + r.height / 2 - vh / 2) / vh; // -1 .. 1
+      img.style.transform = `scale(1.22) translateY(${(progress * 9).toFixed(2)}%)`;
+    });
+    ticking = false;
+  };
+  window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(apply); } }, { passive: true });
+  apply();
+}
+
+function initMagneticButtons() {
+  if (prefersReduced || isTouchDevice) return;
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width / 2) * 0.3;
+      const y = (e.clientY - r.top - r.height / 2) * 0.4;
+      btn.style.transform = `translate(${x}px, ${y}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  });
+}
+
+function initCountdown() {
+  const el = document.getElementById('countdown');
+  if (!el) return;
+  const target = new Date('2027-11-07T16:00:00');
+  const item = (n, l) => `<div class="cd-item"><span class="cd-num">${String(n).padStart(2, '0')}</span><span class="cd-label">${l}</span></div>`;
+  const sep = () => `<span class="cd-sep" aria-hidden="true">·</span>`;
+  function tick() {
+    const diff = target - Date.now();
+    if (diff <= 0) { el.innerHTML = '<p class="countdown-eyebrow">Today is the day.</p>'; clearInterval(timer); return; }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    el.innerHTML = item(d, 'Days') + sep() + item(h, 'Hours') + sep() + item(m, 'Minutes') + sep() + item(s, 'Seconds');
+  }
+  tick();
+  const timer = setInterval(tick, 1000);
 }
 
 /* ──────────────────────────────────────────────────────────────

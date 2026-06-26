@@ -28,6 +28,19 @@
 </head>
 <body>
 
+  <!-- Grand entrance curtain -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader-inner">
+      <span class="loader-monogram">R &amp; M</span>
+      <span class="loader-line"></span>
+      <span class="loader-label">Robert &amp; Madison</span>
+    </div>
+  </div>
+
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <div class="cursor-dot"  id="cursorDot"  aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
   <!-- ═══════════════════════════════════════════════════════
        NAVIGATION
   ═══════════════════════════════════════════════════════ -->
@@ -77,10 +90,34 @@
         <div class="monogram-wrap" aria-hidden="true">
           <svg class="monogram-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 490" fill="none">
           <style>
-          /* Restrained: the crest is drawn in full and simply settles in, no stroke choreography. */
-          .crest-all{animation:crestFade 1.6s cubic-bezier(0.22,1,0.36,1) 0.2s both}
-          @keyframes crestFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-          @media(prefers-reduced-motion:reduce){.crest-all{animation:none}}
+          .crest-all{transform-origin:200px 245px;animation:gateOpen 1.2s cubic-bezier(0.16,1,0.3,1) 0.05s both}
+          @keyframes gateOpen{0%{transform:scaleY(0.012);opacity:0}18%{opacity:1}100%{transform:scaleY(1)}}
+          .ring-1{stroke-dasharray:1340;stroke-dashoffset:1340;animation:cDraw 3.2s cubic-bezier(0.4,0,0.2,1) 0.55s forwards}
+          .ring-2{stroke-dasharray:1280;stroke-dashoffset:1280;animation:cDraw 3.2s cubic-bezier(0.4,0,0.2,1) 0.8s forwards}
+          .crown{opacity:0;animation:cFadeD 0.8s ease 1.5s forwards}
+          .finial{opacity:0;animation:cFadeD 0.6s ease 1.2s forwards}
+          .shield-out{stroke-dasharray:860;stroke-dashoffset:860;animation:cDraw 2.4s ease 1.3s forwards}
+          .shield-in{stroke-dasharray:820;stroke-dashoffset:820;animation:cDraw 2.4s ease 1.55s forwards}
+          .shield-hdiv{stroke-dasharray:115;stroke-dashoffset:115;animation:cDraw 0.6s ease 2.4s forwards}
+          .br-l{stroke-dasharray:700;stroke-dashoffset:700;animation:cDraw 2.2s ease 2.1s forwards}
+          .br-r{stroke-dasharray:700;stroke-dashoffset:700;animation:cDraw 2.2s ease 2.3s forwards}
+          .shield-star{opacity:0;animation:cPop 0.5s ease 2.6s forwards}
+          .mono-R{opacity:0;animation:cSlideR 1s cubic-bezier(0.22,1,0.36,1) 2.8s forwards}
+          .mono-M{opacity:0;animation:cSlideL 1s cubic-bezier(0.22,1,0.36,1) 2.8s forwards}
+          .mono-amp{opacity:0;animation:cFadeU 0.7s ease 3.1s forwards}
+          .mono-sub{opacity:0;animation:cFadeU 0.8s ease 3.3s forwards}
+          .banner{stroke-dasharray:560;stroke-dashoffset:560;animation:cDraw 1.5s ease 3.1s forwards}
+          .ban-txt{opacity:0;animation:cFadeU 0.7s ease 3.6s forwards}
+          .bot-rule{opacity:0;animation:cFadeU 0.6s ease 3.8s forwards}
+          .bot-date{opacity:0;animation:cFadeU 0.7s ease 4.0s forwards}
+          .bot-arch{opacity:0;animation:cFadeU 0.7s ease 4.2s forwards}
+          @keyframes cDraw{to{stroke-dashoffset:0}}
+          @keyframes cFadeU{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+          @keyframes cFadeD{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:none}}
+          @keyframes cSlideR{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+          @keyframes cSlideL{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+          @keyframes cPop{0%{opacity:0;transform:scale(0)}65%{opacity:1;transform:scale(1.25)}100%{opacity:1;transform:scale(1)}}
+          @media(prefers-reduced-motion:reduce){.crest-all{transform:none!important;animation:none!important;opacity:1!important}*{stroke-dashoffset:0!important;animation:none!important;opacity:1!important}}
           </style>
           <g class="crest-all">
             <ellipse class="ring-1" cx="200" cy="245" rx="188" ry="233" stroke="#B08D57" stroke-width="1.25"/>
@@ -196,6 +233,19 @@
         <span class="scroll-cue-label">Scroll</span>
       </a>
     </section>
+
+    <!-- Countdown showpiece -->
+    <section class="countdown-band" aria-label="Countdown to the wedding">
+      <p class="countdown-eyebrow" data-reveal>Counting down to the seventh of November</p>
+      <div class="countdown" id="countdown" data-reveal></div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee-band" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Robert &amp; Madison</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>November VII &middot; MMXXVII</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>The William Aiken House</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>Charleston, South Carolina</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>Robert &amp; Madison</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>November VII &middot; MMXXVII</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>The William Aiken House</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>Charleston, South Carolina</span><span class="marquee-dot">&nbsp;·&nbsp;</span>
+      </div>
+    </div>
 
     <!-- ═══════════════════════════════════════════════════
          2. OUR STORY

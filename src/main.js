@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Cinematic flourishes
   initLoader();
+  initEnvelopeScene();
   initCursor();
   initScrollProgress();
   initHeroParallax();
@@ -449,6 +450,55 @@ function prependNote(note, container, append) {
     ${date ? `<div class="guestbook-card-date">${date}</div>` : ''}
   `;
   if (append) container.appendChild(card); else container.insertBefore(card, container.firstChild);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Envelope invitation intro
+────────────────────────────────────────────────────────────── */
+function initEnvelopeScene() {
+  const overlay  = document.getElementById('envOverlay');
+  const stage    = document.getElementById('envStage');
+  const envelope = document.getElementById('mainEnvelope');
+  const hint     = document.getElementById('envHint');
+  const letter   = document.getElementById('envLetterCard');
+  const contBtn  = document.getElementById('envContinue');
+  if (!overlay || !envelope) return;
+
+  if (sessionStorage.getItem('invOpened')) { overlay.remove(); return; }
+
+  // Reveal after loader finishes (~3.9s total including fade-out)
+  const loaderDone = prefersReduced ? 500 : 3900;
+  setTimeout(() => {
+    overlay.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }, loaderDone);
+
+  let opened = false;
+
+  function openEnvelope() {
+    if (opened) return;
+    opened = true;
+    hint.classList.add('gone');
+    envelope.classList.add('open');
+    // Letter starts rising shortly after flap begins rotating
+    setTimeout(() => stage.classList.add('open'), 350);
+    // Bring letter above envelope once it clears the top edge
+    setTimeout(() => { letter.style.zIndex = '5'; }, 1400);
+    // Show continue button when animation settles
+    setTimeout(() => contBtn.classList.add('show'), 2100);
+  }
+
+  envelope.addEventListener('click', openEnvelope);
+  envelope.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnvelope(); }
+  });
+
+  contBtn.addEventListener('click', () => {
+    sessionStorage.setItem('invOpened', '1');
+    overlay.classList.add('dismissed');
+    document.body.style.overflow = '';
+    overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
+  });
 }
 
 /* ──────────────────────────────────────────────────────────────

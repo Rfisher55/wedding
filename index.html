@@ -37,6 +37,41 @@
     </div>
   </div>
 
+  <!-- Envelope invitation overlay (appears after loader) -->
+  <div id="envOverlay" class="env-overlay" aria-hidden="true">
+    <p class="env-hint" id="envHint">Tap to open</p>
+    <div class="env-stage" id="envStage">
+      <div class="env-letter-card" id="envLetterCard" aria-hidden="true">
+        <div class="letter-inner">
+          <div class="letter-rule-top"></div>
+          <p class="letter-eyebrow">Together with their families</p>
+          <div class="letter-monogram">R &amp; M</div>
+          <div class="letter-names">
+            <span>Robert Fisher</span>
+            <em>&amp;</em>
+            <span>Madison Muschik</span>
+          </div>
+          <p class="letter-request">request the honour of your presence<br>at the celebration of their marriage</p>
+          <div class="letter-divider"></div>
+          <p class="letter-when">Sunday, the Seventh of November<br><i>Two Thousand and Twenty-Seven</i></p>
+          <p class="letter-where">The William Aiken House<br>Charleston, South Carolina</p>
+          <div class="letter-divider"></div>
+          <p class="letter-reception">Reception to follow</p>
+          <div class="letter-rule-bot"></div>
+        </div>
+      </div>
+      <div class="envelope" id="mainEnvelope" role="button" tabindex="0" aria-label="Open your invitation">
+        <div class="env-tri-left"  aria-hidden="true"></div>
+        <div class="env-tri-right" aria-hidden="true"></div>
+        <div class="env-tri-bot"   aria-hidden="true"></div>
+        <div class="env-flap" aria-hidden="true">
+          <span class="env-seal">R &amp; M</span>
+        </div>
+      </div>
+    </div>
+    <button class="env-continue" id="envContinue" aria-label="Continue to site">Enter &nbsp;↓</button>
+  </div>
+
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
   <div class="cursor-dot"  id="cursorDot"  aria-hidden="true"></div>
   <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>

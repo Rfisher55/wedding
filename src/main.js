@@ -1,224 +1,282 @@
-/* Native, accessible interactions. No tracking, fake RSVP submissions, or dependencies. */
+/* KING STREET: native interactions, no tracking or simulated RSVP submissions. */
+const $ = (s, scope = document) => scope.querySelector(s);
+const $$ = (s, scope = document) => [...scope.querySelectorAll(s)];
 const root = document.documentElement;
-const $ = (selector) => document.querySelector(selector);
-const $$ = (selector) => Array.from(document.querySelectorAll(selector));
-const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const storage = {
   get(key) { try { return localStorage.getItem(key); } catch { return null; } },
-  set(key, value) { try { localStorage.setItem(key, value); } catch { /* Private mode still works. */ } }
+  set(key, value) { try { localStorage.setItem(key, value); } catch { /* Storage is optional. */ } }
 };
 let userPaused = storage.get('rm-motion-paused') === 'true';
 let motionEnabled = false;
 const motionButton = $('#motionToggle');
 function syncMotion() {
-  motionEnabled = !reduceMotion.matches && !userPaused;
+  motionEnabled = !userPaused && !reduced.matches;
   root.dataset.motion = motionEnabled ? 'on' : 'off';
   motionButton.hidden = false;
-  motionButton.disabled = reduceMotion.matches;
+  motionButton.disabled = reduced.matches;
+  motionButton.textContent = reduced.matches ? 'Reduced motion' : userPaused ? 'Resume motion' : 'Pause motion';
   motionButton.setAttribute('aria-pressed', String(!motionEnabled));
-  motionButton.textContent = reduceMotion.matches ? 'Reduced motion' : userPaused ? 'Resume motion' : 'Pause motion';
   if (!motionEnabled) {
-    $$('.will-reveal').forEach(node => node.classList.add('visible'));
-    $$('[data-parallax]').forEach(node => node.style.removeProperty('transform'));
-    $('.arrival')?.classList.remove('show');
+    $$('.will-reveal').forEach(el => el.classList.add('visible'));
+    root.style.setProperty('--hero-shift', '0px');
+    root.style.setProperty('--letter-turn', '2deg');
   }
 }
 syncMotion();
-root.classList.add('js');
 motionButton.addEventListener('click', () => {
   userPaused = !userPaused;
   storage.set('rm-motion-paused', String(userPaused));
-  syncMotion();
-  requestScrollFrame();
+  syncMotion(); requestScrollFrame();
 });
-reduceMotion.addEventListener('change', () => { syncMotion(); requestScrollFrame(); });
+reduced.addEventListener('change', () => { syncMotion(); requestScrollFrame(); });
 
-// An automatic first-visit entrance, never an invitation gate.
-const arrival = $('.arrival');
-let hasVisited = true;
-try { hasVisited = sessionStorage.getItem('rm-visited') === 'true'; sessionStorage.setItem('rm-visited', 'true'); } catch { /* Skip the entrance when storage is unavailable. */ }
-if (motionEnabled && !hasVisited && !location.hash) {
-  arrival.classList.add('show');
-  setTimeout(() => arrival.remove(), 1350);
-} else { arrival.remove(); }
-
-// Native dialogs keep keyboard focus inside and return it to the trigger.
-const menu = $('#menuDialog');
-const lightbox = $('#lightbox');
-let activeTrigger = null;
+// Dialogs: native modal focus containment, Escape, backdrop close, focus return.
+const supportsDialogs = typeof HTMLDialogElement !== 'undefined' && typeof HTMLDialogElement.prototype.showModal === 'function';
+const triggerFor = new WeakMap();
 function openDialog(dialog, trigger) {
-  if (!dialog || typeof dialog.showModal !== 'function') return false;
-  activeTrigger = trigger;
+  if (!supportsDialogs || dialog.open) return false;
+  triggerFor.set(dialog, trigger || document.activeElement);
   dialog.showModal();
   document.body.classList.add('dialog-open');
+  if (dialog.id === 'guideDialog') $('#guideStatus').textContent = '';
   return true;
 }
-[menu, lightbox].forEach(dialog => {
+function closeDialog(dialog, restoreFocus = true) {
+  if (!restoreFocus) triggerFor.delete(dialog);
+  dialog.close();
+}
+$$('[data-dialog]').forEach(button => {
+  if (!supportsDialogs) return;
+  button.hidden = false;
+  button.setAttribute('aria-haspopup', 'dialog');
+  button.setAttribute('aria-controls', button.dataset.dialog);
+  button.addEventListener('click', () => openDialog(document.getElementById(button.dataset.dialog), button));
+});
+if (supportsDialogs) $('.seal-hint').hidden = false;
+$$('dialog').forEach(dialog => {
+  $$('[data-close]', dialog).forEach(button => button.addEventListener('click', () => closeDialog(dialog)));
   dialog.addEventListener('close', () => {
-    document.body.classList.remove('dialog-open');
-    activeTrigger?.focus({ preventScroll: true });
-    activeTrigger = null;
+    document.body.classList.toggle('dialog-open', !!$('dialog[open]'));
+    document.body.classList.remove('printing-guide');
+    const trigger = triggerFor.get(dialog);
+    triggerFor.delete(dialog);
+    trigger?.focus({ preventScroll: true });
   });
+  // Only clicks genuinely outside the box, not inside empty dialog padding.
   dialog.addEventListener('click', event => {
     if (event.target !== dialog) return;
-    const box = dialog.getBoundingClientRect();
-    if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) dialog.close();
+    const r = dialog.getBoundingClientRect();
+    if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) closeDialog(dialog);
   });
 });
-$('#menuButton').addEventListener('click', event => openDialog(menu, event.currentTarget));
-$('#closeMenu').addEventListener('click', () => menu.close());
-menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
-  // Focus the destination heading after navigating rather than leave focus offscreen.
-  activeTrigger = null;
-  menu.close();
-  const target = document.querySelector(link.hash);
-  const heading = target?.querySelector('h2') || target;
-  if (heading) { heading.setAttribute('tabindex', '-1'); requestAnimationFrame(() => heading.focus({ preventScroll: true })); }
+const menu = $('#menuDialog');
+$$('nav a', menu).forEach(link => link.addEventListener('click', () => {
+  closeDialog(menu, false);
+  const target = $(link.hash);
+  const heading = $('h2', target) || target;
+  heading.tabIndex = -1;
+  requestAnimationFrame(() => heading.focus({ preventScroll: true }));
 }));
-matchMedia('(min-width: 821px)').addEventListener('change', event => { if (event.matches && menu.open) menu.close(); });
+matchMedia('(min-width: 901px)').addEventListener('change', event => { if (event.matches && menu.open) closeDialog(menu); });
+$('#copyAddress').addEventListener('click', async () => {
+  const status = $('#guideStatus');
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+    await navigator.clipboard.writeText('The William Aiken House, 456 King Street, Charleston, SC 29403');
+    status.textContent = 'Venue address copied.';
+  } catch { status.textContent = 'Automatic copy is unavailable. Select the address above to copy it.'; }
+});
+$('#printGuide').addEventListener('click', () => {
+  document.body.classList.add('printing-guide');
+  window.print();
+});
+addEventListener('afterprint', () => document.body.classList.remove('printing-guide'));
 
-// Midnight at the START of Nov 7 is still daylight time in Charleston.
-// This counts down to the date, not to an unconfirmed ceremony time.
+// Countdown is to the date, never an invented ceremony hour. Midnight is EDT.
 const weddingDay = Date.parse('2027-11-07T00:00:00-04:00');
-const dateFormat = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' });
-function updateCountdown() {
+function tick() {
   const remaining = Math.max(0, weddingDay - Date.now());
-  const numbers = { days: Math.floor(remaining / 86400000), hours: Math.floor(remaining / 3600000) % 24, minutes: Math.floor(remaining / 60000) % 60, seconds: Math.floor(remaining / 1000) % 60 };
-  Object.entries(numbers).forEach(([unit, value]) => {
-    const node = $(`[data-unit="${unit}"]`);
+  const values = {
+    days: Math.floor(remaining / 86400000), hours: Math.floor(remaining / 3600000) % 24,
+    minutes: Math.floor(remaining / 60000) % 60, seconds: Math.floor(remaining / 1000) % 60
+  };
+  Object.entries(values).forEach(([unit, value]) => {
+    const el = $(`[data-unit="${unit}"]`);
     const next = String(value).padStart(2, '0');
-    if (node.textContent !== next) node.textContent = next;
+    if (el.textContent !== next) el.textContent = next;
   });
-  if (remaining === 0) {
-    const parts = dateFormat.formatToParts(new Date());
-    const value = type => parts.find(part => part.type === type).value;
-    const today = `${value('year')}-${value('month')}-${value('day')}`;
-    $('#countdownTitle').textContent = today === '2027-11-07' ? 'Today, we celebrate.' : 'A day to remember.';
+  if (!remaining) {
+    const parts = new Intl.DateTimeFormat('en', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
+    const get = type => parts.find(p => p.type === type).value;
+    $('#countdownTitle').textContent = `${get('year')}-${get('month')}-${get('day')}` === '2027-11-07' ? 'Today, we celebrate.' : 'A day to remember.';
   }
 }
-updateCountdown();
-let countdownTimer = setInterval(updateCountdown, 1000);
+tick();
+let clock = setInterval(tick, 1000);
 document.addEventListener('visibilitychange', () => {
-  clearInterval(countdownTimer);
-  if (!document.hidden) { updateCountdown(); countdownTimer = setInterval(updateCountdown, 1000); }
+  clearInterval(clock);
+  root.classList.toggle('motion-sleep', document.hidden);
+  if (!document.hidden) { tick(); clock = setInterval(tick, 1000); }
 });
 
-// Staggered reveals; plain HTML remains visible if IntersectionObserver is absent.
-if ('IntersectionObserver' in window && motionEnabled) {
-  const reveals = new IntersectionObserver(entries => entries.forEach(entry => {
-    if (entry.isIntersecting) { entry.target.classList.add('visible'); reveals.unobserve(entry.target); }
-  }), { threshold: .08, rootMargin: '0px 0px -25px 0px' });
-  $$('.reveal').forEach(node => {
-    node.classList.add('will-reveal');
-    if (node.closest('.schedule, .gallery-grid')) node.style.setProperty('--delay', `${Array.from(node.parentElement.children).indexOf(node) * 90}ms`);
-    reveals.observe(node);
+// Accessible tabs: click, arrows, Home/End; normal content remains without JS.
+function initTabs(selector) {
+  const list = $(selector);
+  const tabs = $$('[role="tab"]', list);
+  const panels = tabs.map(tab => document.getElementById(tab.getAttribute('aria-controls')));
+  function select(index, focus = false) {
+    tabs.forEach((tab, position) => {
+      const active = position === index;
+      tab.tabIndex = active ? 0 : -1;
+      tab.setAttribute('aria-selected', String(active));
+      panels[position].hidden = !active;
+      panels[position].setAttribute('role', 'tabpanel');
+      panels[position].setAttribute('aria-labelledby', tab.id);
+      panels[position].tabIndex = 0;
+      panels[position].classList.toggle('entering', active && motionEnabled);
+    });
+    if (focus) tabs[index].focus();
+    requestScrollFrame();
+  }
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => select(index));
+    tab.addEventListener('keydown', event => {
+      let next;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index + tabs.length - 1) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      else return;
+      event.preventDefault(); select(next, true);
+    });
   });
+  list.hidden = false;
+  select(0);
+  return { tabs, select };
 }
-
-// One requestAnimationFrame per scroll tick; no perpetual JS animation loop.
+// Defined scroll state before tabs ask for their first frame.
+let queued = false;
 const header = $('#siteHeader');
-const parallaxLayers = $$('[data-parallax]');
-const sectionLinks = $$('.desktop-nav a');
-const sections = sectionLinks.map(link => document.querySelector(link.hash));
-let scrollQueued = false;
+const hero = $('.hero');
+const letter = $('.correspondence');
+const navLinks = $$('.desktop-nav a');
+const sections = navLinks.map(link => $(link.hash));
 function renderScroll() {
-  scrollQueued = false;
+  queued = false;
   const y = window.scrollY;
-  header.classList.toggle('scrolled', y > 55);
-  const pageHeight = document.documentElement.scrollHeight - window.innerHeight;
-  root.style.setProperty('--progress', String(pageHeight > 0 ? Math.min(1, Math.max(0, y / pageHeight)) : 0));
-  if (motionEnabled) parallaxLayers.forEach(layer => {
-    const rect = layer.parentElement.getBoundingClientRect();
-    if (rect.bottom > 0 && rect.top < innerHeight) {
-      const shift = Math.max(-75, Math.min(120, -rect.top * Number(layer.dataset.parallax)));
-      layer.style.transform = `translate3d(0,${shift.toFixed(1)}px,0)`;
-    }
-  });
+  header.classList.toggle('scrolled', y > 35);
+  const max = root.scrollHeight - innerHeight;
+  root.style.setProperty('--progress', String(max > 0 ? Math.min(1, Math.max(0, y / max)) : 0));
+  if (motionEnabled) {
+    const hr = hero.getBoundingClientRect();
+    if (hr.bottom > 0) root.style.setProperty('--hero-shift', `${Math.max(-18, Math.min(0, -y * .035))}px`);
+    const lr = letter.getBoundingClientRect();
+    if (lr.bottom > 0 && lr.top < innerHeight) root.style.setProperty('--letter-turn', `${Math.max(-1, Math.min(2, (lr.top / innerHeight) * 4 - 1)).toFixed(2)}deg`);
+  }
   let active = -1;
-  sections.forEach((section, index) => { if (section.getBoundingClientRect().top <= innerHeight * .4) active = index; });
+  sections.forEach((section, i) => { if (section.getBoundingClientRect().top <= innerHeight * .4) active = i; });
   if ($('#rsvp').getBoundingClientRect().top <= innerHeight * .4) active = -1;
-  sectionLinks.forEach((link, index) => { if (index === active) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current'); });
+  navLinks.forEach((link, i) => { if (i === active) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current'); });
 }
-function requestScrollFrame() { if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(renderScroll); } }
+function requestScrollFrame() { if (!queued) { queued = true; requestAnimationFrame(renderScroll); } }
+initTabs('.scene-controls');
+const travel = initTabs('.travel-tabs');
+$$('[data-open-tab]').forEach(link => link.addEventListener('click', () => {
+  const index = travel.tabs.findIndex(tab => tab.id === `tab-${link.dataset.openTab}`);
+  if (index >= 0) travel.select(index);
+}));
 addEventListener('scroll', requestScrollFrame, { passive: true });
 addEventListener('resize', requestScrollFrame, { passive: true });
 requestScrollFrame();
 
-// Travel tabs support click, Left/Right, Home/End and direct FAQ navigation.
-const tablist = $('.travel-tabs');
-const tabs = $$('.travel-tabs [role="tab"]');
-function selectTab(index, focus = false) {
-  tabs.forEach((tab, position) => {
-    const selected = index === position;
-    tab.setAttribute('aria-selected', String(selected));
-    tab.tabIndex = selected ? 0 : -1;
-    const panel = document.getElementById(tab.getAttribute('aria-controls'));
-    panel.hidden = !selected;
-    panel.setAttribute('role', 'tabpanel');
-    panel.tabIndex = 0;
-    panel.classList.toggle('entering', selected && motionEnabled);
-  });
-  if (focus) tabs[index].focus();
-  requestScrollFrame();
+// IntersectionObserver only adds hidden states after it is ready to observe.
+if ('IntersectionObserver' in window && motionEnabled) {
+  const reveal = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (entry.isIntersecting) { entry.target.classList.add('visible'); reveal.unobserve(entry.target); }
+  }), { threshold: .06, rootMargin: '0px 0px -18px 0px' });
+  $$('.reveal').forEach(el => { el.classList.add('will-reveal'); reveal.observe(el); });
 }
-tablist.hidden = false;
-selectTab(0);
-tabs.forEach((tab, index) => {
-  tab.addEventListener('click', () => selectTab(index));
-  tab.addEventListener('keydown', event => {
-    let next = index;
-    if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
-    else if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
-    else if (event.key === 'Home') next = 0;
-    else if (event.key === 'End') next = tabs.length - 1;
-    else return;
-    event.preventDefault(); selectTab(next, true);
-  });
-});
-$$('[data-open-tab]').forEach(link => link.addEventListener('click', () => {
-  const index = tabs.findIndex(tab => tab.id === `tab-${link.dataset.openTab}`);
-  if (index >= 0) selectTab(index);
-}));
 
-// Gallery: arrows, keyboard, swipe, captions, and native focus management.
+// Native horizontal filmstrip keeps touch scrolling and does not hijack page scroll.
+const film = $('#filmstrip');
+const filmPrev = $('#filmPrev');
+const filmNext = $('#filmNext');
+$('.film-arrows').hidden = false;
+function updateFilm() {
+  filmPrev.disabled = film.scrollLeft <= 3;
+  filmNext.disabled = film.scrollLeft >= film.scrollWidth - film.clientWidth - 3;
+}
+function moveFilm(direction) {
+  const card = $('.film-photo', film);
+  const gap = parseFloat(getComputedStyle(film).gap) || 20;
+  film.scrollBy({ left: direction * (card.getBoundingClientRect().width + gap), behavior: motionEnabled ? 'smooth' : 'instant' });
+}
+filmPrev.addEventListener('click', () => moveFilm(-1));
+filmNext.addEventListener('click', () => moveFilm(1));
+film.addEventListener('scroll', updateFilm, { passive: true });
+film.addEventListener('keydown', event => {
+  if (event.target !== film) return;
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); moveFilm(event.key === 'ArrowRight' ? 1 : -1); }
+});
+addEventListener('resize', updateFilm, { passive: true });
+updateFilm();
+
+// Gallery has native link fallbacks, captions, keyboard navigation, and swipe.
+const lightbox = $('#lightbox');
 const photos = $$('[data-photo]');
 let photoIndex = 0;
 function showPhoto(index) {
   photoIndex = (index + photos.length) % photos.length;
   const source = photos[photoIndex];
   const image = $('#lightboxImage');
+  $('.lightbox-fallback').hidden = true;
+  $('#originalPhoto').href = source.href;
   image.src = source.href;
-  image.alt = source.querySelector('img').alt;
+  image.alt = $('img', source).alt;
   $('#lightboxCaption').textContent = source.dataset.caption;
   $('#lightboxCredit').textContent = source.dataset.credit;
   $('#photoCount').textContent = `${photoIndex + 1} / ${photos.length}`;
 }
-photos.forEach((photo, index) => photo.addEventListener('click', event => {
-  if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
-  if (typeof lightbox.showModal !== 'function') return;
-  event.preventDefault(); showPhoto(index); openDialog(lightbox, photo);
+photos.forEach((photo, i) => photo.addEventListener('click', event => {
+  if (!supportsDialogs || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey || event.button !== 0) return;
+  event.preventDefault(); showPhoto(i); openDialog(lightbox, photo);
 }));
-$('#closeLightbox').addEventListener('click', () => lightbox.close());
 $('#prevPhoto').addEventListener('click', () => showPhoto(photoIndex - 1));
 $('#nextPhoto').addEventListener('click', () => showPhoto(photoIndex + 1));
 lightbox.addEventListener('keydown', event => {
-  if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); showPhoto(photoIndex + (event.key === 'ArrowRight' ? 1 : -1)); }
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); showPhoto(photoIndex + (event.key === 'ArrowRight' ? 1 : -1)); }
 });
-let touchStart = null;
-$('#lightboxImage').addEventListener('touchstart', event => {
-  if (event.touches.length === 1) touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-  else touchStart = null;
+let touch = null;
+const lightboxMedia = $('.lightbox-media');
+lightboxMedia.addEventListener('touchstart', e => {
+  touch = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
 }, { passive: true });
-$('#lightboxImage').addEventListener('touchend', event => {
-  if (!touchStart || event.changedTouches.length !== 1) return;
-  const dx = event.changedTouches[0].clientX - touchStart.x;
-  const dy = event.changedTouches[0].clientY - touchStart.y;
+lightboxMedia.addEventListener('touchend', e => {
+  if (!touch || e.changedTouches.length !== 1) { touch = null; return; }
+  const dx = e.changedTouches[0].clientX - touch.x;
+  const dy = e.changedTouches[0].clientY - touch.y;
   if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) showPhoto(photoIndex + (dx < 0 ? 1 : -1));
-  touchStart = null;
+  touch = null;
 }, { passive: true });
-// A failed third-party image should not show a broken-image icon in the layout.
+lightboxMedia.addEventListener('touchcancel', () => touch = null, { passive: true });
+
+// Preserve a designed background when third-party photography cannot be loaded.
 $$('img').forEach(image => {
-  image.addEventListener('error', () => image.dataset.failed = 'true');
-  image.addEventListener('load', () => { delete image.dataset.failed; });
-  if (image.complete && image.getAttribute('src') && !image.naturalWidth) image.dataset.failed = 'true';
+  function failed() {
+    image.dataset.failed = 'true';
+    const frame = image.closest('.media');
+    if (frame) frame.dataset.fallback = 'true';
+    if (image.id === 'lightboxImage') $('.lightbox-fallback').hidden = false;
+  }
+  image.addEventListener('error', failed);
+  image.addEventListener('load', () => {
+    delete image.dataset.failed;
+    const frame = image.closest('.media');
+    if (frame) delete frame.dataset.fallback;
+    if (image.id === 'lightboxImage') $('.lightbox-fallback').hidden = true;
+  });
+  if (image.complete && image.getAttribute('src') && !image.naturalWidth) failed();
 });
+root.classList.add('js');
+root.classList.toggle('dialogs', supportsDialogs);

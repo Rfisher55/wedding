@@ -1,48 +1,47 @@
-# Robert & Madison — A Charleston Celebration
+# Robert & Madison — King Street, second edition
 
-A rebuilt, responsive wedding website for November 7, 2027 at The William Aiken House. Charleston green, ivory correspondence, restrained brass details, venue photography, and cinematic motion. No framework, bundler, tracking, background audio, or required installation.
+Wedding: November 7, 2027. The William Aiken House, Charleston, South Carolina.
+Live site: https://rfisher55.github.io/wedding/
 
-## Live site and publishing
+The production deployment runs on pushes to **main**. The previous published version is commit `6192053` and remains in Git history. This edition replaces the guest-facing HTML, CSS, and JavaScript together, without removing legacy assets or changing the calendar date.
 
-Live: https://rfisher55.github.io/wedding/
+## The new experience
 
-The existing GitHub Pages workflow publishes pushes to **main**. A change sitting only on another branch does not publish. This rebuild reconciles the earlier design branch with the live branch; previous versions remain in Git history.
+An ivory, Charleston-green editorial layout with an arched photographic opening and date stamp; layered correspondence with a wax-seal button opening a save-the-date card; three interactive venue scenes (piazza, courtyard, interiors); a dedicated black-formal-attire section; redesigned hotel, arrival, and exploring panels; a horizontally scrolling photographic filmstrip; and a slide-out guest guide with directions, calendar download, clipboard feedback, and print layout.
 
-## Files to edit
+Motion includes a slow photographic zoom, light scroll-linked movement, letter rotation, section reveals, scene transitions, and dialog entrances. Native scrolling is never hijacked. The persistent Pause motion preference and the device's reduced-motion setting are respected. No background audio, mandatory opening screen, tracking, frameworks, or fake submissions.
 
-- `index.html`: all guest-facing text, hotel links, photographs, wedding details, and FAQ answers.
-- `src/style.css`: design, responsive layout, transitions, and reduced-motion rules.
-- `src/main.js`: countdown, parallax, travel tabs, gallery, navigation, and motion preference.
-- `public/robert-madison.ics`: all-day save-the-date download. Keep CRLF line endings. Change dates in both this file and the countdown together.
-- `scripts/verify.mjs`: dependency-free static checks; run `node scripts/verify.mjs` from the repository root.
+## Editing and maintenance
 
-The legacy `src/data/content.js`, `src/lib/sheets.js`, and `apps-script/` files are preserved for reference but are **not loaded by this rebuild**. Editing the legacy content file will not change the page. Do not publish guest lists or private RSVP records in this public repository.
+- `index.html`: guest-facing copy, venue images and credits, hotel links, dress code, FAQ, and dialog content.
+- `src/style.css`: visual system, responsive layouts, animations, print stylesheet, image fallbacks.
+- `src/main.js`: dialogs, countdown, scene and travel tabs, gallery, filmstrip, clipboard, print controls, and motion preference.
+- `public/robert-madison.ics`: unchanged all-day save-the-date. The ceremony time is not known. Its end date is exclusive.
+- `public/charleston-linework.svg`: original decorative architectural illustration used when external photography is unavailable. It is not an exact rendering of the venue.
+- `scripts/verify.mjs`: run `node scripts/verify.mjs` to check IDs, anchors, ARIA targets, assets, date, calendar formatting, and JavaScript syntax.
 
-## Implemented interactions
+The legacy `src/data/content.js`, `src/lib/sheets.js`, and `apps-script/` are retained but not loaded. Editing legacy content does not update this page. Do not put private guest lists or RSVP records in this public repository.
 
-An automatic first-visit entrance; a slow photographic zoom; native scroll with lightweight requestAnimationFrame parallax; staggered section reveals; reading progress; sticky navigation; mobile dialog navigation with keyboard focus handling; accessible Stay / Arrive / Explore tabs; a captioned three-image gallery with previous/next, keyboard arrows, swipe, and Escape; native FAQ accordions; and a static, downloadable calendar file.
+## Guest access and graceful fallbacks
 
-The Pause motion control persists a preference when browser storage is available. The operating system's reduced-motion setting takes precedence. Content, directions, gallery image links, FAQs, and the calendar remain available without JavaScript. There is no mandatory invitation gate.
+The date, location, dress code, hotel links, directions, FAQ, and calendar download remain available without JavaScript. Venue and travel panels show as regular content without JavaScript. Photos remain ordinary image links when dialogs are unavailable. Native dialogs support Escape and keyboard focus containment; focus returns to the opener, or to the destination heading after mobile navigation.
 
-## Content still awaiting the couple
+Scene and travel selectors support arrows and Home/End. The gallery supports next/previous, keyboard arrows, wraparound, and swipe. Clipboard permission failures produce an honest manual-copy message. Printing is scoped to the guest guide only when that control is used. External photo failures show decorative linework; the gallery also exposes a direct link to the original photograph.
 
-Ceremony time and the detailed schedule, personal photographs and a verified relationship story, a registry destination, any negotiated room-block links, and the actual RSVP service / guest access are not supplied. The page clearly says invitations and RSVP access will follow. No fake submission form, meal selections, ceremony hour, or room-block claim has been added. The calendar saves only the date; the countdown targets the beginning of November 7 in Charleston, not a ceremony time.
+## Factual content and photography
 
-## Photography and factual sources
+Official source: https://www.pphgcharleston.com/venues/william-aiken-house/ (reviewed September 16, 2026).
 
-Photographs depict **the venue**, not Robert and Madison. Gallery captions and credits make that distinction explicit. Images are externally hosted by the venue; this repository does not contain copies of them or claim rights to them. Maintain the source and photographer credits. Replace these images with approved personal or licensed files when available.
+Venue photos are externally hosted by Patrick Properties Hospitality Group and credited in the page and gallery. Piazza: Lydia Ruth Photography. Courtyard and garden aerial: Kailee DiMeglio Photography. Interior: Taylor Haney Photography. These are venue photographs, not photographs of Robert and Madison or a promise of their final event layout. Photo bytes are not copied into this repository; this project does not claim ownership or a license to redistribute them. Replace with approved personal/licensed images when supplied.
 
-Official venue source, checked September 16, 2026:
-https://www.pphgcharleston.com/venues/william-aiken-house/
+Hotel links remain the established official property destinations. No rates, room availability, transit times, room blocks, or new booking arrangements are promised. The venue's accessibility statement is attributed, with guests directed to confirm specific needs with the venue.
 
-- Palmettos / piazza: Lydia Ruth Photography, as credited in the venue gallery.
-- Garden aerial and courtyard table setting: Kailee DiMeglio Photography, as credited by the venue.
-- Address, piazzas, courtyards, parking, and accessibility information are drawn from the venue's official page. Specific accessibility needs should be confirmed with the venue.
+## Validation: 91 checks passed
 
-Hotel links were checked against the properties' official sites, including the corrected Dewberry domain and the Charleston-specific Restoration page. No rates, room availability, journey times, or booking arrangements are promised. Google Fonts are requested remotely with system-serif and sans-serif fallbacks; no font files are distributed here.
+Offline Chromium checks covered initialization, unique IDs and in-page references, all venue/travel tab interactions and keyboard controls, FAQ cross-navigation, invitation and guest-guide dialogs, focus return, clipboard success/failure handling, print CSS/state cleanup, filmstrip controls, gallery keyboard/wrap/swipe handling, image failures, motion controls, no-script access, and responsive geometry at 14 viewport sizes from 320 to 1920 pixels wide, including landscape. There were no JavaScript runtime errors in that run. Static integrity and Node syntax checks also passed.
 
-## Validation performed
+Limits: browser network navigation is blocked in the build environment. Tests used the actual local HTML/CSS/JS in an isolated document with external requests blocked. An inline SVG fixture exercised successful image loading. Official photographs were visually checked separately through web retrieval. Clipboard success and the print command used API mocks; this is not a physical-device, operating-system printing, every-browser, or live network visual audit. Google Fonts were unavailable during local screenshots, so fallback fonts were checked. GitHub's production deployment must be checked separately after publication.
 
-45 local Chromium checks passed: core interactions, tabs and keyboard shortcuts, gallery and focus return, mobile menu, anchor navigation, countdown, calendar wiring and date format, system reduced motion, no-script access, and overflow checks at 1440, 1024, 820, 768, 430, 390, 375, and 320-pixel widths plus landscape. JavaScript syntax was checked with Node. Tests exercised the local HTML/CSS/JS in an isolated document because this execution environment blocks browser network navigation; external photographs and official links were checked separately through web retrieval. This is not a claim that every physical device or browser has been tested.
+## Still awaiting confirmed details
 
-Before announcing future RSVP availability, configure and test an actual persistent service, its privacy controls, delivery, validation, and error handling end to end.
+Actual RSVP service and access, final ceremony timing, registry links, personal photos and verified relationship story, and any negotiated hotel block links. The page continues to state that invitations and RSVP access will follow. No made-up story, ceremony hour, or working-looking submission form has been introduced.

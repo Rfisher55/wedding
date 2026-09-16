@@ -1,573 +1,117 @@
-<!DOCTYPE html>
-<html lang="en" class="no-js">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Boot resilience: prove scripting works, and arm a failsafe so a failed
-       module load can never leave the loader or hidden content stranded.
-       main.js clears the timer once it boots; if it never does, content is shown. -->
-  <script>
-    (function (h) {
-      h.className = h.className.replace('no-js', 'js');
-      window.__impBootFailsafe = window.setTimeout(function () {
-        h.classList.add('boot-failed');
-      }, 5000);
-    })(document.documentElement);
-  </script>
-
-  <meta name="description" content="Robert Fisher & Madison Muschik — Wedding Celebration, November 7, 2027 · The William Aiken House, Charleston, SC">
-  <title>Robert &amp; Madison | November 7, 2027</title>
-
-  <!-- Google Fonts -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#12231c">
+  <meta name="description" content="The wedding of Robert Fisher and Madison Muschik — November 7, 2027 at The William Aiken House in Charleston, South Carolina.">
+  <title>Robert & Madison — November 7, 2027</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='32' fill='%2312231c'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-size='29' fill='%23d2b16f' font-family='serif'%3ER%26M%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
-
-  <!-- Grand entrance curtain -->
-  <div class="loader" id="loader" aria-hidden="true">
-    <div class="loader-inner">
-      <span class="loader-monogram">R &amp; M</span>
-      <span class="loader-line"></span>
-      <span class="loader-label">Robert &amp; Madison</span>
+  <div class="intro" id="intro" aria-label="Wedding invitation">
+    <div class="intro-frame">
+      <p class="kicker">Together with their families</p>
+      <div class="crest" aria-hidden="true"><span>R</span><i>&</i><span>M</span></div>
+      <h1>Robert Fisher<br><em>&</em><br>Madison Muschik</h1>
+      <p class="invitation-line">request the honour of your presence at the celebration of their marriage</p>
+      <p class="date-script">Sunday, the Seventh of November<br>Two Thousand and Twenty-Seven</p>
+      <p class="venue-line">The William Aiken House<br>Charleston, South Carolina</p>
+      <button class="enter" id="enterSite">Enter the celebration <span>↓</span></button>
     </div>
   </div>
 
-  <!-- Envelope invitation overlay (appears after loader) -->
-  <div id="envOverlay" class="env-overlay" aria-hidden="true">
-    <p class="env-hint" id="envHint">Tap to open</p>
-    <div class="env-stage" id="envStage">
-      <div class="env-letter-card" id="envLetterCard" aria-hidden="true">
-        <div class="letter-inner">
-          <div class="letter-rule-top"></div>
-          <p class="letter-eyebrow">Together with their families</p>
-          <div class="letter-monogram">R &amp; M</div>
-          <div class="letter-names">
-            <span>Robert Fisher</span>
-            <em>&amp;</em>
-            <span>Madison Muschik</span>
-          </div>
-          <p class="letter-request">request the honour of your presence<br>at the celebration of their marriage</p>
-          <div class="letter-divider"></div>
-          <p class="letter-when">Sunday, the Seventh of November<br><i>Two Thousand and Twenty-Seven</i></p>
-          <p class="letter-where">The William Aiken House<br>Charleston, South Carolina</p>
-          <div class="letter-divider"></div>
-          <p class="letter-reception">Reception to follow</p>
-          <div class="letter-rule-bot"></div>
-        </div>
-      </div>
-      <div class="envelope" id="mainEnvelope" role="button" tabindex="0" aria-label="Open your invitation">
-        <div class="env-tri-left"  aria-hidden="true"></div>
-        <div class="env-tri-right" aria-hidden="true"></div>
-        <div class="env-tri-bot"   aria-hidden="true"></div>
-        <div class="env-flap" aria-hidden="true">
-          <span class="env-seal">R &amp; M</span>
-        </div>
-      </div>
-    </div>
-    <button class="env-continue" id="envContinue" aria-label="Continue to site">Enter &nbsp;↓</button>
-  </div>
-
-  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-  <div class="cursor-dot"  id="cursorDot"  aria-hidden="true"></div>
-  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
-
-  <!-- ═══════════════════════════════════════════════════════
-       NAVIGATION
-  ═══════════════════════════════════════════════════════ -->
-  <nav class="nav" id="nav" aria-label="Site navigation">
-    <div class="nav-inner">
-      <a href="#hero" class="nav-monogram" aria-label="Return to top">R &amp; M</a>
-      <ul class="nav-links" role="list">
-        <li><a href="#story">Our Story</a></li>
-        <li><a href="#details">Details</a></li>
-        <li><a href="#travel">Travel</a></li>
-        <li><a href="#gallery">Gallery</a></li>
-        <li><a href="#registry">Registry</a></li>
-        <li><a href="#rsvp">RSVP</a></li>
-        <li><a href="#guestbook">Guestbook</a></li>
-      </ul>
-      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">&#9776;</button>
-    </div>
-  </nav>
-
-  <!-- Mobile menu overlay -->
-  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-label="Navigation menu">
-    <button class="mobile-close" id="mobileClose" aria-label="Close menu">&#215;</button>
-    <ul role="list">
-      <li><a href="#story">Our Story</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#travel">Travel</a></li>
-      <li><a href="#gallery">Gallery</a></li>
-      <li><a href="#registry">Registry</a></li>
-      <li><a href="#rsvp">RSVP</a></li>
-      <li><a href="#guestbook">Guestbook</a></li>
-    </ul>
-  </div>
+  <header class="site-header" id="siteHeader">
+    <a class="wordmark" href="#home" aria-label="Robert and Madison, home">R <span>&</span> M</a>
+    <button class="menu-button" id="menuButton" aria-expanded="false" aria-controls="siteNav"><span></span><span></span></button>
+    <nav id="siteNav" aria-label="Wedding navigation">
+      <a href="#story">Our Story</a><a href="#details">The Wedding</a><a href="#travel">Charleston</a><a href="#gallery">Gallery</a><a href="#rsvp">RSVP</a>
+    </nav>
+  </header>
 
   <main>
-
-    <!-- ═══════════════════════════════════════════════════
-         1. HERO
-         hero image src + scroll cue text set by main.js
-    ═══════════════════════════════════════════════════ -->
-    <section id="hero" class="section-hero" aria-label="Hero">
-      <div class="hero-bg" aria-hidden="true">
-        <img class="hero-img" src="" alt="Robert and Madison" loading="eager" fetchpriority="high">
+    <section class="hero" id="home">
+      <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2000&q=88" alt="An elegant outdoor wedding celebration" fetchpriority="high">
+      <div class="hero-shade"></div>
+      <div class="hero-copy reveal">
+        <p class="kicker">Charleston · South Carolina</p>
+        <h2>Robert <em>&</em> Madison</h2>
+        <p class="hero-date">November 7, 2027</p>
+        <a href="#details" class="outline-button">View the celebration</a>
       </div>
-      <div class="hero-overlay" aria-hidden="true"></div>
-
-      <div class="hero-content" id="heroContent">
-        <div class="monogram-wrap" aria-hidden="true">
-          <svg class="monogram-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 490" fill="none">
-          <style>
-          .crest-all{transform-origin:200px 245px;animation:gateOpen 1.2s cubic-bezier(0.16,1,0.3,1) 0.05s both}
-          @keyframes gateOpen{0%{transform:scaleY(0.012);opacity:0}18%{opacity:1}100%{transform:scaleY(1)}}
-          .ring-1{stroke-dasharray:1340;stroke-dashoffset:1340;animation:cDraw 3.2s cubic-bezier(0.4,0,0.2,1) 0.55s forwards}
-          .ring-2{stroke-dasharray:1280;stroke-dashoffset:1280;animation:cDraw 3.2s cubic-bezier(0.4,0,0.2,1) 0.8s forwards}
-          .crown{opacity:0;animation:cFadeD 0.8s ease 1.5s forwards}
-          .finial{opacity:0;animation:cFadeD 0.6s ease 1.2s forwards}
-          .shield-out{stroke-dasharray:860;stroke-dashoffset:860;animation:cDraw 2.4s ease 1.3s forwards}
-          .shield-in{stroke-dasharray:820;stroke-dashoffset:820;animation:cDraw 2.4s ease 1.55s forwards}
-          .shield-hdiv{stroke-dasharray:115;stroke-dashoffset:115;animation:cDraw 0.6s ease 2.4s forwards}
-          .br-l{stroke-dasharray:700;stroke-dashoffset:700;animation:cDraw 2.2s ease 2.1s forwards}
-          .br-r{stroke-dasharray:700;stroke-dashoffset:700;animation:cDraw 2.2s ease 2.3s forwards}
-          .shield-star{opacity:0;animation:cPop 0.5s ease 2.6s forwards}
-          .mono-R{opacity:0;animation:cSlideR 1s cubic-bezier(0.22,1,0.36,1) 2.8s forwards}
-          .mono-M{opacity:0;animation:cSlideL 1s cubic-bezier(0.22,1,0.36,1) 2.8s forwards}
-          .mono-amp{opacity:0;animation:cFadeU 0.7s ease 3.1s forwards}
-          .mono-sub{opacity:0;animation:cFadeU 0.8s ease 3.3s forwards}
-          .banner{stroke-dasharray:560;stroke-dashoffset:560;animation:cDraw 1.5s ease 3.1s forwards}
-          .ban-txt{opacity:0;animation:cFadeU 0.7s ease 3.6s forwards}
-          .bot-rule{opacity:0;animation:cFadeU 0.6s ease 3.8s forwards}
-          .bot-date{opacity:0;animation:cFadeU 0.7s ease 4.0s forwards}
-          .bot-arch{opacity:0;animation:cFadeU 0.7s ease 4.2s forwards}
-          @keyframes cDraw{to{stroke-dashoffset:0}}
-          @keyframes cFadeU{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
-          @keyframes cFadeD{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:none}}
-          @keyframes cSlideR{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
-          @keyframes cSlideL{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
-          @keyframes cPop{0%{opacity:0;transform:scale(0)}65%{opacity:1;transform:scale(1.25)}100%{opacity:1;transform:scale(1)}}
-          @media(prefers-reduced-motion:reduce){.crest-all{transform:none!important;animation:none!important;opacity:1!important}*{stroke-dashoffset:0!important;animation:none!important;opacity:1!important}}
-          </style>
-          <g class="crest-all">
-            <ellipse class="ring-1" cx="200" cy="245" rx="188" ry="233" stroke="#B08D57" stroke-width="1.25"/>
-            <ellipse class="ring-2" cx="200" cy="245" rx="179" ry="224" stroke="#B08D57" stroke-width="0.45"/>
-            <g class="finial">
-              <line x1="200" y1="4" x2="200" y2="17" stroke="#B08D57" stroke-width="1.4"/>
-              <line x1="193" y1="10" x2="207" y2="10" stroke="#B08D57" stroke-width="1.4"/>
-              <circle cx="200" cy="10" r="3.5" stroke="#B08D57" stroke-width="0.9" fill="none"/>
-            </g>
-            <g class="crown">
-              <line x1="162" y1="126" x2="238" y2="126" stroke="#B08D57" stroke-width="1.1"/>
-              <line x1="165" y1="126" x2="165" y2="108" stroke="#B08D57" stroke-width="1.1"/>
-              <line x1="181" y1="126" x2="181" y2="99" stroke="#B08D57" stroke-width="1.1"/>
-              <line x1="200" y1="126" x2="200" y2="89" stroke="#B08D57" stroke-width="1.4"/>
-              <line x1="219" y1="126" x2="219" y2="99" stroke="#B08D57" stroke-width="1.1"/>
-              <line x1="235" y1="126" x2="235" y2="108" stroke="#B08D57" stroke-width="1.1"/>
-              <circle cx="165" cy="106" r="3" stroke="#B08D57" stroke-width="0.9" fill="none"/>
-              <circle cx="181" cy="97" r="3.5" stroke="#B08D57" stroke-width="0.9" fill="none"/>
-              <circle cx="200" cy="87" r="4.2" stroke="#B08D57" stroke-width="1.0" fill="none"/>
-              <circle cx="219" cy="97" r="3.5" stroke="#B08D57" stroke-width="0.9" fill="none"/>
-              <circle cx="235" cy="106" r="3" stroke="#B08D57" stroke-width="0.9" fill="none"/>
-              <path d="M 165,126 Q 173,113 181,126" stroke="#B08D57" stroke-width="0.55" fill="none"/>
-              <path d="M 181,126 Q 190,108 200,126" stroke="#B08D57" stroke-width="0.55" fill="none"/>
-              <path d="M 200,126 Q 210,108 219,126" stroke="#B08D57" stroke-width="0.55" fill="none"/>
-              <path d="M 219,126 Q 227,113 235,126" stroke="#B08D57" stroke-width="0.55" fill="none"/>
-            </g>
-            <path class="shield-out" d="M 148,132 L 252,132 L 252,246 Q 249,314 200,337 Q 151,314 148,246 Z" stroke="#B08D57" stroke-width="1.7"/>
-            <path class="shield-in" d="M 155,139 L 245,139 L 245,243 Q 242,304 200,325 Q 158,304 155,243 Z" stroke="#B08D57" stroke-width="0.4"/>
-            <line class="shield-hdiv" x1="148" y1="202" x2="252" y2="202" stroke="#B08D57" stroke-width="0.8"/>
-            <g class="shield-star">
-              <line x1="173" y1="159" x2="173" y2="170" stroke="#B08D57" stroke-width="0.75"/>
-              <line x1="167" y1="164" x2="179" y2="164" stroke="#B08D57" stroke-width="0.75"/>
-              <line x1="169" y1="161" x2="177" y2="167" stroke="#B08D57" stroke-width="0.55"/>
-              <line x1="177" y1="161" x2="169" y2="167" stroke="#B08D57" stroke-width="0.55"/>
-            </g>
-            <g class="shield-star">
-              <line x1="227" y1="159" x2="227" y2="170" stroke="#B08D57" stroke-width="0.75"/>
-              <line x1="221" y1="164" x2="233" y2="164" stroke="#B08D57" stroke-width="0.75"/>
-              <line x1="223" y1="161" x2="231" y2="167" stroke="#B08D57" stroke-width="0.55"/>
-              <line x1="231" y1="161" x2="223" y2="167" stroke="#B08D57" stroke-width="0.55"/>
-            </g>
-            <text class="mono-R" x="174" y="196" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="46" fill="#B08D57">R</text>
-            <text class="mono-M" x="226" y="196" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="46" fill="#B08D57">M</text>
-            <text class="mono-amp" x="200" y="188" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="19" font-style="italic" fill="#B08D57">&amp;</text>
-            <text class="mono-sub" x="200" y="235" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="8.5" letter-spacing="4.5" fill="#B08D57">TOGETHER · 2027</text>
-            <line class="mono-sub" x1="170" y1="244" x2="230" y2="244" stroke="#B08D57" stroke-width="0.4"/>
-            <g class="br-l" stroke="#B08D57" fill="none">
-              <path d="M 140,188 C 126,188 114,184 103,179" stroke-width="0.85"/>
-              <path d="M 140,208 C 126,210 114,216 103,222" stroke-width="0.85"/>
-              <path d="M 135,186 C 126,177 118,170 113,162" stroke-width="0.7"/>
-              <path d="M 135,186 C 123,186 115,192 109,198" stroke-width="0.7"/>
-              <path d="M 124,183 C 115,175 110,167 107,159" stroke-width="0.7"/>
-              <path d="M 124,183 C 112,183 104,190 99,197" stroke-width="0.7"/>
-              <path d="M 113,181 C 106,174 103,165 101,157" stroke-width="0.65"/>
-              <path d="M 113,181 C 103,182 96,188 93,196" stroke-width="0.65"/>
-              <path d="M 135,210 C 126,218 121,226 118,234" stroke-width="0.7"/>
-              <path d="M 135,210 C 123,207 115,202 109,198" stroke-width="0.7"/>
-              <path d="M 124,213 C 114,220 109,228 106,237" stroke-width="0.7"/>
-              <path d="M 124,213 C 113,211 105,206 99,202" stroke-width="0.7"/>
-              <path d="M 113,217 C 104,224 101,233 99,242" stroke-width="0.65"/>
-              <path d="M 113,217 C 103,215 96,210 92,206" stroke-width="0.65"/>
-            </g>
-            <g class="br-r" stroke="#B08D57" fill="none">
-              <path d="M 260,188 C 274,188 286,184 297,179" stroke-width="0.85"/>
-              <path d="M 260,208 C 274,210 286,216 297,222" stroke-width="0.85"/>
-              <path d="M 265,186 C 274,177 282,170 287,162" stroke-width="0.7"/>
-              <path d="M 265,186 C 277,186 285,192 291,198" stroke-width="0.7"/>
-              <path d="M 276,183 C 285,175 290,167 293,159" stroke-width="0.7"/>
-              <path d="M 276,183 C 288,183 296,190 301,197" stroke-width="0.7"/>
-              <path d="M 287,181 C 294,174 297,165 299,157" stroke-width="0.65"/>
-              <path d="M 287,181 C 297,182 304,188 307,196" stroke-width="0.65"/>
-              <path d="M 265,210 C 274,218 279,226 282,234" stroke-width="0.7"/>
-              <path d="M 265,210 C 277,207 285,202 291,198" stroke-width="0.7"/>
-              <path d="M 276,213 C 286,220 291,228 294,237" stroke-width="0.7"/>
-              <path d="M 276,213 C 287,211 295,206 301,202" stroke-width="0.7"/>
-              <path d="M 287,217 C 296,224 299,233 301,242" stroke-width="0.65"/>
-              <path d="M 287,217 C 297,215 304,210 308,206" stroke-width="0.65"/>
-            </g>
-            <path class="banner" d="M 136,350 Q 200,342 264,350 L 266,362 Q 200,354 134,362 Z" stroke="#B08D57" stroke-width="1.0"/>
-            <path class="banner" d="M 136,350 L 119,356 L 134,362" stroke="#B08D57" stroke-width="0.85" fill="none"/>
-            <path class="banner" d="M 264,350 L 281,356 L 266,362" stroke="#B08D57" stroke-width="0.85" fill="none"/>
-            <path class="banner" d="M 136,350 L 142,356 L 136,362" stroke="#B08D57" stroke-width="0.4" fill="none"/>
-            <path class="banner" d="M 264,350 L 258,356 L 264,362" stroke="#B08D57" stroke-width="0.4" fill="none"/>
-            <text class="ban-txt" x="200" y="360" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="11.5" letter-spacing="6" fill="#B08D57">F I S H E R</text>
-            <g class="bot-rule">
-              <line x1="155" y1="376" x2="245" y2="376" stroke="#B08D57" stroke-width="0.65"/>
-              <line x1="163" y1="380" x2="237" y2="380" stroke="#B08D57" stroke-width="0.3"/>
-              <path d="M 200,374 L 203.5,378 L 200,382 L 196.5,378 Z" stroke="#B08D57" stroke-width="0.8"/>
-            </g>
-            <text class="bot-date" x="200" y="410" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="8" letter-spacing="5" fill="#B08D57">NOVEMBER · VII · MMXXVII</text>
-            <g class="bot-arch">
-              <circle cx="148" cy="408" r="1.4" fill="#B08D57"/>
-              <circle cx="252" cy="408" r="1.4" fill="#B08D57"/>
-              <path d="M 168,462 Q 200,474 232,462" stroke="#B08D57" stroke-width="1.0" fill="none"/>
-              <path d="M 200,464 L 204,470 L 200,476 L 196,470 Z" stroke="#B08D57" stroke-width="0.9"/>
-            </g>
-          </g>
-          </svg>
-        </div>
-
-        <p class="hero-tagline">Together with their families</p>
-        <h1 class="hero-title">
-          <span class="ht-name">Robert</span>
-          <span class="ht-amp" aria-hidden="true">&amp;</span>
-          <span class="ht-name">Madison</span>
-        </h1>
-        <p class="hero-date">Sunday, the Seventh of November, 2027</p>
-        <p class="hero-venue">The William Aiken House &middot; Charleston, SC</p>
-      </div>
-
-      <a href="#story" class="scroll-cue" aria-label="Scroll down">
-        <span class="scroll-cue-line"></span>
-        <span class="scroll-cue-label">Scroll</span>
-      </a>
+      <a href="#story" class="scroll-mark" aria-label="Scroll to our story">Discover <span>↓</span></a>
     </section>
 
-    <!-- Countdown showpiece -->
-    <section class="countdown-band" aria-label="Countdown to the wedding">
-      <p class="countdown-eyebrow" data-reveal>Counting down to the seventh of November</p>
-      <div class="countdown" id="countdown" data-reveal></div>
+    <section class="countdown" aria-label="Countdown to the wedding">
+      <p>Until we gather in Charleston</p>
+      <div id="countdown" class="countdown-grid"><div><strong>—</strong><span>Days</span></div><div><strong>—</strong><span>Hours</span></div><div><strong>—</strong><span>Minutes</span></div><div><strong>—</strong><span>Seconds</span></div></div>
     </section>
 
-    <!-- Marquee -->
-    <div class="marquee-band" aria-hidden="true">
-      <div class="marquee-track">
-        <span>Robert &amp; Madison</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>November VII &middot; MMXXVII</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>The William Aiken House</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>Charleston, South Carolina</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>Robert &amp; Madison</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>November VII &middot; MMXXVII</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>The William Aiken House</span><span class="marquee-dot">&nbsp;·&nbsp;</span><span>Charleston, South Carolina</span><span class="marquee-dot">&nbsp;·&nbsp;</span>
-      </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════
-         2. OUR STORY
-         .timeline populated by main.js from story.milestones
-    ═══════════════════════════════════════════════════ -->
-    <section id="story" class="section section-story">
-      <div class="section-inner">
-        <h2 data-reveal class="split-heading">Our Story</h2>
-        <p class="section-dek" data-reveal>How it all began</p>
-        <div class="divider" aria-hidden="true" data-reveal></div>
-      </div>
-      <!-- Timeline entries injected by main.js -->
-      <div class="timeline" id="timeline"></div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════
-         3. EVENT DETAILS
-         #scheduleList populated by main.js from schedule[]
-    ═══════════════════════════════════════════════════ -->
-    <section id="details" class="section section-details">
-      <div class="section-inner">
-        <h2 data-reveal class="split-heading">The Celebration</h2>
-        <p class="section-dek" data-reveal>Where to be, and when</p>
-        <div class="divider" aria-hidden="true" data-reveal></div>
-        <p data-reveal style="color:rgba(251,248,240,0.65);max-width:540px;margin:0 auto var(--space-md)">
-          The William Aiken House — an 1810 National Historic Landmark on Upper King Street — sets the stage with its grand ballrooms, open-air piazzas, garden pergola, and magnolia courtyard.
-        </p>
-
-        <div class="details-grid">
-          <div class="detail-card" data-reveal>
-            <h3>Ceremony</h3>
-            <span class="detail-time">TODO pm</span>
-            <p>The William Aiken House<br>Garden Pergola<br>456 King Street<br>Charleston, SC 29403</p>
-          </div>
-          <div class="detail-card" data-reveal>
-            <h3>Cocktail Hour</h3>
-            <span class="detail-time">Following the Ceremony</span>
-            <p>Magnolia Courtyard<br>&amp; Open-Air Piazzas</p>
-          </div>
-          <div class="detail-card" data-reveal>
-            <h3>Reception</h3>
-            <span class="detail-time">TODO pm</span>
-            <p>Grand Ballroom<br>The William Aiken House</p>
-          </div>
-          <div class="detail-card" data-reveal>
-            <h3>Dress Code</h3>
-            <span class="detail-time">Black Attire Required</span>
-            <p>Guests are kindly asked to wear a black dress or black suit. All other colors will not be permitted.</p>
-          </div>
-        </div>
-
-        <!-- Schedule rows injected by main.js -->
-        <div class="schedule" data-reveal>
-          <h3>Day-Of Schedule</h3>
-          <div class="schedule-list" id="scheduleList"></div>
-        </div>
-
-        <!-- Venue map -->
-        <div class="map-wrap" data-reveal>
-          <iframe
-            src="https://maps.google.com/maps?q=The+William+Aiken+House+456+King+Street+Charleston+SC+29403&t=&z=16&ie=UTF8&iwloc=&output=embed"
-            title="The William Aiken House — 456 King Street, Charleston, SC"
-            loading="lazy"
-            allowfullscreen
-            referrerpolicy="no-referrer-when-downgrade">
-          </iframe>
-        </div>
-
+    <section class="editorial section" id="story">
+      <div class="editorial-photo reveal"><img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=86" alt="A couple walking together at sunset" loading="lazy"><span>Est. 2021</span></div>
+      <div class="editorial-copy reveal">
+        <p class="kicker dark">Our Story</p>
+        <h2>A love worth<br><em>celebrating</em></h2>
+        <p>What began as one conversation became a life built together. In 2027, we will gather the people we love most in Charleston to begin our next chapter as husband and wife.</p>
+        <p>We cannot wait to share an evening of timeless Southern hospitality, beautiful music, and memories that will stay with us long after the last dance.</p>
+        <div class="signature">R <span>&</span> M</div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════
-         4. TRAVEL & LODGING
-         #hotelGrid fully populated by main.js from travel{}
-    ═══════════════════════════════════════════════════ -->
-    <section id="travel" class="section section-travel">
-      <div class="section-inner">
-        <h2 data-reveal class="split-heading">Travel &amp; Lodging</h2>
-        <p class="section-dek" data-reveal>Making your way to Charleston</p>
-        <div class="divider" aria-hidden="true" data-reveal></div>
+    <section class="venue section" id="details">
+      <div class="section-heading reveal"><p class="kicker">The Wedding</p><h2>The William<br><em>Aiken House</em></h2><p>Sunday · November 7, 2027</p></div>
+      <div class="venue-grid">
+        <article class="venue-card reveal"><span>01</span><h3>Ceremony</h3><p>Garden Pergola<br>Formal timing to follow</p></article>
+        <article class="venue-card reveal"><span>02</span><h3>Cocktails</h3><p>Magnolia Courtyard<br>Following the ceremony</p></article>
+        <article class="venue-card reveal"><span>03</span><h3>Reception</h3><p>Grand Ballroom<br>Dinner and dancing</p></article>
+        <article class="venue-card reveal"><span>04</span><h3>Attire</h3><p>Black formal attire<br>Kindly dress in black</p></article>
+      </div>
+      <div class="address reveal"><p>456 King Street · Charleston, South Carolina</p><a href="https://www.google.com/maps/search/?api=1&query=The+William+Aiken+House+456+King+Street+Charleston+SC" target="_blank" rel="noopener">Open in Maps ↗</a></div>
+    </section>
 
-        <!-- Airport, parking, and hotel cards injected by main.js -->
-        <div class="travel-grid" id="hotelGrid"></div>
+    <section class="travel section" id="travel">
+      <div class="travel-intro reveal"><p class="kicker dark">A Charleston Weekend</p><h2>Stay awhile.</h2><p>Historic Charleston is best explored slowly. Arrive early, wander King Street, and make a weekend of it.</p></div>
+      <div class="travel-list">
+        <article class="reveal"><span>Arrive</span><h3>Charleston International</h3><p>CHS is approximately 20–30 minutes from downtown. Rideshare is the easiest way to reach the historic district.</p></article>
+        <article class="reveal"><span>Stay</span><h3>Near Upper King</h3><p>Hotel Bennett, Francis Marion Hotel, The Restoration, and The Dewberry are all convenient to the venue.</p></article>
+        <article class="reveal"><span>Move</span><h3>Walk or rideshare</h3><p>There is no on-site venue parking. Downtown is walkable; Uber and Lyft can drop guests directly on King Street.</p></article>
+      </div>
+      <div class="hotel-links reveal"><a href="https://www.hotelbennett.com" target="_blank" rel="noopener">Hotel Bennett</a><a href="https://www.francismarionhotel.com" target="_blank" rel="noopener">Francis Marion</a><a href="https://www.therestorationhotel.com" target="_blank" rel="noopener">The Restoration</a><a href="https://www.thedewberry.com" target="_blank" rel="noopener">The Dewberry</a></div>
+    </section>
 
-        <div class="travel-note" data-reveal>
-          <p>Charleston's historic downtown is wonderfully walkable. King Street is lined with restaurants, boutiques, and bars — we encourage you to make a long weekend of it.</p>
-        </div>
+    <section class="gallery section" id="gallery">
+      <div class="section-heading dark reveal"><p class="kicker dark">Captured Moments</p><h2>Ours,<br><em>so far.</em></h2></div>
+      <div class="gallery-grid" id="galleryGrid">
+        <button class="photo tall reveal"><img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=84" alt="Wedding celebration portrait" loading="lazy"></button>
+        <button class="photo reveal"><img src="https://images.unsplash.com/photo-1474552226712-ac0f0961a954?auto=format&fit=crop&w=900&q=84" alt="Couple holding hands" loading="lazy"></button>
+        <button class="photo reveal"><img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=900&q=84" alt="Elegant wedding table details" loading="lazy"></button>
+        <button class="photo wide reveal"><img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1400&q=84" alt="A joyful wedding moment" loading="lazy"></button>
+        <button class="photo reveal"><img src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?auto=format&fit=crop&w=900&q=84" alt="Wedding rings and florals" loading="lazy"></button>
+      </div>
+      <p class="gallery-note">Personal photographs can replace these editorial images whenever you are ready.</p>
+    </section>
+
+    <section class="rsvp section" id="rsvp">
+      <div class="rsvp-panel reveal">
+        <p class="kicker">Kindly Reply</p><h2>We hope you’ll<br><em>join us.</em></h2>
+        <p>Formal invitations and online RSVP access will follow. For now, please save the date.</p>
+        <button class="outline-button light" id="saveDate">Add to calendar</button>
+        <p class="small">Sunday, November 7, 2027 · Charleston, South Carolina</p>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════
-         5. GALLERY
-         #galleryGrid populated by main.js from gallery{}
-    ═══════════════════════════════════════════════════ -->
-    <section id="gallery" class="section section-gallery">
-      <div class="section-inner">
-        <h2 data-reveal class="split-heading">Gallery</h2>
-        <p class="section-dek" data-reveal>A few of our favorite moments</p>
-        <div class="divider" aria-hidden="true" data-reveal></div>
-        <p data-reveal style="color:var(--ink-muted);max-width:480px;margin:0 auto var(--space-md);font-style:italic">
-          Click any photo to view full size.
-        </p>
-
-        <!-- Calm responsive grid populated by main.js; Tab/Enter by keyboard, click to enlarge -->
-        <div class="gallery-grid" id="galleryGrid" role="group" aria-label="Photo gallery — Tab to browse, Enter to enlarge"></div>
-      </div>
+    <section class="registry section">
+      <p class="kicker dark">With Gratitude</p><h2>Your presence is<br><em>the greatest gift.</em></h2><p>Registry details will be shared with the formal invitation.</p>
     </section>
-
-    <!-- ═══════════════════════════════════════════════════
-         6. REGISTRY
-         #registryGrid populated by main.js from registry.links[]
-    ═══════════════════════════════════════════════════ -->
-    <section id="registry" class="section section-registry section-alt">
-      <div class="section-inner">
-        <h2 data-reveal class="split-heading">Registry</h2>
-        <p class="section-dek" data-reveal>Should you wish to give</p>
-        <div class="divider" aria-hidden="true" data-reveal></div>
-        <!-- intro text set by main.js from registry.intro -->
-        <p id="registryIntro" data-reveal style="color:var(--ink-muted);max-width:500px;margin:0 auto var(--space-md)"></p>
-
-        <!-- Registry tiles injected by main.js -->
-        <div class="registry-grid" id="registryGrid"></div>
-      </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════
-         7. RSVP
-         meal <select> options injected by main.js from rsvp.mealOptions[]
-         #rsvpIntro text set by main.js from rsvp.intro
-    ═══════════════════════════════════════════════════ -->
-    <section id="rsvp" class="section section-rsvp">
-      <div class="section-inner">
-        <h2 data-reveal class="split-heading">RSVP</h2>
-        <p class="section-dek" data-reveal>Kindly let us know</p>
-        <div class="divider" aria-hidden="true" data-reveal></div>
-        <!-- populated by main.js from rsvp.intro -->
-        <p id="rsvpIntro" data-reveal></p>
-
-        <div data-reveal>
-          <form class="rsvp-form" id="rsvpForm" novalidate>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="rsvp-name">Full Name</label>
-                <input type="text" id="rsvp-name" name="name" required maxlength="80"
-                  autocomplete="name" autocapitalize="words" placeholder="Your full name">
-              </div>
-              <div class="form-group">
-                <label for="rsvp-email">Email Address</label>
-                <input type="email" id="rsvp-email" name="email" required maxlength="254"
-                  autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false"
-                  placeholder="your@email.com">
-              </div>
-            </div>
-
-            <fieldset class="form-group rsvp-attending-group">
-              <legend>Will you be attending?</legend>
-              <div class="rsvp-attending">
-                <label class="radio-label">
-                  <input type="radio" name="attending" value="Joyfully Accepts" required>
-                  Joyfully Accepts
-                </label>
-                <label class="radio-label">
-                  <input type="radio" name="attending" value="Regretfully Declines">
-                  Regretfully Declines
-                </label>
-              </div>
-            </fieldset>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="rsvp-guests">Number of Guests (including yourself)</label>
-                <input type="number" id="rsvp-guests" name="guests" min="1" max="10" step="1"
-                  inputmode="numeric" placeholder="1">
-              </div>
-              <div class="form-group">
-                <label for="rsvp-meal">Meal Preference</label>
-                <!-- Options injected by main.js from rsvp.mealOptions -->
-                <select id="rsvp-meal" name="meal">
-                  <option value="">Select a preference</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="rsvp-notes">Dietary Restrictions / Notes</label>
-              <textarea id="rsvp-notes" name="notes" maxlength="1000" placeholder="Any allergies or notes for us?"></textarea>
-            </div>
-
-            <div class="rsvp-submit">
-              <button type="submit" class="btn btn-solid">Send My RSVP</button>
-            </div>
-
-          </form>
-
-          <div class="form-success" id="rsvpSuccess">
-            <h3>Thank you!</h3>
-            <!-- success message text set by main.js from rsvp.successMessage -->
-            <p style="color:rgba(251,248,240,0.7)"></p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════
-         8. GUESTBOOK
-         #gbIntro text set by main.js
-         textarea placeholder set by main.js from guestbook.placeholder
-    ═══════════════════════════════════════════════════ -->
-    <section id="guestbook" class="section section-guestbook">
-      <div class="section-inner">
-        <h2 data-reveal class="split-heading">Guestbook</h2>
-        <p class="section-dek" data-reveal>A note for us to keep</p>
-        <div class="divider" aria-hidden="true" data-reveal></div>
-        <!-- populated by main.js from guestbook.intro -->
-        <p id="gbIntro" data-reveal style="color:var(--ink-muted);max-width:480px;margin:0 auto var(--space-lg)"></p>
-
-        <div class="guestbook-layout" data-reveal>
-
-          <div class="guestbook-form-wrap">
-            <h3 style="font-style:italic;margin-bottom:var(--space-md)">Write a Note</h3>
-
-            <form class="guestbook-form" id="gbForm" novalidate>
-              <div class="form-group">
-                <label for="gb-name">Your Name</label>
-                <input type="text" id="gb-name" name="name" required maxlength="80"
-                  autocomplete="name" autocapitalize="words" placeholder="Your name">
-              </div>
-              <div class="form-group">
-                <label for="gb-message">Your Message</label>
-                <!-- placeholder set by main.js from guestbook.placeholder -->
-                <textarea id="gb-message" name="message" required maxlength="2000" rows="5"></textarea>
-              </div>
-              <button type="submit" class="btn btn-outline"
-                style="border-color:var(--green);color:var(--green)">
-                Leave a Note
-              </button>
-            </form>
-
-            <div class="form-success" id="gbSuccess" style="color:var(--green)">
-              <h3 style="color:var(--green)">Thank you!</h3>
-              <p style="color:var(--ink-muted)">Your note has been added to the guestbook.</p>
-            </div>
-          </div>
-
-          <div>
-            <h3 style="font-style:italic;margin-bottom:var(--space-md)">Notes from Our Guests</h3>
-            <div class="guestbook-notes" id="gbNotes">
-              <p class="guestbook-empty">Notes will appear here once guests begin writing.</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
   </main>
 
-  <!-- ═══════════════════════════════════════════════════════
-       FOOTER  — text IDs populated by main.js from footer{} + couple{}
-  ═══════════════════════════════════════════════════════ -->
-  <footer class="footer">
-    <div class="footer-monogram">R &amp; M</div>
-    <div class="footer-rule" aria-hidden="true"></div>
-    <div class="footer-date" id="footerDate"></div>
-    <div class="footer-hashtag" id="footerHashtag" data-hashtag></div>
-    <div class="footer-tagline" id="footerTagline" style="font-style:italic;color:rgba(251,248,240,0.45);font-size:var(--size-sm);margin:var(--space-xs) 0"></div>
-    <div class="footer-rule" aria-hidden="true"></div>
-    <div class="footer-contact">
-      Questions? <a href="#" data-contact-email></a>
-    </div>
-  </footer>
+  <footer><div class="crest small-crest" aria-hidden="true"><span>R</span><i>&</i><span>M</span></div><p>Robert Fisher & Madison Muschik</p><p>11 · 07 · 2027</p><a href="#home">Back to top ↑</a></footer>
 
-  <!-- ═══════════════════════════════════════════════════════
-       LIGHTBOX
-  ═══════════════════════════════════════════════════════ -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo lightbox">
-    <button class="lightbox-close" id="lbClose" aria-label="Close lightbox">&#215;</button>
-    <button class="lightbox-prev" id="lbPrev" aria-label="Previous photo">&#8249;</button>
-    <button class="lightbox-next" id="lbNext" aria-label="Next photo">&#8250;</button>
-    <div class="lightbox-inner">
-      <img class="lightbox-img" src="" alt="">
-    </div>
-  </div>
-
-  <!-- Single ES-module entry point — imports content.js and sheets.js internally -->
+  <dialog class="lightbox" id="lightbox"><button id="closeLightbox" aria-label="Close photo">×</button><img id="lightboxImage" alt=""></dialog>
   <script type="module" src="src/main.js"></script>
 </body>
 </html>

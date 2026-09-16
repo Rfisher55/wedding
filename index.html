@@ -1,371 +1,117 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Robert Fisher & Madison Muschik — Wedding Celebration, November 7, 2027 · The William Aiken House, Charleston, SC">
-  <title>Robert &amp; Madison | November 7, 2027</title>
-
-  <!-- Google Fonts -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#12231c">
+  <meta name="description" content="The wedding of Robert Fisher and Madison Muschik — November 7, 2027 at The William Aiken House in Charleston, South Carolina.">
+  <title>Robert & Madison — November 7, 2027</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='32' fill='%2312231c'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-size='29' fill='%23d2b16f' font-family='serif'%3ER%26M%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
-
-  <!-- ═══════════════════════════════════════════════════════
-       NAVIGATION
-  ═══════════════════════════════════════════════════════ -->
-  <nav class="nav" id="nav" aria-label="Site navigation">
-    <div class="nav-inner">
-      <a href="#hero" class="nav-monogram" aria-label="Return to top">R &amp; M</a>
-      <ul class="nav-links" role="list">
-        <li><a href="#story">Our Story</a></li>
-        <li><a href="#details">Details</a></li>
-        <li><a href="#travel">Travel</a></li>
-        <li><a href="#gallery">Gallery</a></li>
-        <li><a href="#registry">Registry</a></li>
-        <li><a href="#rsvp">RSVP</a></li>
-        <li><a href="#guestbook">Guestbook</a></li>
-      </ul>
-      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">&#9776;</button>
+  <div class="intro" id="intro" aria-label="Wedding invitation">
+    <div class="intro-frame">
+      <p class="kicker">Together with their families</p>
+      <div class="crest" aria-hidden="true"><span>R</span><i>&</i><span>M</span></div>
+      <h1>Robert Fisher<br><em>&</em><br>Madison Muschik</h1>
+      <p class="invitation-line">request the honour of your presence at the celebration of their marriage</p>
+      <p class="date-script">Sunday, the Seventh of November<br>Two Thousand and Twenty-Seven</p>
+      <p class="venue-line">The William Aiken House<br>Charleston, South Carolina</p>
+      <button class="enter" id="enterSite">Enter the celebration <span>↓</span></button>
     </div>
-  </nav>
-
-  <!-- Mobile menu overlay -->
-  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-label="Navigation menu">
-    <button class="mobile-close" id="mobileClose" aria-label="Close menu">&#215;</button>
-    <ul role="list">
-      <li><a href="#story">Our Story</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#travel">Travel</a></li>
-      <li><a href="#gallery">Gallery</a></li>
-      <li><a href="#registry">Registry</a></li>
-      <li><a href="#rsvp">RSVP</a></li>
-      <li><a href="#guestbook">Guestbook</a></li>
-    </ul>
   </div>
+
+  <header class="site-header" id="siteHeader">
+    <a class="wordmark" href="#home" aria-label="Robert and Madison, home">R <span>&</span> M</a>
+    <button class="menu-button" id="menuButton" aria-expanded="false" aria-controls="siteNav"><span></span><span></span></button>
+    <nav id="siteNav" aria-label="Wedding navigation">
+      <a href="#story">Our Story</a><a href="#details">The Wedding</a><a href="#travel">Charleston</a><a href="#gallery">Gallery</a><a href="#rsvp">RSVP</a>
+    </nav>
+  </header>
 
   <main>
-
-    <!-- ═══════════════════════════════════════════════════
-         1. HERO
-         hero image src + scroll cue text set by main.js
-    ═══════════════════════════════════════════════════ -->
-    <section id="hero" class="section-hero" aria-label="Hero">
-      <div class="hero-bg" aria-hidden="true">
-        <!-- src injected by main.js from hero.heroImage -->
-        <img class="hero-img" src="" alt="Robert and Madison" loading="eager" fetchpriority="high">
+    <section class="hero" id="home">
+      <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2000&q=88" alt="An elegant outdoor wedding celebration" fetchpriority="high">
+      <div class="hero-shade"></div>
+      <div class="hero-copy reveal">
+        <p class="kicker">Charleston · South Carolina</p>
+        <h2>Robert <em>&</em> Madison</h2>
+        <p class="hero-date">November 7, 2027</p>
+        <a href="#details" class="outline-button">View the celebration</a>
       </div>
-      <div class="hero-overlay" aria-hidden="true"></div>
+      <a href="#story" class="scroll-mark" aria-label="Scroll to our story">Discover <span>↓</span></a>
+    </section>
 
-      <div class="hero-content">
-        <div class="monogram-wrap" aria-hidden="true">
-          <img src="public/monogram.svg" alt="" class="monogram-svg" width="220" height="250">
-        </div>
+    <section class="countdown" aria-label="Countdown to the wedding">
+      <p>Until we gather in Charleston</p>
+      <div id="countdown" class="countdown-grid"><div><strong>—</strong><span>Days</span></div><div><strong>—</strong><span>Hours</span></div><div><strong>—</strong><span>Minutes</span></div><div><strong>—</strong><span>Seconds</span></div></div>
+    </section>
 
-        <p class="hero-tagline">Together with their families</p>
-
-        <h1 class="hero-names">
-          Robert Fisher
-          <span class="hero-amp">&amp;</span>
-          Madison Muschik
-        </h1>
-
-        <p class="hero-date">Sunday, the Seventh of November, 2027</p>
-        <p class="hero-venue" style="margin-top:0.4em">The William Aiken House &middot; Charleston, SC</p>
-
-        <a href="#story" class="scroll-cue" aria-label="Scroll down">
-          <span class="scroll-cue-line"></span>
-          <span class="scroll-cue-label">Scroll</span>
-        </a>
+    <section class="editorial section" id="story">
+      <div class="editorial-photo reveal"><img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=86" alt="A couple walking together at sunset" loading="lazy"><span>Est. 2021</span></div>
+      <div class="editorial-copy reveal">
+        <p class="kicker dark">Our Story</p>
+        <h2>A love worth<br><em>celebrating</em></h2>
+        <p>What began as one conversation became a life built together. In 2027, we will gather the people we love most in Charleston to begin our next chapter as husband and wife.</p>
+        <p>We cannot wait to share an evening of timeless Southern hospitality, beautiful music, and memories that will stay with us long after the last dance.</p>
+        <div class="signature">R <span>&</span> M</div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════
-         2. OUR STORY
-         .timeline populated by main.js from story.milestones
-    ═══════════════════════════════════════════════════ -->
-    <section id="story" class="section section-story">
-      <div class="section-inner">
-        <span class="eyebrow" data-reveal>How It Began</span>
-        <h2 data-reveal>Our Story</h2>
-        <div class="divider" aria-hidden="true" data-reveal></div>
+    <section class="venue section" id="details">
+      <div class="section-heading reveal"><p class="kicker">The Wedding</p><h2>The William<br><em>Aiken House</em></h2><p>Sunday · November 7, 2027</p></div>
+      <div class="venue-grid">
+        <article class="venue-card reveal"><span>01</span><h3>Ceremony</h3><p>Garden Pergola<br>Formal timing to follow</p></article>
+        <article class="venue-card reveal"><span>02</span><h3>Cocktails</h3><p>Magnolia Courtyard<br>Following the ceremony</p></article>
+        <article class="venue-card reveal"><span>03</span><h3>Reception</h3><p>Grand Ballroom<br>Dinner and dancing</p></article>
+        <article class="venue-card reveal"><span>04</span><h3>Attire</h3><p>Black formal attire<br>Kindly dress in black</p></article>
+      </div>
+      <div class="address reveal"><p>456 King Street · Charleston, South Carolina</p><a href="https://www.google.com/maps/search/?api=1&query=The+William+Aiken+House+456+King+Street+Charleston+SC" target="_blank" rel="noopener">Open in Maps ↗</a></div>
+    </section>
 
-        <!-- Timeline entries injected by main.js -->
-        <div class="timeline" id="timeline"></div>
+    <section class="travel section" id="travel">
+      <div class="travel-intro reveal"><p class="kicker dark">A Charleston Weekend</p><h2>Stay awhile.</h2><p>Historic Charleston is best explored slowly. Arrive early, wander King Street, and make a weekend of it.</p></div>
+      <div class="travel-list">
+        <article class="reveal"><span>Arrive</span><h3>Charleston International</h3><p>CHS is approximately 20–30 minutes from downtown. Rideshare is the easiest way to reach the historic district.</p></article>
+        <article class="reveal"><span>Stay</span><h3>Near Upper King</h3><p>Hotel Bennett, Francis Marion Hotel, The Restoration, and The Dewberry are all convenient to the venue.</p></article>
+        <article class="reveal"><span>Move</span><h3>Walk or rideshare</h3><p>There is no on-site venue parking. Downtown is walkable; Uber and Lyft can drop guests directly on King Street.</p></article>
+      </div>
+      <div class="hotel-links reveal"><a href="https://www.hotelbennett.com" target="_blank" rel="noopener">Hotel Bennett</a><a href="https://www.francismarionhotel.com" target="_blank" rel="noopener">Francis Marion</a><a href="https://www.therestorationhotel.com" target="_blank" rel="noopener">The Restoration</a><a href="https://www.thedewberry.com" target="_blank" rel="noopener">The Dewberry</a></div>
+    </section>
+
+    <section class="gallery section" id="gallery">
+      <div class="section-heading dark reveal"><p class="kicker dark">Captured Moments</p><h2>Ours,<br><em>so far.</em></h2></div>
+      <div class="gallery-grid" id="galleryGrid">
+        <button class="photo tall reveal"><img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=84" alt="Wedding celebration portrait" loading="lazy"></button>
+        <button class="photo reveal"><img src="https://images.unsplash.com/photo-1474552226712-ac0f0961a954?auto=format&fit=crop&w=900&q=84" alt="Couple holding hands" loading="lazy"></button>
+        <button class="photo reveal"><img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=900&q=84" alt="Elegant wedding table details" loading="lazy"></button>
+        <button class="photo wide reveal"><img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1400&q=84" alt="A joyful wedding moment" loading="lazy"></button>
+        <button class="photo reveal"><img src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?auto=format&fit=crop&w=900&q=84" alt="Wedding rings and florals" loading="lazy"></button>
+      </div>
+      <p class="gallery-note">Personal photographs can replace these editorial images whenever you are ready.</p>
+    </section>
+
+    <section class="rsvp section" id="rsvp">
+      <div class="rsvp-panel reveal">
+        <p class="kicker">Kindly Reply</p><h2>We hope you’ll<br><em>join us.</em></h2>
+        <p>Formal invitations and online RSVP access will follow. For now, please save the date.</p>
+        <button class="outline-button light" id="saveDate">Add to calendar</button>
+        <p class="small">Sunday, November 7, 2027 · Charleston, South Carolina</p>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════
-         3. EVENT DETAILS
-         #scheduleList populated by main.js from schedule[]
-    ═══════════════════════════════════════════════════ -->
-    <section id="details" class="section section-details">
-      <div class="section-inner">
-        <span class="eyebrow" data-reveal>Join Us</span>
-        <h2 data-reveal>The Celebration</h2>
-        <div class="divider" aria-hidden="true" data-reveal></div>
-        <p data-reveal style="color:rgba(251,248,240,0.65);max-width:540px;margin:0 auto var(--space-md)">
-          The William Aiken House — an 1810 National Historic Landmark on Upper King Street — sets the stage with its grand ballrooms, open-air piazzas, garden pergola, and magnolia courtyard.
-        </p>
-
-        <div class="details-grid">
-          <div class="detail-card" data-reveal>
-            <h3>Ceremony</h3>
-            <span class="detail-time">TODO pm</span>
-            <p>The William Aiken House<br>Garden Pergola<br>456 King Street<br>Charleston, SC 29403</p>
-          </div>
-          <div class="detail-card" data-reveal>
-            <h3>Cocktail Hour</h3>
-            <span class="detail-time">Following the Ceremony</span>
-            <p>Magnolia Courtyard<br>&amp; Open-Air Piazzas</p>
-          </div>
-          <div class="detail-card" data-reveal>
-            <h3>Reception</h3>
-            <span class="detail-time">TODO pm</span>
-            <p>Grand Ballroom<br>The William Aiken House</p>
-          </div>
-          <div class="detail-card" data-reveal>
-            <h3>Dress Code</h3>
-            <span class="detail-time">Attire</span>
-            <p>TODO: Black Tie / Black Tie Optional / Cocktail</p>
-          </div>
-        </div>
-
-        <!-- Schedule rows injected by main.js -->
-        <div class="schedule" data-reveal>
-          <h3>Day-Of Schedule</h3>
-          <div class="schedule-list" id="scheduleList"></div>
-        </div>
-
-        <!-- Venue map -->
-        <div class="map-wrap" data-reveal>
-          <iframe
-            src="https://maps.google.com/maps?q=The+William+Aiken+House+456+King+Street+Charleston+SC+29403&t=&z=16&ie=UTF8&iwloc=&output=embed"
-            title="The William Aiken House — 456 King Street, Charleston, SC"
-            loading="lazy"
-            allowfullscreen
-            referrerpolicy="no-referrer-when-downgrade">
-          </iframe>
-        </div>
-
-      </div>
+    <section class="registry section">
+      <p class="kicker dark">With Gratitude</p><h2>Your presence is<br><em>the greatest gift.</em></h2><p>Registry details will be shared with the formal invitation.</p>
     </section>
-
-    <!-- ═══════════════════════════════════════════════════
-         4. TRAVEL & LODGING
-         #hotelGrid fully populated by main.js from travel{}
-    ═══════════════════════════════════════════════════ -->
-    <section id="travel" class="section section-travel">
-      <div class="section-inner">
-        <span class="eyebrow" data-reveal>Getting Here</span>
-        <h2 data-reveal>Travel &amp; Lodging</h2>
-        <div class="divider" aria-hidden="true" data-reveal></div>
-
-        <!-- Airport, parking, and hotel cards injected by main.js -->
-        <div class="travel-grid" id="hotelGrid"></div>
-
-        <div class="travel-note" data-reveal>
-          <p>Charleston's historic downtown is wonderfully walkable. King Street is lined with restaurants, boutiques, and bars — we encourage you to make a long weekend of it.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════
-         5. GALLERY
-         #galleryGrid populated by main.js from gallery{}
-    ═══════════════════════════════════════════════════ -->
-    <section id="gallery" class="section section-gallery">
-      <div class="section-inner">
-        <span class="eyebrow" data-reveal>Captured Moments</span>
-        <h2 data-reveal>Gallery</h2>
-        <div class="divider" aria-hidden="true" data-reveal></div>
-        <p data-reveal style="color:var(--ink-muted);max-width:480px;margin:0 auto var(--space-md);font-style:italic">
-          Click any photo to view full size.
-        </p>
-
-        <!-- Gallery items injected by main.js from gallery.images -->
-        <div class="gallery-grid" id="galleryGrid" role="list" aria-label="Photo gallery"></div>
-      </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════
-         6. REGISTRY
-         #registryGrid populated by main.js from registry.links[]
-    ═══════════════════════════════════════════════════ -->
-    <section id="registry" class="section section-registry section-alt">
-      <div class="section-inner">
-        <span class="eyebrow" data-reveal>Gifts &amp; Registry</span>
-        <h2 data-reveal>Registry</h2>
-        <div class="divider" aria-hidden="true" data-reveal></div>
-        <!-- intro text set by main.js from registry.intro -->
-        <p id="registryIntro" data-reveal style="color:var(--ink-muted);max-width:500px;margin:0 auto var(--space-md)"></p>
-
-        <!-- Registry tiles injected by main.js -->
-        <div class="registry-grid" id="registryGrid"></div>
-      </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════
-         7. RSVP
-         meal <select> options injected by main.js from rsvp.mealOptions[]
-         #rsvpIntro text set by main.js from rsvp.intro
-    ═══════════════════════════════════════════════════ -->
-    <section id="rsvp" class="section section-rsvp">
-      <div class="section-inner">
-        <span class="eyebrow" data-reveal>Kindly Reply</span>
-        <h2 data-reveal>RSVP</h2>
-        <div class="divider" aria-hidden="true" data-reveal></div>
-        <!-- populated by main.js from rsvp.intro -->
-        <p id="rsvpIntro" data-reveal></p>
-
-        <div data-reveal>
-          <form class="rsvp-form" id="rsvpForm" novalidate>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="rsvp-name">Full Name</label>
-                <input type="text" id="rsvp-name" name="name" required placeholder="Your full name">
-              </div>
-              <div class="form-group">
-                <label for="rsvp-email">Email Address</label>
-                <input type="email" id="rsvp-email" name="email" required placeholder="your@email.com">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Will you be attending?</label>
-              <div class="rsvp-attending">
-                <label class="radio-label">
-                  <input type="radio" name="attending" value="Joyfully Accepts" required>
-                  Joyfully Accepts
-                </label>
-                <label class="radio-label">
-                  <input type="radio" name="attending" value="Regretfully Declines">
-                  Regretfully Declines
-                </label>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="rsvp-guests">Number of Guests (including yourself)</label>
-                <input type="number" id="rsvp-guests" name="guests" min="1" max="10" placeholder="1">
-              </div>
-              <div class="form-group">
-                <label for="rsvp-meal">Meal Preference</label>
-                <!-- Options injected by main.js from rsvp.mealOptions -->
-                <select id="rsvp-meal" name="meal">
-                  <option value="">Select a preference</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="rsvp-notes">Dietary Restrictions / Notes</label>
-              <textarea id="rsvp-notes" name="notes" placeholder="Any allergies or notes for us?"></textarea>
-            </div>
-
-            <div class="rsvp-submit">
-              <button type="submit" class="btn btn-solid">Send My RSVP</button>
-            </div>
-
-          </form>
-
-          <div class="form-success" id="rsvpSuccess">
-            <h3>Thank you!</h3>
-            <!-- success message text set by main.js from rsvp.successMessage -->
-            <p style="color:rgba(251,248,240,0.7)"></p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════
-         8. GUESTBOOK
-         #gbIntro text set by main.js
-         textarea placeholder set by main.js from guestbook.placeholder
-    ═══════════════════════════════════════════════════ -->
-    <section id="guestbook" class="section section-guestbook">
-      <div class="section-inner">
-        <span class="eyebrow" data-reveal>Leave a Note</span>
-        <h2 data-reveal>Guestbook</h2>
-        <div class="divider" aria-hidden="true" data-reveal></div>
-        <!-- populated by main.js from guestbook.intro -->
-        <p id="gbIntro" data-reveal style="color:var(--ink-muted);max-width:480px;margin:0 auto var(--space-lg)"></p>
-
-        <div class="guestbook-layout" data-reveal>
-
-          <div class="guestbook-form-wrap">
-            <h3 style="font-style:italic;margin-bottom:var(--space-md)">Write a Note</h3>
-
-            <form class="guestbook-form" id="gbForm" novalidate>
-              <div class="form-group">
-                <label for="gb-name">Your Name</label>
-                <input type="text" id="gb-name" name="name" required placeholder="Your name">
-              </div>
-              <div class="form-group">
-                <label for="gb-message">Your Message</label>
-                <!-- placeholder set by main.js from guestbook.placeholder -->
-                <textarea id="gb-message" name="message" required rows="5"></textarea>
-              </div>
-              <button type="submit" class="btn btn-outline"
-                style="border-color:var(--green);color:var(--green)">
-                Leave a Note
-              </button>
-            </form>
-
-            <div class="form-success" id="gbSuccess" style="color:var(--green)">
-              <h3 style="color:var(--green)">Thank you!</h3>
-              <p style="color:var(--ink-muted)">Your note has been added to the guestbook.</p>
-            </div>
-          </div>
-
-          <div>
-            <h3 style="font-style:italic;margin-bottom:var(--space-md)">Notes from Our Guests</h3>
-            <div class="guestbook-notes" id="gbNotes">
-              <p class="guestbook-empty">Notes will appear here once guests begin writing.</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
   </main>
 
-  <!-- ═══════════════════════════════════════════════════════
-       FOOTER  — text IDs populated by main.js from footer{} + couple{}
-  ═══════════════════════════════════════════════════════ -->
-  <footer class="footer">
-    <div class="footer-monogram">R &amp; M</div>
-    <div class="footer-rule" aria-hidden="true"></div>
-    <div class="footer-date" id="footerDate"></div>
-    <div class="footer-hashtag" id="footerHashtag" data-hashtag></div>
-    <div class="footer-tagline" id="footerTagline" style="font-style:italic;color:rgba(251,248,240,0.45);font-size:var(--size-sm);margin:var(--space-xs) 0"></div>
-    <div class="footer-rule" aria-hidden="true"></div>
-    <div class="footer-contact">
-      Questions? <a href="#" data-contact-email></a>
-    </div>
-  </footer>
+  <footer><div class="crest small-crest" aria-hidden="true"><span>R</span><i>&</i><span>M</span></div><p>Robert Fisher & Madison Muschik</p><p>11 · 07 · 2027</p><a href="#home">Back to top ↑</a></footer>
 
-  <!-- ═══════════════════════════════════════════════════════
-       LIGHTBOX
-  ═══════════════════════════════════════════════════════ -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo lightbox">
-    <button class="lightbox-close" id="lbClose" aria-label="Close lightbox">&#215;</button>
-    <button class="lightbox-prev" id="lbPrev" aria-label="Previous photo">&#8249;</button>
-    <button class="lightbox-next" id="lbNext" aria-label="Next photo">&#8250;</button>
-    <div class="lightbox-inner">
-      <img class="lightbox-img" src="" alt="">
-    </div>
-  </div>
-
-  <!-- Single ES-module entry point — imports content.js and sheets.js internally -->
+  <dialog class="lightbox" id="lightbox"><button id="closeLightbox" aria-label="Close photo">×</button><img id="lightboxImage" alt=""></dialog>
   <script type="module" src="src/main.js"></script>
 </body>
 </html>

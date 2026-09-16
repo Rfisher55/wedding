@@ -1,0 +1,17 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Robert and Madison//Charleston Wedding//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:robert-madison-20271107@rfisher55.github.io
+DTSTAMP:20260916T120000Z
+DTSTART;VALUE=DATE:20271107
+DTEND;VALUE=DATE:20271108
+SUMMARY:Robert and Madison's Wedding
+LOCATION:The William Aiken House\, 456 King Street\, Charleston\, SC
+DESCRIPTION:Save the date. Formal invitation and ceremony time to follow.
+URL:https://rfisher55.github.io/wedding/
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

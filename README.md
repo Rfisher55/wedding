@@ -52,7 +52,7 @@ Limits: browser network navigation is blocked in the build environment. Tests us
 
 ## Still awaiting confirmed details
 
-Final ceremony timing, RSVP deadline and invitation/plus-one policy, registry shopping links, verified relationship story, and any negotiated hotel block links still require the couple's details. RSVP collection is connected to a real Google Form and private Google Sheet.
+Final ceremony timing, the active registry URL, verified relationship story, and any negotiated hotel block links still require confirmed details. RSVP collection is connected to a real Google Form and private Google Sheet.
 
 ## Feature references for this update
 
@@ -68,6 +68,12 @@ Reviewed Joy’s wedding website features and Zola’s guest FAQ guidance on Sep
 
 The site links to the published Google Form from navigation, guest shortcuts, the RSVP section, the FAQ, and the guest guide. Guests can reply without a Google account and use the confirmation page's private edit-response link for corrections. The form collects names, email, mailing address, attendance, plus-one attendance/name, and an optional note. It writes to the couple's private Google spreadsheet; guest data and the spreadsheet URL are not included in this repository. The results-summary setting remains off.
 
-The private workbook has a raw Form Responses 1 tab, a live RSVP view, and attendance totals on Overview. Formula references use whole source columns plus a header-row exclusion so Google Forms row insertion cannot skip responses. The labeled synthetic test is retained in raw responses and excluded from the guest view, totals, and hourly ChatGPT notifications. Custom domain purchase remains deferred. Registry shopping links still need to be provided by the couple.
+The private workbook has a raw Form Responses 1 tab, a live RSVP view, and attendance totals on Overview. Formula references use whole source columns plus a header-row exclusion so Google Forms row insertion cannot skip responses. The labeled synthetic test is retained in raw responses and excluded from the guest view, totals, and hourly ChatGPT notifications. Custom domain purchase remains deferred. Zola onboarding is staged with the couple’s names and wedding date. Account creation requires the owner’s authentication choice and agreement to Zola’s terms before the registry can be activated.
 
 Static checks passed for all local image links, IDs, anchors, ARIA references, calendar dates, registry structure, and JavaScript syntax. Browser checks passed for gallery pagination, photo decoding, lightbox keyboard wraparound and Escape, FAQ filtering and clearing, mobile menu navigation, registry add/edit/delete, HTTPS validation, draft persistence, and separation between owner drafts and guest-facing published data. Layout checks at 320, 390, 768, 1024, and 1440 pixels found no page overflow after correcting hotel cards and the FAQ heading. No JavaScript runtime errors were observed. Desktop and mobile screenshots were visually reviewed. These checks used local Chromium with reduced motion enabled; existing live motion behavior was preserved.
+
+## Delegated finishing choices — September 28, 2026
+
+The RSVP deadline is October 3, 2027 (five weeks before the wedding), selected as a planning default under the couple’s delegated setup request. Plus-ones are limited to invitations that include a guest. These instructions appear on the site, guest guide, and Google Form. Selecting No for a plus-one skips the name section; selecting Yes requires a full name. The form uses the site’s Charleston-green accent.
+
+`docs/registry-starter.json` is a staged list of gifts for the future Zola registry, not an active registry or a record of purchases. It is not loaded by the guest site. Add these items after the owner completes Zola signup, then replace the guest registry data with the verified public registry URL. Prices are reference values from the listed product pages and must be rechecked during setup. No cash fund, payment account, purchase, or domain order has been created.

@@ -38,5 +38,5 @@ for (const entry of registry.entries) {
   assert(url.protocol === 'https:' && !url.username && !url.password, 'Registry must use public HTTPS shopping links');
   assert(['registry', 'gift'].includes(entry.type) && entry.name.trim(), 'Registry entry invalid');
 }
-assert.equal((html.match(/ data-photo /g) || []).length, 162, 'Expected the full 162-photo album');
-console.log('Charleston v3: static integrity, photo assets, registry data and JavaScript syntax checks passed.');
+assert.equal((html.match(/\bdata-photo(?:[=\s>])/g) || []).length, 162, 'Expected the full 162-photo album');
+console.log('Charleston v4: static integrity, photo assets, registry data and JavaScript syntax checks passed.');

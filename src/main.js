@@ -177,7 +177,6 @@ function renderScroll() {
   }
   let active = -1;
   sections.forEach((section, i) => { if (section.getBoundingClientRect().top <= innerHeight * .4) active = i; });
-  if ($('#rsvp').getBoundingClientRect().top <= innerHeight * .4) active = -1;
   navLinks.forEach((link, i) => { if (i === active) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current'); });
 }
 function requestScrollFrame() { if (!queued) { queued = true; requestAnimationFrame(renderScroll); } }
@@ -318,7 +317,8 @@ function updateAlbum() {
   const remaining = Math.max(0, albumTiles.length - visibleTiles);
   morePhotos.hidden = remaining === 0;
   morePhotos.textContent = `Show ${Math.min(12, remaining)} more photos`;
-  $('#galleryStatus').textContent = `${Math.min(visibleTiles, albumTiles.length) + 6} of ${photos.length} photographs shown`;
+  $('#galleryStatus').textContent = `${Math.min(visibleTiles, albumTiles.length) + $$('.film-photo').length} of ${photos.length} photographs shown`;
+  $('#fewerPhotos').hidden = visibleTiles <= 12;
 }
 morePhotos.addEventListener('click', () => {
   const firstNew = albumTiles[visibleTiles];
@@ -327,3 +327,28 @@ morePhotos.addEventListener('click', () => {
   firstNew?.focus({ preventScroll: true });
 });
 updateAlbum();
+
+// Album stays compact until guests choose to explore more.
+$('#fewerPhotos').addEventListener('click', () => {
+  visibleTiles = 12; updateAlbum();
+  $('#albumDisclosure > summary').focus();
+  $('#albumDisclosure').scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'instant', block: 'start' });
+});
+
+// Load the actual Google Form only after an explicit guest interaction.
+const showRsvp = $('#showRsvp');
+const rsvpEmbed = $('#rsvpEmbed');
+showRsvp.hidden = false;
+showRsvp.addEventListener('click', () => {
+  const frame = $('#rsvpFrame');
+  if (frame.getAttribute('src') === 'about:blank') frame.src = frame.dataset.src;
+  rsvpEmbed.hidden = false;
+  showRsvp.setAttribute('aria-expanded', 'true');
+  $('#closeRsvp').focus({ preventScroll: true });
+  rsvpEmbed.scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'instant', block: 'start' });
+});
+$('#closeRsvp').addEventListener('click', () => {
+  rsvpEmbed.hidden = true;
+  showRsvp.setAttribute('aria-expanded', 'false');
+  showRsvp.focus();
+});

@@ -21,7 +21,8 @@ for (const match of html.matchAll(/\b(?:src|href)="((?:src|public)\/[^"?]+)(?:\?
 assert(existsSync(resolve(root, 'public/charleston-linework.svg')), 'Missing image fallback');
 assert(html.includes('Sunday, November 7, 2027'), 'Wedding date missing');
 assert(html.includes('Black formal attire'), 'Dress code missing');
-assert(html.includes('No responses are being collected'), 'RSVP status must remain clear');
+assert(html.includes('RSVP to our wedding') && html.includes('docs.google.com/forms/d/e/1FAIpQLSekzjdeoutXAfWjVl948ZJpeSYMp38QibZWVBNtn7wUmLY1tw/viewform'), 'Published RSVP form link required');
+assert(!html.includes('No responses are being collected'), 'Remove outdated RSVP status');
 assert(!/<form\b/i.test(html), 'Review any RSVP form and its real delivery service');
 assert(calendar.includes('DTSTART;VALUE=DATE:20271107'), 'Calendar must save the correct date');
 assert(calendar.includes('DTEND;VALUE=DATE:20271108'), 'Calendar end must be exclusive');

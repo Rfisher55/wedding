@@ -52,16 +52,22 @@ Limits: browser network navigation is blocked in the build environment. Tests us
 
 ## Still awaiting confirmed details
 
-Actual RSVP service and access, final ceremony timing, registry shopping links, verified relationship story, and any negotiated hotel block links. The page continues to state that invitations and RSVP access will follow. No made-up story, ceremony hour, or working-looking submission form has been introduced.
+Final ceremony timing, RSVP deadline and invitation/plus-one policy, registry shopping links, verified relationship story, and any negotiated hotel block links still require the couple's details. RSVP collection is connected to a real Google Form and private Google Sheet.
 
 ## Feature references for this update
 
-Reviewed Joy’s wedding website features and Zola’s guest FAQ guidance on September 28, 2026. Selected personal photo albums, consolidated registry links, guest travel shortcuts, a searchable question section, and easy calendar access. Existing unconfirmed event details remain unconfirmed; no RSVP collection or guest submission success is simulated.
+Reviewed Joy’s wedding website features and Zola’s guest FAQ guidance on September 28, 2026. Selected personal photo albums, consolidated registry links, guest travel shortcuts, a searchable question section, and easy calendar access. Existing unconfirmed event details remain unconfirmed; RSVP collection uses a published Google Form.
 
 - https://withjoy.com/wedding-website/
 - https://www.zola.com/expert-advice/wedding-website-faq-ideas
 - https://www.zola.com/wedding-registry
 
 ## September 28 validation
+
+## Live RSVP connection — September 28, 2026
+
+The site links to the published Google Form from navigation, guest shortcuts, the RSVP section, the FAQ, and the guest guide. Guests can reply without a Google account and use the confirmation page's private edit-response link for corrections. The form collects names, email, mailing address, attendance, plus-one attendance/name, and an optional note. It writes to the couple's private Google spreadsheet; guest data and the spreadsheet URL are not included in this repository. The results-summary setting remains off.
+
+The private workbook has a raw Form Responses 1 tab, a live RSVP view, and attendance totals on Overview. Formula references use whole source columns plus a header-row exclusion so Google Forms row insertion cannot skip responses. The labeled synthetic test is retained in raw responses and excluded from the guest view, totals, and hourly ChatGPT notifications. Custom domain purchase remains deferred. Registry shopping links still need to be provided by the couple.
 
 Static checks passed for all local image links, IDs, anchors, ARIA references, calendar dates, registry structure, and JavaScript syntax. Browser checks passed for gallery pagination, photo decoding, lightbox keyboard wraparound and Escape, FAQ filtering and clearing, mobile menu navigation, registry add/edit/delete, HTTPS validation, draft persistence, and separation between owner drafts and guest-facing published data. Layout checks at 320, 390, 768, 1024, and 1440 pixels found no page overflow after correcting hotel cards and the FAQ heading. No JavaScript runtime errors were observed. Desktop and mobile screenshots were visually reviewed. These checks used local Chromium with reduced motion enabled; existing live motion behavior was preserved.

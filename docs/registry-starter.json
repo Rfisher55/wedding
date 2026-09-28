@@ -1,0 +1,108 @@
+{
+  "status": "draft-awaiting-zola-account",
+  "prepared_on": "2026-09-28",
+  "purpose": "Stage gifts for addition to the couple's Zola registry after owner signup. This file is not loaded by the guest website and does not track purchases.",
+  "intro": "Celebrating with you is the greatest gift. For those who would like to give something, we have chosen a few things for our home and life together. Thank you for being part of our next chapter.",
+  "defaults": {
+    "palette": "white, clear glass, silver and soft grey",
+    "quantity_each": 1,
+    "price_note": "Reference prices only, retrieved September 28, 2026; check price, size and availability before adding."
+  },
+  "items": [
+    {
+      "name": "OXO Good Grips Chopper",
+      "quantity": 1,
+      "color": "standard",
+      "reference_price_usd": 24.99,
+      "url": "https://www.zola.com/shop/product/oxo_good_grips_chopper",
+      "category": "Kitchen"
+    },
+    {
+      "name": "Libbey Baker's Basics Casserole Dish with Glass Cover, Set of 2",
+      "quantity": 1,
+      "color": "clear",
+      "reference_price_usd": 39.99,
+      "url": "https://www.zola.com/shop/product/libbey_bakers_basics_casserole_dish_with_glass_cover_set2",
+      "category": "Kitchen"
+    },
+    {
+      "name": "Zyliss Swift Dry Salad Spinner",
+      "quantity": 1,
+      "color": "grey",
+      "reference_price_usd_range": [
+        39.99,
+        49.99
+      ],
+      "size": "smaller available size",
+      "url": "https://www.zola.com/shop/product/zyliss1_swift_dry_salad_spinner1_grey",
+      "category": "Kitchen"
+    },
+    {
+      "name": "OXO Good Grips 3-Piece Round POP Container Set",
+      "quantity": 1,
+      "color": "standard",
+      "reference_price_usd": 44.99,
+      "url": "https://www.zola.com/shop/product/oxo_gg_round_pop_container_set",
+      "category": "Kitchen"
+    },
+    {
+      "name": "Villeroy & Boch Like Champagne Glass, Set of 2",
+      "quantity": 2,
+      "color": "smoke",
+      "reference_price_usd": 46.99,
+      "url": "https://www.zola.com/shop/product/villeroyboch_like_champagne_glass_set2_smoke",
+      "category": "Table"
+    },
+    {
+      "name": "Duralex Gigogne Clear Stackable Bowl Set",
+      "quantity": 1,
+      "color": "clear",
+      "reference_price_usd": 59.99,
+      "url": "https://www.zola.com/shop/product/duralex_lysprep_10pc",
+      "category": "Kitchen"
+    },
+    {
+      "name": "Zwiesel Glas Pure Sauvignon Blanc Wine Glass, Set of 6",
+      "quantity": 1,
+      "color": "clear",
+      "reference_price_usd": 102,
+      "url": "https://www.zola.com/shop/product/zwiesel_puresauvignonblanc6",
+      "category": "Table"
+    },
+    {
+      "name": "Aura Carver Digital Photo Frame",
+      "quantity": 1,
+      "color": "gravel",
+      "reference_price_usd": 149.99,
+      "url": "https://www.zola.com/shop/product/auraframes_carver_digital_photo_frame_gravel",
+      "category": "Home"
+    },
+    {
+      "name": "All-Clad HA1 Expert Nonstick Saute Pan with Lid",
+      "quantity": 1,
+      "color": "standard",
+      "reference_price_usd": 149.99,
+      "url": "https://www.zola.com/shop/product/allclad_ha1_expert_nonstick_saute_pan_with_lid",
+      "category": "Kitchen"
+    },
+    {
+      "name": "Fortessa Ravenna 20-Piece Flatware Set, Service for 4",
+      "quantity": 2,
+      "color": "silver",
+      "reference_price_usd": 300,
+      "url": "https://www.zola.com/shop/product/fortessa_ravenna_20pc_flatware_set_servicefor4_silver",
+      "category": "Table"
+    }
+  ],
+  "remaining_steps": [
+    "Owner completes Zola signup and terms acceptance in the prepared browser tab.",
+    "Add staged gifts and verify variants; resolve discontinued items with comparable neutral alternatives.",
+    "Copy the actual public registry URL into public/registry.json as a registry entry.",
+    "Verify the website link opens the couple's active registry."
+  ],
+  "excluded": [
+    "Cash funds or banking setup",
+    "Purchases",
+    "Custom domain order"
+  ]
+}

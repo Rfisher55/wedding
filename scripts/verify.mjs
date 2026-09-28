@@ -29,4 +29,13 @@ assert(!calendar.replaceAll('\r\n', '').includes('\n'), 'Calendar requires CRLF'
 assert(css.includes('prefers-reduced-motion'), 'Reduced motion styles required');
 assert(js.includes('supportsDialogs') && js.includes('Clipboard unavailable'), 'Graceful fallbacks required');
 execFileSync(process.execPath, ['--check', resolve(root, 'src/main.js')]);
-console.log('King Street v2: static integrity and JavaScript syntax checks passed.');
+for (const file of ['src/registry.js', 'src/manage-registry.js']) execFileSync(process.execPath, ['--check', resolve(root, file)]);
+const registry = JSON.parse(readFileSync(resolve(root, 'public/registry.json'), 'utf8'));
+assert(Array.isArray(registry.entries) && typeof registry.intro === 'string', 'Registry data structure invalid');
+for (const entry of registry.entries) {
+  const url = new URL(entry.url);
+  assert(url.protocol === 'https:' && !url.username && !url.password, 'Registry must use public HTTPS shopping links');
+  assert(['registry', 'gift'].includes(entry.type) && entry.name.trim(), 'Registry entry invalid');
+}
+assert.equal((html.match(/ data-photo /g) || []).length, 162, 'Expected the full 162-photo album');
+console.log('Charleston v3: static integrity, photo assets, registry data and JavaScript syntax checks passed.');

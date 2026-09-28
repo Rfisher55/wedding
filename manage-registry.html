@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#192f28"><title>Manage our registry · Robert & Madison</title><link rel="stylesheet" href="src/style.css?v=charleston-3"></head>
+<body class="registry-manager">
+<header class="manager-header"><a class="monogram" href="index.html">R<i>&</i>M</a><a href="index.html#registry">Back to the wedding</a></header>
+<main class="manager-main">
+<p class="eyebrow">For Robert & Madison</p><h1>Our registry.</h1><p class="manager-lede">Add a registry or a gift link. Guests shop through the store, and you can keep adding gifts inside your registry account.</p>
+<details class="setup-help"><summary>Don’t have a registry yet?</summary><p>Create one with <a href="https://www.zola.com/wedding-registry" target="_blank" rel="noopener noreferrer">Zola</a>, <a href="https://withjoy.com/registry/" target="_blank" rel="noopener noreferrer">Joy</a>, or your favorite store. Copy its public sharing link into the form below. Use a full registry when you want the store to track which gifts have been purchased.</p></details>
+<div id="managerLoading" role="status">Loading published registry…</div>
+<section id="managerEditor" hidden>
+<div class="manager-grid"><div>
+<label class="field-label" for="registryMessage">A note to your guests</label><textarea id="registryMessage" maxlength="600" rows="4"></textarea>
+<form id="registryForm">
+<h2 id="editorTitle">Add a link</h2>
+<label class="field-label" for="entryType">What are you adding?</label><select id="entryType"><option value="registry">A complete registry</option><option value="gift">An individual gift</option></select>
+<label class="field-label" for="entryName">Registry or gift name</label><input id="entryName" required maxlength="120" placeholder="For example, Our Zola Registry">
+<label class="field-label" for="entryUrl">Public shopping link</label><input id="entryUrl" type="url" required placeholder="https://" autocomplete="off"><p class="field-help">Use the public link guests should visit, not your account or editing page.</p>
+<label class="field-label" for="entryNote">Short description (optional)</label><textarea id="entryNote" maxlength="300" rows="2" placeholder="A few things for our home."></textarea>
+<div class="manager-buttons"><button class="button" type="submit" id="saveEntry">Add to draft</button><button class="text-link" type="button" id="cancelEdit" hidden>Cancel edit</button></div>
+<p id="formStatus" class="manager-status" role="status"></p>
+</form></div>
+<section aria-labelledby="previewTitle"><p class="eyebrow">Draft preview</p><h2 id="previewTitle">Your gift links</h2><p class="field-help">Changes stay in this browser until you publish the file in step 2 below.</p><div id="draftEntries" class="draft-entries"></div></section></div>
+<section class="publish-panel" aria-labelledby="publishTitle"><p class="eyebrow">Make it visible to guests</p><h2 id="publishTitle">Publish your changes</h2><p>Your site publishes through your GitHub account. Only someone with access to your repository can change the live registry.</p>
+<ol><li><strong>Copy your updated registry.</strong> This includes all the gift links in the preview.</li><li><strong>Open the registry file on GitHub.</strong> Replace its contents with what you copied, then select <b>Commit changes</b>. GitHub publishes the update to your wedding site.</li></ol>
+<div class="manager-buttons"><button type="button" id="copyRegistry" class="button">1. Copy registry</button><a class="button button-outline" href="https://github.com/Rfisher55/wedding/edit/main/public/registry.json" target="_blank" rel="noopener noreferrer">2. Open GitHub ↗</a><button type="button" id="downloadRegistry" class="text-link">Download a backup</button></div>
+<p class="manager-status" id="publishStatus" role="status"></p><details><summary>View or manually copy the registry file</summary><textarea id="registryOutput" readonly rows="10" aria-label="Registry file contents" spellcheck="false"></textarea></details><button class="text-link" type="button" id="resetDraft">Reload published version</button>
+</section></section></main>
+<script type="module" src="src/manage-registry.js?v=charleston-3"></script></body></html>

@@ -1,4 +1,5 @@
 /* KING STREET: native interactions, no tracking or simulated RSVP submissions. */
+import { loadRegistry, registryCard } from './registry.js';
 const $ = (s, scope = document) => scope.querySelector(s);
 const $$ = (s, scope = document) => [...scope.querySelectorAll(s)];
 const root = document.documentElement;
@@ -280,3 +281,49 @@ $$('img').forEach(image => {
 });
 root.classList.add('js');
 root.classList.toggle('dialogs', supportsDialogs);
+
+// Only published registry data is rendered here, never an owner's local draft.
+loadRegistry().then(data => {
+  $('#registryIntro').textContent = data.intro;
+  if (data.entries.length) $('#registryList').replaceChildren(...data.entries.map(registryCard));
+}).catch(() => {
+  $('#registryStatus').textContent = 'The registry is temporarily unavailable. Please try again shortly.';
+});
+
+const faqSearch = $('#faqSearch');
+const questions = $$('.faq details');
+$('.faq-search').hidden = false;
+function filterQuestions() {
+  const term = faqSearch.value.trim().toLocaleLowerCase();
+  let count = 0;
+  for (const question of questions) {
+    const match = !term || question.textContent.toLocaleLowerCase().includes(term);
+    question.hidden = !match;
+    if (term) question.open = match;
+    else question.open = false;
+    if (match) count++;
+  }
+  $('#clearFaq').hidden = !term;
+  $('#faqResult').textContent = !term ? '' : count ? `${count} ${count === 1 ? 'answer' : 'answers'} found` : 'No matching answers. Try another word or clear your search.';
+}
+faqSearch.addEventListener('input', filterQuestions);
+$('#clearFaq').addEventListener('click', () => { faqSearch.value = ''; filterQuestions(); faqSearch.focus(); });
+
+// Show the full album in small batches; all links remain available without JS.
+const albumTiles = $$('#photoGrid .photo-tile');
+let visibleTiles = 12;
+const morePhotos = $('#morePhotos');
+function updateAlbum() {
+  albumTiles.forEach((tile, index) => { tile.hidden = index >= visibleTiles; });
+  const remaining = Math.max(0, albumTiles.length - visibleTiles);
+  morePhotos.hidden = remaining === 0;
+  morePhotos.textContent = `Show ${Math.min(12, remaining)} more photos`;
+  $('#galleryStatus').textContent = `${Math.min(visibleTiles, albumTiles.length) + 6} of ${photos.length} photographs shown`;
+}
+morePhotos.addEventListener('click', () => {
+  const firstNew = albumTiles[visibleTiles];
+  visibleTiles += 12;
+  updateAlbum();
+  firstNew?.focus({ preventScroll: true });
+});
+updateAlbum();

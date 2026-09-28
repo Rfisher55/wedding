@@ -1,11 +1,19 @@
-# Robert & Madison — King Street, second edition
+# Robert & Madison — photos, registry, and guest essentials
 
 Wedding: November 7, 2027. The William Aiken House, Charleston, South Carolina.
 Live site: https://rfisher55.github.io/wedding/
 
-The production deployment runs on pushes to **main**. The previous published version is commit `6192053` and remains in Git history. This edition replaces the guest-facing HTML, CSS, and JavaScript together, without removing legacy assets or changing the calendar date.
+The production deployment runs on pushes to **main**. The current photo and registry update is described below. The previous published version is commit `6192053` and remains in Git history. This edition replaces the guest-facing HTML, CSS, and JavaScript together, without removing legacy assets or changing the calendar date.
 
-## The new experience
+## September 28, 2026 update
+
+- Imported all 162 supplied photographs as local WebP images, with 640-pixel thumbnails and 1800-pixel lightbox copies. The total photo payload is 30.2 MB; originals are not copied into Git. EXIF metadata is removed from website copies.
+- Added a personal opening portrait, six featured photographs, a full gallery shown 12 additional images at a time, keyboard/swipe lightbox navigation, and a link to the supplied full-resolution Dropbox album.
+- Added a registry section and `manage-registry.html`, a form-based editor for complete registries or individual gift links. Owner drafts stay in the current browser. Publishing requires copying the generated JSON into `public/registry.json` on GitHub and committing; the page gives explicit steps. No token, password, private guest data, or client-side admin password is introduced.
+- Registry entries are intentionally empty until Robert and Madison provide real shopping URLs. Individual gift links do not track purchases. A retailer registry is the recommended route when purchase tracking is needed.
+- Added a searchable FAQ, Google Calendar link alongside the Apple/Outlook calendar file, guest shortcuts, and a mobile navigation bar.
+
+## The established experience
 
 An ivory, Charleston-green editorial layout with an arched photographic opening and date stamp; layered correspondence with a wax-seal button opening a save-the-date card; three interactive venue scenes (piazza, courtyard, interiors); a dedicated black-formal-attire section; redesigned hotel, arrival, and exploring panels; a horizontally scrolling photographic filmstrip; and a slide-out guest guide with directions, calendar download, clipboard feedback, and print layout.
 
@@ -36,7 +44,7 @@ Venue photos are externally hosted by Patrick Properties Hospitality Group and c
 
 Hotel links remain the established official property destinations. No rates, room availability, transit times, room blocks, or new booking arrangements are promised. The venue's accessibility statement is attributed, with guests directed to confirm specific needs with the venue.
 
-## Validation: 91 checks passed
+## Prior-edition validation (September 16, 2026): 91 checks passed
 
 Offline Chromium checks covered initialization, unique IDs and in-page references, all venue/travel tab interactions and keyboard controls, FAQ cross-navigation, invitation and guest-guide dialogs, focus return, clipboard success/failure handling, print CSS/state cleanup, filmstrip controls, gallery keyboard/wrap/swipe handling, image failures, motion controls, no-script access, and responsive geometry at 14 viewport sizes from 320 to 1920 pixels wide, including landscape. There were no JavaScript runtime errors in that run. Static integrity and Node syntax checks also passed.
 
@@ -44,4 +52,16 @@ Limits: browser network navigation is blocked in the build environment. Tests us
 
 ## Still awaiting confirmed details
 
-Actual RSVP service and access, final ceremony timing, registry links, personal photos and verified relationship story, and any negotiated hotel block links. The page continues to state that invitations and RSVP access will follow. No made-up story, ceremony hour, or working-looking submission form has been introduced.
+Actual RSVP service and access, final ceremony timing, registry shopping links, verified relationship story, and any negotiated hotel block links. The page continues to state that invitations and RSVP access will follow. No made-up story, ceremony hour, or working-looking submission form has been introduced.
+
+## Feature references for this update
+
+Reviewed Joy’s wedding website features and Zola’s guest FAQ guidance on September 28, 2026. Selected personal photo albums, consolidated registry links, guest travel shortcuts, a searchable question section, and easy calendar access. Existing unconfirmed event details remain unconfirmed; no RSVP collection or guest submission success is simulated.
+
+- https://withjoy.com/wedding-website/
+- https://www.zola.com/expert-advice/wedding-website-faq-ideas
+- https://www.zola.com/wedding-registry
+
+## September 28 validation
+
+Static checks passed for all local image links, IDs, anchors, ARIA references, calendar dates, registry structure, and JavaScript syntax. Browser checks passed for gallery pagination, photo decoding, lightbox keyboard wraparound and Escape, FAQ filtering and clearing, mobile menu navigation, registry add/edit/delete, HTTPS validation, draft persistence, and separation between owner drafts and guest-facing published data. Layout checks at 320, 390, 768, 1024, and 1440 pixels found no page overflow after correcting hotel cards and the FAQ heading. No JavaScript runtime errors were observed. Desktop and mobile screenshots were visually reviewed. These checks used local Chromium with reduced motion enabled; existing live motion behavior was preserved.
